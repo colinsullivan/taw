@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "johnny-five": "^0.9.2",
-    "node-pixel": "^0.4.1"
+    "node-pixel": "^0.4.1",
+    "supercolliderjs": "^0.8.2"
   }
 }
