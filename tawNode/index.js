@@ -4,42 +4,6 @@ var five = require("johnny-five");
 
 var supercolliderjs = require("supercolliderjs");
 
-supercolliderjs.resolveOptions(null, {
-  debug: true,
-  stdin: false
-}).then(function(options) {
-
-  var lang = new supercolliderjs.sclang(options);
-  /*lang.boot().then(function () {
-    return lang.initInterpreter();
-  }).then(function () {
-    lang.interpret("API.mountDuplexOSC").then(function (result) {
-      console.log("result");
-      console.log(result);
-    });
-  });*/
-  /*.then(function () {
-  });*/
-  var api = new supercolliderjs.scapi(options.host, options.langPort);
-  api.log.dbug(options);
-
-  console.log("connecting...");
-  api.connect();
-  console.log("calling...");
-  api.call(0, "taw.hello", []).then(function (resp) {
-    console.log("resp");
-    console.log(resp);
-  });
-
-  /*var Server = supercolliderjs.scsynth;
-  var s = new Server(options);
-  s.boot();*/
-
-  //console.log("resolveOptions done");
-  //console.log("options");
-  //console.log(options);
-
-});
 
 
 
@@ -86,3 +50,55 @@ board.on("ready", function () {
 });
 
 
+supercolliderjs.resolveOptions(null, {
+  debug: true,
+  stdin: false
+}).then(function(options) {
+
+  var lang = new supercolliderjs.sclang(options);
+  /*lang.boot().then(function () {
+    return lang.initInterpreter();
+  }).then(function () {
+    lang.interpret("API.mountDuplexOSC").then(function (result) {
+      console.log("result");
+      console.log(result);
+    });
+  });*/
+  /*.then(function () {
+  });*/
+  var api = new supercolliderjs.scapi(options.host, options.langPort);
+  api.log.echo = true;
+
+  api.on("error", function (err) {
+    console.log("API ERROR: ");
+    console.log(err);
+  });
+
+  console.log("connecting...");
+  api.connect();
+  console.log("calling...");
+
+  var incrementStripPositionQuantized;
+
+  var incrementStripPosition = function () {
+    state.sequence.currentStep = (state.sequence.currentStep + 1) % state.sequence.numSteps;
+  };
+  incrementStripPositionQuantized = function () {
+    api.call(0, "taw.hello", []).then(function (resp) {
+      incrementStripPosition();
+      incrementStripPositionQuantized();
+      console.log("state.sequence.currentStep");
+      console.log(state.sequence.currentStep);
+    });
+  };
+  incrementStripPositionQuantized();
+
+  /*var Server = supercolliderjs.scsynth;
+  var s = new Server(options);
+  s.boot();*/
+
+  //console.log("resolveOptions done");
+  //console.log("options");
+  //console.log(options);
+
+});

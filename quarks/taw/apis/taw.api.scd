@@ -1,5 +1,10 @@
 (
   hello: { arg reply;
-    reply.value("hello back");
+    var tawController = TawController.getInstance();
+    /*tawController.play();*/
+    tawController.play({
+      "taw.api.hello".postln();
+      reply.value("hello back");
+    });
   }
 );
