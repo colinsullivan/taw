@@ -17,5 +17,12 @@
         tick: tawController.tickClock.beatInBar
       ));
     });
+  },
+  scheduleAction: {
+    arg reply, action, quant;
+    var tawController = TawController.getInstance();
+    tawController.scheduleAction(action, quant, {
+      reply.value();
+    });
   }
 );

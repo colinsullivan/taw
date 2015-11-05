@@ -104,6 +104,12 @@ TawController {
     this.tickClock.sched(1, task);
   }
 
+  scheduleAction {
+    arg action, quant, task;
+    // TODO: use quant to select clock
+    this.clock.sched(1, task);
+  }
+
   *getInstance {
 
     //"TawController.getInstance".postln();
