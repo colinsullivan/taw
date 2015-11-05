@@ -1,10 +1,21 @@
 (
-  hello: { arg reply;
+  playNote: { arg reply;
     var tawController = TawController.getInstance();
     /*tawController.play();*/
     tawController.play({
-      "taw.api.hello".postln();
-      reply.value("hello back");
+      reply.value((
+        beats: tawController.clock.beats
+      ));
+    });
+  },
+  onNextTick: {
+    arg reply;
+    var tawController = TawController.getInstance();
+    tawController.onNextTick({
+      reply.value((
+        beats: tawController.clock.beatInBar,
+        tick: tawController.tickClock.beatInBar
+      ));
     });
   }
 );

@@ -3,6 +3,7 @@ TawController {
   classvar <>instance;
 
   var <>clock,
+    <>tickClock,
     <>playCallback,
     // MixerChannel instance
     <>outputChannel,
@@ -26,10 +27,19 @@ TawController {
   init {
     arg params;
     var me = this;
+    var now = thisThread.clock.seconds;
+    var tempo = 1;
+    var tickClock;
 
     "TawController.init".postln();
 
-    this.clock = TempoClock.default;
+    this.clock = TempoClock.new(tempo, 0, now);
+    //this.clock.tempo = 150.0/60.0;
+    this.tickClock = TempoClock.new(tempo * 32.0, 0, now);
+    tickClock = this.tickClock;
+    this.tickClock.schedAbs(0, {
+      tickClock.beatsPerBar = 32;
+    });
 
     this.playCallback = {
       arg beats, time, clock;
@@ -61,10 +71,10 @@ TawController {
       noteBeat,
       noteLatency;
 
-    "TawController.handlePlayCallback".postln();
+    //"TawController.handlePlayCallback".postln();
     
     noteBeat = t.beatsPerBar + t.nextTimeOnGrid(
-      1,
+      0,
       0
     );
     noteLatency = t.beats2secs(noteBeat) - t.seconds;
@@ -73,22 +83,33 @@ TawController {
       atTime: noteLatency
     );
 
-    [beats, time, clock].postln();
+    //[beats, time, clock].postln();
   }
 
   play {
     arg task;
+    var eventBeat, eventTime;
     "TawController.play".postln();
+
+    eventBeat = this.clock.nextTimeOnGrid(1, 0);
+    "eventBeat:".postln;
+    eventBeat.postln;
+
     this.clock.play(this.playCallback);
     this.clock.play(task);
   }
 
+  onNextTick {
+    arg task;
+    this.tickClock.sched(1, task);
+  }
+
   *getInstance {
 
-    "TawController.getInstance".postln();
+    //"TawController.getInstance".postln();
 
-    "this.instance:".postln;
-    this.instance.postln;
+    //"this.instance:".postln;
+    //this.instance.postln;
     if (this.instance == nil, {
       this.instance = TawController.new(());
     });

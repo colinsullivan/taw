@@ -12,6 +12,9 @@ var board = new five.Board({
 });
 
 var state = {
+  clock: {
+    beats: null
+  },
   sequence: {
     numSteps: 8,
     currentStep: 0
@@ -55,17 +58,12 @@ supercolliderjs.resolveOptions(null, {
   stdin: false
 }).then(function(options) {
 
-  var lang = new supercolliderjs.sclang(options);
-  /*lang.boot().then(function () {
+  /*var lang = new supercolliderjs.sclang(options);
+  lang.boot().then(function () {
     return lang.initInterpreter();
   }).then(function () {
-    lang.interpret("API.mountDuplexOSC").then(function (result) {
-      console.log("result");
-      console.log(result);
-    });
   });*/
-  /*.then(function () {
-  });*/
+
   var api = new supercolliderjs.scapi(options.host, options.langPort);
   api.log.echo = true;
 
@@ -78,20 +76,48 @@ supercolliderjs.resolveOptions(null, {
   api.connect();
   console.log("calling...");
 
+  var apiCallIndex = 0;
+  function getAPICallIndex () {
+    if (apiCallIndex < Number.MAX_SAFE_INTEGER - 1) {
+      apiCallIndex++;
+    } else {
+      apiCallIndex = 0;
+    }
+    return apiCallIndex;
+  }
+
   var incrementStripPositionQuantized;
 
   var incrementStripPosition = function () {
     state.sequence.currentStep = (state.sequence.currentStep + 1) % state.sequence.numSteps;
   };
   incrementStripPositionQuantized = function () {
-    api.call(0, "taw.hello", []).then(function (resp) {
-      incrementStripPosition();
+    api.call(getAPICallIndex(), "taw.playNote", []).then(function (resp) {
+      console.log("resp");
+      console.log(resp);
+      if (state.clock.beats != resp.beats) {
+        state.clock.beats = resp.beats;
+        incrementStripPosition();
+        console.log("state.sequence.currentStep");
+        console.log(state.sequence.currentStep);
+      }
       incrementStripPositionQuantized();
-      console.log("state.sequence.currentStep");
-      console.log(state.sequence.currentStep);
     });
   };
   incrementStripPositionQuantized();
+
+  var scheduleTickUpdate;
+  var tickUpdate = function (resp) {
+    console.log("tickUpdate.resp");
+    console.log(resp);
+  };
+  scheduleTickUpdate = function () {
+    api.call(getAPICallIndex(), "taw.onNextTick", []).then(function (resp) {
+      tickUpdate(resp);
+      scheduleTickUpdate();
+    });
+  };
+  scheduleTickUpdate();
 
   /*var Server = supercolliderjs.scsynth;
   var s = new Server(options);

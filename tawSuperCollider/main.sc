@@ -1,15 +1,7 @@
-({
-
-  //API.mountDuplexOSC;
-
-  //API.loadAll.allPaths
-
-
-}.value());
 
 ({
   var m, mBounds;
-  s.quit;
+  s.quit();
   /*s.options.inDevice = "PreSonus FIREPOD (2112)";*/
   //s.options.outDevice= "Soundflower (64ch)";
   /*s.options.inDevice = "JackRouter";
@@ -27,7 +19,7 @@
   m.window.setTopLeftBounds(mBounds);
 }.value());
 
-({
+/*({
   s.quit();
 }.value());
 
@@ -37,4 +29,4 @@ Quarks.install("taw");
 
 API.loadAll.allPaths.do(_.postln);
 
-TawController.getInstance()
+TawController.getInstance()*/
