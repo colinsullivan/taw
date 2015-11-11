@@ -1,7 +1,10 @@
 export const actionTypes = {
   //CLOCK_TICKED: Symbol("The clock has moved forward")
-  SEQUENCER_STEPPED: "SEQUENCER_STEPPED_FORWARD"
-  //SEQUENCER_STEP_SCHEDULED: "SEQUENCER_STEP_SCHEDULED"
+  SEQUENCER_STEPPED: "SEQUENCER_STEPPED_FORWARD",
+  //SEQUENCER_STEP_SCHEDULED: "SEQUENCER_STEP_SCHEDULED",
+  SUPERCOLLIDER_READY: "SUPERCOLLIDER_READY",
+  SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
+  SUPERCOLLIDER_INIT_COMPLETE: "SUPERCOLLIDER_INIT_COMPLETE"
 };
 
 /*export function clockTick (quant) {
@@ -25,3 +28,21 @@ export function stepSequencerForward (sequencerName) {
     name: sequencerName
   };
 }*/
+
+export function supercolliderReady () {
+  return {
+    type: actionTypes.SUPERCOLLIDER_READY
+  };
+}
+
+export function supercolliderInitStarted () {
+  return {
+    type: actionTypes.SUPERCOLLIDER_INIT_START
+  };
+}
+
+export function supercolliderInitCompleted () {
+  return {
+    type: actionTypes.SUPERCOLLIDER_INIT_COMPLETE
+  };
+}

@@ -17,6 +17,11 @@
   mBounds.left = 1440;
   mBounds.top = 900;
   m.window.setTopLeftBounds(mBounds);
+
+
+  s.doWhenBooted({
+    var tawController = TawController.getInstance();
+  });
 }.value());
 
 /*({

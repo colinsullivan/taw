@@ -24,6 +24,36 @@ function sequencers (state = {}, action) {
   }
 };
 
+function supercolliderIsReady (state = false, action) {
+  switch (action.type) {
+    case actionTypes.SUPERCOLLIDER_READY:
+      return true;
+    default:
+      return state;
+  }
+}
+
+function supercolliderInitializationStarted (state = false, action) {
+  switch (action.type) {
+    case actionTypes.SUPERCOLLIDER_INIT_START:
+      return true;
+    default:
+      return state;
+  }
+}
+
+function supercolliderInitializationComplete (state = false, action) {
+  switch (action.type) {
+    case actionTypes.SUPERCOLLIDER_INIT_COMPLETE:
+      return true;
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
-  sequencers
+  sequencers,
+  supercolliderIsReady,
+  supercolliderInitializationStarted,
+  supercolliderInitializationComplete
 });

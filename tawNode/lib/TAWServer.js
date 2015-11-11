@@ -4,17 +4,20 @@ import { createStore } from "redux"
 import rootReducer from "./reducers.js"
 import * as actions from "./actions.js"
 import TAWScheduler from "./TAWScheduler.js"
+import SCController from "./SCController.js"
 
 class TAWServer {
   constructor () {
+    var playListener;
+
     this.store = createStore(rootReducer, {
       sequencers: {
         lead: {
           quant: {
             value: 4
           },
-          numBars: {
-            value: 2
+          numBeats: {
+            value: 16
           },
           currentBeat: {
             value: 0
@@ -23,12 +26,20 @@ class TAWServer {
       }
     });
 
-    this.store.subscribe(() => {
-      console.log("this.store.getState().sequencers.lead.currentBeat");
-      console.log(this.store.getState().sequencers.lead.currentBeat);
+    playListener = this.store.subscribe(() => {
+      /*console.log("this.store.getState().sequencers.lead.currentBeat");
+      console.log(this.store.getState().sequencers.lead.currentBeat);*/
+      
+      // once supercollider is initialized
+      /*if (this.store.getState().supercolliderInitCompleted) {
+
+        playListener();
+      }*/
     });
 
-    this.scheduler = new TAWScheduler(this.store);
+    //this.scheduler = new TAWScheduler(this.store);
+    
+    this.scController = new SCController(this.store);
 
   }
 }

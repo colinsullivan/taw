@@ -1,46 +1,17 @@
 import * as actions from "./actions.js";
 
-var supercolliderjs = require("supercolliderjs");
 
 class TAWScheduler {
   constructor (store) {
     this.store = store;
-    this._apiCallIndex = 0;
     this._currentBeatCache = {};
 
-    supercolliderjs.resolveOptions(null, {
-      debug: true,
-      stdin: false
-    }).then((options) => {
-
-      var api = new supercolliderjs.scapi(options.host, options.langPort);
-      this.scapi = api;
-      api.log.echo = true;
-
-      api.on("error", function (err) {
-        console.log("API ERROR: ");
-        console.log(err);
-      });
-
-      console.log("connecting...");
-      api.connect();
-
-      this.supercolliderReady();
-    });   
   }
   getCurrentBeatFromCache (instrName, current) {
     if (!this._currentBeatCache[instrName]) {
       this._currentBeatCache[instrName] = current;
     }
     return this._currentBeatCache[instrName];
-  }
-  getAPICallIndex () {
-    if (this._apiCallIndex < Number.MAX_SAFE_INTEGER - 1) {
-      this._apiCallIndex++;
-    } else {
-      this._apiCallIndex = 0;
-    }
-    return this._apiCallIndex;
   }
 
   supercolliderReady () {
@@ -79,22 +50,22 @@ class TAWScheduler {
     };
     scheduleTickUpdate();*/
 
-   this.store.subscribe(() => {
+    this.store.subscribe(() => {
      this.scheduleSequencerUpdatesIfNeeded();
-   });
+    });
 
-   // and now to start
-   //this.scheduleSequencerUpdatesIfNeeded();
+    // and now to start
+    //this.scheduleSequencerUpdatesIfNeeded();
 
-   // schedule updates for all sequencers to start
-    var state = this.store.getState();
+    // schedule updates for all sequencers to start
+    /*var state = this.store.getState();
     Object.keys(state.sequencers).forEach((sequencerName) => {
       var sequencer = state.sequencers[sequencerName];
       this._currentBeatCache[sequencerName] = sequencer.currentBeat;
       var action = actions.stepSequencerForward(sequencerName);
       this.scheduleAction(action, sequencer.quant);
     });
-    
+    */
   }
 
   scheduleSequencerUpdatesIfNeeded () {
@@ -117,8 +88,8 @@ class TAWScheduler {
 
 
   scheduleAction (action, quantization) {
-    this.scapi.call(
-      this.getAPICallIndex(),
+    // TODO
+    this.scController.call(
       "taw.scheduleAction",
       [action, quantization]
     ).then((resp) => {

@@ -1,4 +1,11 @@
 (
+  init: {
+    arg reply, initialState;
+    var tawController = TawController.getInstance();
+    tawController.initFromAPI(initialState);
+    reply.value((status: "ok"));
+  },
+
   playNote: { arg reply;
     var tawController = TawController.getInstance();
     /*tawController.play();*/

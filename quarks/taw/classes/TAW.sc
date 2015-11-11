@@ -1,4 +1,3 @@
-
 TawController {
   classvar <>instance;
 
@@ -7,7 +6,10 @@ TawController {
     <>playCallback,
     // MixerChannel instance
     <>outputChannel,
-    <>patch;
+    <>patch,
+    <>state,
+    <>store,
+    <>sequencers;
 
   *new {
     arg params;
@@ -28,10 +30,11 @@ TawController {
     arg params;
     var me = this;
     var now = thisThread.clock.seconds;
-    var tempo = 1;
+    var tempo = 150.0/60.0;
     var tickClock;
 
     "TawController.init".postln();
+
 
     this.clock = TempoClock.new(tempo, 0, now);
     //this.clock.tempo = 150.0/60.0;
@@ -45,45 +48,33 @@ TawController {
       arg beats, time, clock;
       me.handlePlayCallback(beats, time, clock);
     };
+
+    //this.tickClock.play(this.playCallback);
     
     this.outputChannel = this.create_output_channel();
     
-    Instr("SineBeep", {
-      arg freq = 440, amp = 0.5;
-
-      var out,
-        envShape;
-
-      envShape = Env.perc(0.01, 0.2);
-
-      out = SinOsc.ar(freq);
-
-      out = EnvGen.ar(envShape) * [out, out];
-    });
-    this.patch = Patch("SineBeep");
-
     ^this;
+  }
+
+  initFromAPI {
+    arg initialState;
+    var state;
+    this.store = StateStore.new(initialState);
+    state = this.store.getState();
+    
+    this.clock.play(this.playCallback);
   }
 
   handlePlayCallback {
     arg beats, time, clock;
-    var t = this.clock,
-      noteBeat,
-      noteLatency;
 
-    //"TawController.handlePlayCallback".postln();
+    "TawController.handlePlayCallback".postln();
     
-    noteBeat = t.beatsPerBar + t.nextTimeOnGrid(
-      0,
-      0
-    );
-    noteLatency = t.beats2secs(noteBeat) - t.seconds;
-    this.patch.playToMixer(
-      this.outputChannel,
-      atTime: noteLatency
-    );
+    //this.sequencers[0].scheduleNextBeat(clock);
 
-    //[beats, time, clock].postln();
+    [beats, time, clock].postln();
+
+    ^1.0;
   }
 
   play {
