@@ -36,33 +36,59 @@ TawController {
     "TawController.init".postln();
 
 
-    this.clock = TempoClock.new(tempo, 0, now);
+    //this.clock = TempoClock.new(tempo, 0, now);
     //this.clock.tempo = 150.0/60.0;
-    this.tickClock = TempoClock.new(tempo * 32.0, 0, now);
+    /*this.tickClock = TempoClock.new(tempo * 32.0, 0, now);
     tickClock = this.tickClock;
     this.tickClock.schedAbs(0, {
       tickClock.beatsPerBar = 32;
-    });
+    });*/
 
-    this.playCallback = {
+    /*this.playCallback = {
       arg beats, time, clock;
       me.handlePlayCallback(beats, time, clock);
-    };
+    };*/
 
     //this.tickClock.play(this.playCallback);
+
+    this.sequencers = List.new();
     
     this.outputChannel = this.create_output_channel();
     
     ^this;
   }
 
+  initSequencer {
+    arg sequencer;
+
+    this.sequencers.add(
+      TawSequencer.new((
+        store: this.store,
+        name: sequencer.name
+      ))
+    );
+  }
+
   initFromAPI {
     arg initialState;
-    var state;
+    var state,
+      me = this;
+
     this.store = StateStore.new(initialState);
     state = this.store.getState();
+
+    // TODO: Kill any currently running sequencers
+
+    // create sequencers
+    state.sequencers.do({
+      arg sequencer;
+      "sequencer:".postln;
+      sequencer.postln;
+      me.initSequencer(sequencer);
+    });
+  
     
-    this.clock.play(this.playCallback);
+    //this.clock.play(this.playCallback);
   }
 
   handlePlayCallback {

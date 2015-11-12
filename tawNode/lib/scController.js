@@ -36,9 +36,14 @@ class SCController {
           this.store.dispatch(actions.supercolliderInitCompleted());
         }
       });
-
-
     });   
+
+    this.store.subscribe(() => {
+      var state = this.store.getState();
+      if (state.supercolliderInitializationComplete) {
+        this.call("taw.setState", [state]);
+      }
+    })
   }
   getAPICallIndex () {
     if (this._apiCallIndex < Number.MAX_SAFE_INTEGER - 1) {

@@ -31,5 +31,17 @@
     tawController.scheduleAction(action, quant, {
       reply.value();
     });
+  },
+  dispatch: {
+    arg reply, action;
+    var tawController = TawController.getInstance();
+    tawController.store.dispatch(action);
+    reply.value();
+  },
+  setState: {
+    arg reply, state;
+    var tawController = TawController.getInstance();
+    tawController.store.setState(state);
+    reply.value();
   }
 );

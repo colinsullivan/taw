@@ -4,7 +4,8 @@ export const actionTypes = {
   //SEQUENCER_STEP_SCHEDULED: "SEQUENCER_STEP_SCHEDULED",
   SUPERCOLLIDER_READY: "SUPERCOLLIDER_READY",
   SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
-  SUPERCOLLIDER_INIT_COMPLETE: "SUPERCOLLIDER_INIT_COMPLETE"
+  SUPERCOLLIDER_INIT_COMPLETE: "SUPERCOLLIDER_INIT_COMPLETE",
+  SEQUENCERS_QUEUED: "SEQUENCERS_QUEUED"
 };
 
 /*export function clockTick (quant) {
@@ -44,5 +45,11 @@ export function supercolliderInitStarted () {
 export function supercolliderInitCompleted () {
   return {
     type: actionTypes.SUPERCOLLIDER_INIT_COMPLETE
+  };
+}
+
+export function queueAllSequencers () {
+  return {
+    type: actionTypes.SEQUENCERS_QUEUED
   };
 }

@@ -1,5 +1,5 @@
 
-import { createStore } from "redux"
+import { createStore, applyMiddleware } from "redux"
 
 import rootReducer from "./reducers.js"
 import * as actions from "./actions.js"
@@ -10,18 +10,41 @@ class TAWServer {
   constructor () {
     var playListener;
 
-    this.store = createStore(rootReducer, {
+    this.scController = null;
+
+    const logger = store => next => action => {
+      //console.group(action.type)
+      console.info('dispatching', action)
+      let result = next(action)
+      console.log('next state', JSON.stringify(store.getState()))
+      //console.groupEnd(action.type)
+      return result
+    };
+
+    const forwardToSC = store => next => action => {
+      if (this.scController) {
+        this.scController.call("taw.dispatch", [action]);
+      }
+      return next(action);
+    };
+
+    let createStoreWithMiddleware = applyMiddleware(
+      //forwardToSC,
+      logger
+    )(createStore);
+
+
+    this.store = createStoreWithMiddleware(rootReducer, {
+      tempo: {
+        value: 96
+      },
       sequencers: {
         lead: {
-          quant: {
-            value: 4
-          },
-          numBeats: {
-            value: 16
-          },
-          currentBeat: {
-            value: 0
-          }
+          name: "lead",
+          quant: 4,
+          numBeats: 16,
+          currentBeat: 0,
+          playingState: "STOPPED"
         }
       }
     });
@@ -35,11 +58,18 @@ class TAWServer {
 
         playListener();
       }*/
+
+     /*console.log("this.store.getState()");
+     console.log(JSON.stringify(this.store.getState()));*/
     });
 
     //this.scheduler = new TAWScheduler(this.store);
     
     this.scController = new SCController(this.store);
+
+    setTimeout(() => {
+      this.store.dispatch(actions.queueAllSequencers());
+    }, 10000);
 
   }
 }
