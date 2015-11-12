@@ -1,5 +1,6 @@
 
 import { createStore, applyMiddleware } from "redux"
+import osc from "node-osc"
 
 import rootReducer from "./reducers.js"
 import * as actions from "./actions.js"
@@ -11,6 +12,30 @@ class TAWServer {
     var playListener;
 
     this.scController = null;
+
+    this.oscServer = new osc.Server(3334, "127.0.0.1");
+    this.oscServer.on("message", (msg, rinfo) => {
+      console.log("msg");
+      console.log(msg);
+      console.log("rinfo");
+      console.log(rinfo);
+
+      var command = msg[0];
+      switch (command) {
+        case '/dispatch':
+          let actionPairs = msg.slice(1);
+          let i;
+          let action = {};
+          for (i = 0; i < actionPairs.length - 1; i+=2) {
+            action[actionPairs[i]] = actionPairs[i + 1];
+          }
+          this.store.dispatch(action);
+          break;
+        
+        default:
+          break;
+      }
+    });
 
     const logger = store => next => action => {
       //console.group(action.type)
@@ -69,7 +94,7 @@ class TAWServer {
 
     setTimeout(() => {
       this.store.dispatch(actions.queueAllSequencers());
-    }, 10000);
+    }, 1000);
 
   }
 }

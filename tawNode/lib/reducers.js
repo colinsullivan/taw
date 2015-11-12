@@ -2,7 +2,7 @@ import { combineReducers  } from 'redux'
 
 import { actionTypes } from "./actions.js"
 
-function sequencers (state = [], action) {
+function sequencers (state = {}, action) {
   switch (action.type) {
     /*case actionTypes.SEQUENCER_STEP_SCHEDULED:
       // copy sequencer
@@ -24,6 +24,10 @@ function sequencers (state = [], action) {
         let seq = state[sequencerName];
         seq.playingState = "QUEUED";
       });
+      return state;
+    case actionTypes.SEQUENCE_PLAYING:
+      let seq = state[action.name];
+      seq.playingState = "PLAYING";
       return state;
     default:
       return state;

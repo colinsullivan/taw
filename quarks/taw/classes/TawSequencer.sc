@@ -59,16 +59,40 @@ TawSequencer {
 
   }
 
+  queueToNextBar {
+    var noteBeat,
+      noteLatency;
+
+    noteBeat = clock.beatsPerBar + clock.nextTimeOnGrid(
+      0,
+      0
+    );
+    noteLatency = clock.beats2secs(noteBeat) - clock.seconds;
+    patch.playToMixer(
+      outputChannel,
+      atTime: noteLatency
+    );
+    {
+      noteLatency.wait();
+      store.dispatch((
+        type: "SEQUENCE_PLAYING",
+        name: name
+      ));
+    }.fork();
+  }
+
   handleStateChange {
     var state = store.getState();
-
-    "playingState:".postln;
-    playingState.postln;
-
+    var newPlayingState;
 
     // if playing state has changed
-    if (playingState != state.sequencers[name.asSymbol()].playingState, {
-      "playing state has changed".postln();    
+    newPlayingState = state.sequencers[name.asSymbol()].playingState;
+    if (playingState != newPlayingState, {
+      if (playingState == "STOPPED" && newPlayingState == "QUEUED", {
+        this.queueToNextBar();
+      });
+
+      playingState = newPlayingState;
     });
 
   }

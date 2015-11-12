@@ -1,12 +1,13 @@
+
 StateStore {
   var state,
-    subscribers;
+    subscribers,
+    jsServer;
 
   *new {
     arg initialState;
     ^super.new.init(initialState);
   }
-
   init {
     arg initialState;
 
@@ -14,13 +15,15 @@ StateStore {
 
     subscribers = List.new();
 
+    jsServer = Server.new(\tawNode, NetAddr.new("127.0.0.1", 3334))
+
     ^this;
   }
 
   dispatch {
     arg action;
-    "action:".postln;
-    action.postln;
+    var actionPairs = action.getPairs();
+    jsServer.listSendMsg(["/dispatch"] ++ actionPairs);
   }
 
   subscribe {

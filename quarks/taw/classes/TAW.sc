@@ -64,7 +64,8 @@ TawController {
     this.sequencers.add(
       TawSequencer.new((
         store: this.store,
-        name: sequencer.name
+        name: sequencer.name,
+        outputChannel: this.outputChannel
       ))
     );
   }
