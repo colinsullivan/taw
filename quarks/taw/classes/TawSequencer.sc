@@ -37,41 +37,49 @@ TawSequencer {
     //currentBeat = 0;
     outputChannel = params.outputChannel;
 
-    patch = Patch("cs.synths.SineBeep");
+    patch = this.createPatch();
 
     store.subscribe(this);
 
     ^this;
   }
 
-  scheduleNextBeat {
-    var noteBeat,
-      noteLatency;
+  createPatch {
+    ^Patch("cs.synths.SineBeep");
+  }
+
+  //scheduleNextBeat {
+    //var noteBeat,
+      //noteLatency;
     
-    "scheduleNextBeat".postln();
+    ////"scheduleNextBeat".postln();
 
-    //noteBeat = clock.nextTimeOnGrid(
-      //0,
-      //0
+    ////noteBeat = clock.nextTimeOnGrid(
+      ////0,
+      ////0
+    ////);
+    ////noteLatency = clock.beats2secs(noteBeat) - clock.seconds;
+    //noteLatency = clock.timeToNextBeat();
+    //patch.playToMixer(
+      //outputChannel,
+      //atTime: noteLatency
     //);
-    //noteLatency = clock.beats2secs(noteBeat) - clock.seconds;
-    noteLatency = clock.timeToNextBeat();
-    patch.playToMixer(
-      outputChannel,
-      atTime: noteLatency
-    );
 
+  //}
+
+  playBeat {
+    patch.playToMixer(
+      outputChannel
+    );
   }
 
   startPlayingNextBar {
     clock.playNextBar({
+      this.playBeat();
       store.dispatch((
         type: "SEQUENCE_PLAYING",
         name: name
       ));
-      patch.playToMixer(
-        outputChannel
-      );
     });
   }
 
@@ -79,12 +87,10 @@ TawSequencer {
     var noteLatency,
       me = this;
 
-    "startPlaying".postln();
+    //"startPlaying".postln();
 
     clock.play({
-      patch.playToMixer(
-        outputChannel
-      );
+      this.playBeat();
       store.dispatch((
         type: "SEQUENCER_CLOCK_UPDATE",
         beats: clock.beats,
@@ -102,7 +108,7 @@ TawSequencer {
     var state = store.getState();
     var newPlayingState;
 
-    "TawSequencer.handleStateChange".postln();
+    //"TawSequencer.handleStateChange".postln();
 
     // if playing state has changed
     newPlayingState = state.sequencers[name.asSymbol()].playingState;
