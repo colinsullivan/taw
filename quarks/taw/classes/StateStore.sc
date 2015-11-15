@@ -38,7 +38,7 @@ StateStore {
   setState {
     arg newState;
 
-    "setState".postln();
+    //"setState".postln();
 
     state = newState;
 

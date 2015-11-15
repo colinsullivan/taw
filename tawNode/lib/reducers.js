@@ -47,6 +47,11 @@ function sequencers (state = initialSequencers, action) {
       seq.clock.beats = action.beats;
       seq.clock.beatInBar = action.beatInBar;
       return state;
+    case actionTypes.SEQUENCER_CLOCK_METER_CHANGED:
+      seq = state[action.name];
+      seq.clock = Object.assign({}, seq.clock);
+      seq.clock.beatsPerBar = action.beatsPerBar;
+      return state;
     default:
       return state;
   }

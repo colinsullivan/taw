@@ -5,7 +5,8 @@ TawSequencer {
     store,
     patch,
     outputChannel,
-    playingState;
+    playingState,
+    beatsPerBar;
   
   *new {
     arg params;
@@ -28,9 +29,9 @@ TawSequencer {
     playingState = initialState[\playingState];
 
     clock = TempoClock.new(state.tempo, 0, 0);
-    AppClock.sched(0, {
+    /*AppClock.sched(0, {
       clock.gui();
-    });
+    });*/
 
     //quant = 4;
     //numBeats = 16;
@@ -107,12 +108,17 @@ TawSequencer {
 
   handleStateChange {
     var state = store.getState();
-    var newPlayingState;
+    var sequencerState,
+      newPlayingState,
+      newBeatsPerBar;
 
     //"TawSequencer.handleStateChange".postln();
 
+    sequencerState = state.sequencers[name.asSymbol()];
+    newPlayingState = sequencerState.playingState;
+    newBeatsPerBar = sequencerState.clock.beatsPerBar;
+
     // if playing state has changed
-    newPlayingState = state.sequencers[name.asSymbol()].playingState;
     if (playingState != newPlayingState, {
 
       if (playingState == "STOPPED" && newPlayingState == "QUEUED", {
@@ -126,6 +132,13 @@ TawSequencer {
       playingState = newPlayingState;
     });
 
+    // if beats per bar has changed
+    if (beatsPerBar != newBeatsPerBar, {
+      clock.playNextBar({
+        clock.beatsPerBar = newBeatsPerBar;
+      });
+      beatsPerBar = newBeatsPerBar;
+    });
   }
 
 }

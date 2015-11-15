@@ -3,6 +3,7 @@ export const actionTypes = {
   //SEQUENCER_STEPPED: "SEQUENCER_STEPPED_FORWARD",
   //SEQUENCER_STEP_SCHEDULED: "SEQUENCER_STEP_SCHEDULED",
   SEQUENCER_CLOCK_UPDATE: "SEQUENCER_CLOCK_UPDATE",
+  SEQUENCER_CLOCK_METER_CHANGED: "SEQUENCER_CLOCK_METER_CHANGED",
   SUPERCOLLIDER_READY: "SUPERCOLLIDER_READY",
   SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
   SUPERCOLLIDER_INIT_COMPLETE: "SUPERCOLLIDER_INIT_COMPLETE",
@@ -67,5 +68,13 @@ export function startArduinoInit () {
 export function arduinoReady () {
   return {
     type: actionTypes.ARDUINO_READY
+  };
+}
+
+export function changeSequencerMeter (sequencerName, beatsPerBar) {
+  return {
+    type: actionTypes.SEQUENCER_CLOCK_METER_CHANGED,
+    name: sequencerName,
+    beatsPerBar: beatsPerBar
   };
 }

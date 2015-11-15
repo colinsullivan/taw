@@ -82,6 +82,10 @@ class TAWServer {
         // testing
         setTimeout(() => {
           this.store.dispatch(actions.queueAllSequencers());
+
+          setTimeout(() => {
+            this.store.dispatch(actions.changeSequencerMeter("lead", 3));
+          }, 10000);
         }, 1000);
 
       }
