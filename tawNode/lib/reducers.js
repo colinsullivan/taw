@@ -3,6 +3,7 @@ import { combineReducers  } from 'redux'
 import { actionTypes } from "./actions.js"
 
 function sequencers (state = {}, action) {
+  var seq;
   switch (action.type) {
     /*case actionTypes.SEQUENCER_STEP_SCHEDULED:
       // copy sequencer
@@ -26,8 +27,13 @@ function sequencers (state = {}, action) {
       });
       return state;
     case actionTypes.SEQUENCE_PLAYING:
-      let seq = state[action.name];
+      seq = state[action.name];
       seq.playingState = "PLAYING";
+      return state;
+    case actionTypes.SEQUENCER_CLOCK_UPDATE:
+      seq = state[action.name];
+      seq.clock = Object.assign({}, seq.clock);
+      seq.clock.beats = action.beats;
       return state;
     default:
       return state;

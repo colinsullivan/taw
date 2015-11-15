@@ -66,9 +66,9 @@ class TAWServer {
       sequencers: {
         lead: {
           name: "lead",
-          quant: 4,
-          numBeats: 16,
-          currentBeat: 0,
+          clock: {
+            beats: 0
+          },
           playingState: "STOPPED"
         }
       }

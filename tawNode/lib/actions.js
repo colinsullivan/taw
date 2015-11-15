@@ -1,7 +1,8 @@
 export const actionTypes = {
   //CLOCK_TICKED: Symbol("The clock has moved forward")
-  SEQUENCER_STEPPED: "SEQUENCER_STEPPED_FORWARD",
+  //SEQUENCER_STEPPED: "SEQUENCER_STEPPED_FORWARD",
   //SEQUENCER_STEP_SCHEDULED: "SEQUENCER_STEP_SCHEDULED",
+  SEQUENCER_CLOCK_UPDATE: "SEQUENCER_CLOCK_UPDATE",
   SUPERCOLLIDER_READY: "SUPERCOLLIDER_READY",
   SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
   SUPERCOLLIDER_INIT_COMPLETE: "SUPERCOLLIDER_INIT_COMPLETE",
@@ -17,12 +18,12 @@ export const actionTypes = {
 }
 */
 
-export function stepSequencerForward (sequencerName) {
-  return {
-    type: actionTypes.SEQUENCER_STEPPED,
-    name: sequencerName
-  };
-}
+//export function stepSequencerForward (sequencerName) {
+  //return {
+    //type: actionTypes.SEQUENCER_STEPPED,
+    //name: sequencerName
+  //};
+//}
 
 /*export function scheduleSequencerStep (sequencerName) {
   return {
