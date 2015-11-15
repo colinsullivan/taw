@@ -62,7 +62,7 @@ TawController {
     arg sequencer;
 
     this.sequencers.add(
-      TawSequencer.new((
+      TawSequencerBasic.new((
         store: this.store,
         name: sequencer.name,
         outputChannel: this.outputChannel
