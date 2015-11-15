@@ -94,6 +94,7 @@ TawSequencer {
       store.dispatch((
         type: "SEQUENCER_CLOCK_UPDATE",
         beats: clock.beats,
+        beatInBar: clock.beatInBar,
         name: name
       ));
       if (store.getState().sequencers[name.asSymbol()].playingState == "PLAYING", {

@@ -33,14 +33,14 @@ class SCController {
 
       this.call("taw.init", [this.store.getState()]).then((resp) => {
         if (resp.result.status === "ok") {
-          this.store.dispatch(actions.supercolliderInitCompleted());
+          this.store.dispatch(actions.supercolliderReady());
         }
       });
     });   
 
     this.store.subscribe(() => {
       var state = this.store.getState();
-      if (state.supercolliderInitializationComplete) {
+      if (state.supercolliderIsReady) {
         this.call("taw.setState", [state]);
       }
     })

@@ -6,6 +6,7 @@ import rootReducer from "./reducers.js"
 import * as actions from "./actions.js"
 import TAWScheduler from "./TAWScheduler.js"
 import SCController from "./SCController.js"
+import ArduinoController from "./ArduinoController.js"
 
 class TAWServer {
   constructor () {
@@ -59,59 +60,56 @@ class TAWServer {
     )(createStore);
 
 
-    this.store = createStoreWithMiddleware(rootReducer, {
-      tempo: {
-        value: 96
-      },
-      sequencers: {
-        lead: {
-          name: "lead",
-          clock: {
-            beats: 0
-          },
-          playingState: "STOPPED"
-        }
-      }
-    });
+    this.store = createStoreWithMiddleware(rootReducer);
+
+    this.isRendering = false;
+    this.renderInterval = null;
 
     playListener = this.store.subscribe(() => {
+      var state = this.store.getState();
       /*console.log("this.store.getState().sequencers.lead.currentBeat");
       console.log(this.store.getState().sequencers.lead.currentBeat);*/
       
-      // once supercollider is initialized
-      /*if (this.store.getState().supercolliderInitCompleted) {
+      // once supercollider and arduino are ready
+      if (!this.isRendering && state.supercolliderIsReady && state.arduinoIsReady) {
+       
+        // if we're not already rendering, start
+        this.renderInterval = setInterval(() => {
+          this.render();
+        }, 30);
+        this.isRendering = true;
+        
+        // testing
+        setTimeout(() => {
+          this.store.dispatch(actions.queueAllSequencers());
+        }, 1000);
 
-        playListener();
-      }*/
+      }
 
-     /*console.log("this.store.getState()");
-     console.log(JSON.stringify(this.store.getState()));*/
     });
 
     //this.scheduler = new TAWScheduler(this.store);
     
     this.scController = new SCController(this.store);
 
-    setTimeout(() => {
-      this.store.dispatch(actions.queueAllSequencers());
-    }, 1000);
+    this.arduinoController = new ArduinoController(this.store);
 
+
+  }
+
+  render () {
+    this.arduinoController.render();
   }
 }
 export default TAWServer;
 
 
-/*var pixel = require("node-pixel");
-
-var five = require("johnny-five");
+/*
 
 
 
 
 
-var board = new five.Board({
-  repl: false
-});
 
 var state = {
   clock: {
@@ -123,36 +121,7 @@ var state = {
   }
 };
 
-var renderStrip = function (strip) {
-  var i;
-  var p;
-  for (i = 0; i < state.sequence.numSteps; i++) {
-    p = strip.pixel(i);
-    if (state.sequence.currentStep == i) {
-      p.color("teal");
-    } else {
-      p.color("black");
-    }
-  }
-  strip.show();
-};
 
-var renderInterval = null;
-
-board.on("ready", function () {
-  var strip = new pixel.Strip({
-    data: 6,
-    length: 8,
-    board: this,
-    controller: "FIRMATA"
-  });
-
-  strip.on("ready", function () {
-    renderInterval = setInterval(function () {
-      renderStrip(strip);
-    }, 30);
-  });
-});
 
 
 */

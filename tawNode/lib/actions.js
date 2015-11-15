@@ -7,7 +7,9 @@ export const actionTypes = {
   SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
   SUPERCOLLIDER_INIT_COMPLETE: "SUPERCOLLIDER_INIT_COMPLETE",
   SEQUENCERS_QUEUED: "SEQUENCERS_QUEUED",
-  SEQUENCE_PLAYING: "SEQUENCE_PLAYING"
+  SEQUENCE_PLAYING: "SEQUENCE_PLAYING",
+  ARDUINO_INIT_START: "ARDUINO_INIT_START",
+  ARDUINO_READY: "ARDUINO_READY"
 };
 
 /*export function clockTick (quant) {
@@ -53,5 +55,17 @@ export function supercolliderInitCompleted () {
 export function queueAllSequencers () {
   return {
     type: actionTypes.SEQUENCERS_QUEUED
+  };
+}
+
+export function startArduinoInit () {
+  return {
+    type: actionTypes.ARDUINO_INIT_START
+  };
+}
+
+export function arduinoReady () {
+  return {
+    type: actionTypes.ARDUINO_READY
   };
 }

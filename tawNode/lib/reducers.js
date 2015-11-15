@@ -2,7 +2,18 @@ import { combineReducers  } from 'redux'
 
 import { actionTypes } from "./actions.js"
 
-function sequencers (state = {}, action) {
+let initialSequencers = {
+  lead: {
+    name: "lead",
+    clock: {
+      beats: 0,
+      beatInBar: 0
+    },
+    playingState: "STOPPED"
+  }
+};
+
+function sequencers (state = initialSequencers, action) {
   var seq;
   switch (action.type) {
     /*case actionTypes.SEQUENCER_STEP_SCHEDULED:
@@ -34,6 +45,7 @@ function sequencers (state = {}, action) {
       seq = state[action.name];
       seq.clock = Object.assign({}, seq.clock);
       seq.clock.beats = action.beats;
+      seq.clock.beatInBar = action.beatInBar;
       return state;
     default:
       return state;
@@ -67,8 +79,24 @@ function supercolliderInitializationComplete (state = false, action) {
   }
 }
 
-function tempo (state = {}, action) {
+function tempo (state = {value: 96}, action) {
   return state;
+}
+
+function arduinoInitializationStarted (state = false, action) {
+  if (action.type === actionTypes.ARDUINO_INIT_START) {
+    return true;
+  } else {
+    return state;
+  }
+}
+
+function arduinoIsReady (state = false, action) {
+  if (action.type === actionTypes.ARDUINO_READY) {
+    return true;
+  } else {
+    return state;
+  }
 }
 
 export default combineReducers({
@@ -76,5 +104,7 @@ export default combineReducers({
   supercolliderIsReady,
   supercolliderInitializationStarted,
   supercolliderInitializationComplete,
+  arduinoInitializationStarted,
+  arduinoIsReady,
   tempo
 });
