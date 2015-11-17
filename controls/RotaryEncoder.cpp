@@ -20,6 +20,11 @@ void RotaryEncoder::tick () {
 void RotaryEncoder::sendUpdate(long value) {
   int msgLength = 1 + strlen(_uid) + 1;
   char msg[msgLength];
+
+  // constrain value for now
+  value = max(-50, value);
+  value = min(50, value);
+
   sprintf(msg, "R%s%ld\n", _uid, value);
   Serial.write(msg);
 }

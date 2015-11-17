@@ -95,12 +95,34 @@ function lightingIsReady (state = false, action) {
   }
 }
 
+let defaultKnobs = {
+  "A": {
+    position: 0
+  },
+  "B": {
+    position: 0
+  }
+};
+function knobs (state = defaultKnobs, action) {
+  var knob;
+  switch (action.type) {
+    case actionTypes.KNOB_POS_CHANGED:
+      knob = state[action.id]
+      knob = Object.assign({}, knob);
+      knob.position = action.position;
+      state[action.id] = knob;
+      return state;
+    default:
+      return state;
+  }
+}
+
 export default combineReducers({
   sequencers,
   supercolliderIsReady,
   supercolliderInitializationStarted,
-  supercolliderInitializationComplete,
   lightingInitializationStarted,
   lightingIsReady,
+  knobs,
   tempo
 });

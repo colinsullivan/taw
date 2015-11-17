@@ -125,7 +125,7 @@ TawController {
   scheduleAction {
     arg action, quant, task;
     // TODO: use quant to select clock
-    this.clock.sched(1, task);
+    this.clock.playNextBar(task);
   }
 
   *getInstance {

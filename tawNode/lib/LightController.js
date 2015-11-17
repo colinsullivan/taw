@@ -11,7 +11,9 @@ class LightController {
     store.dispatch(actions.lightingInit());
 
     this.board = new five.Board({
-      repl: false
+      repl: false,
+      debug: true,
+      port: process.env.LIGHTING_ARDUINO_SERIALPORT
     });
     
     //var renderStrip = (strip) => {

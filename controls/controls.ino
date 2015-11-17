@@ -26,8 +26,8 @@
 /*#define PIN_ENCODER_B      4*/
 /*#define PIN_ENCODER_SWITCH 4*/
 
-RotaryEncoder knobOne("1");
-RotaryEncoder knobTwo("2");
+RotaryEncoder knobA("A");
+RotaryEncoder knobB("B");
 
 void setup()
 {
@@ -37,8 +37,8 @@ void setup()
   Serial.begin(9600);
   
 
-  knobOne.attach(22, 23);
-  knobTwo.attach(24, 25);
+  knobA.attach(22, 23);
+  knobB.attach(24, 25);
 
 
 
@@ -46,8 +46,8 @@ void setup()
 void loop()
 {
 
-  knobOne.tick();
-  knobTwo.tick();
+  knobA.tick();
+  knobB.tick();
 
   // remember that the switch is active low 
   /*if (bit_is_clear(TRINKET_PINx, PIN_ENCODER_SWITCH)) */

@@ -9,7 +9,8 @@ export const actionTypes = {
   SEQUENCERS_QUEUED: "SEQUENCERS_QUEUED",
   SEQUENCE_PLAYING: "SEQUENCE_PLAYING",
   LIGHTING_INIT_START: "LIGHTING_INIT_START",
-  LIGHTING_READY: "LIGHTING_READY"
+  LIGHTING_READY: "LIGHTING_READY",
+  KNOB_POS_CHANGED: "KNOB_POS_CHANGED"
 };
 
 /*export function clockTick (quant) {
@@ -69,5 +70,13 @@ export function changeSequencerMeter (sequencerName, beatsPerBar) {
     type: actionTypes.SEQUENCER_CLOCK_METER_CHANGED,
     name: sequencerName,
     beatsPerBar: beatsPerBar
+  };
+}
+
+export function knobPosChanged (id, position) {
+  return {
+    type: actionTypes.KNOB_POS_CHANGED,
+    id: id,
+    position: position
   };
 }

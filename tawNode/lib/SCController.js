@@ -38,12 +38,24 @@ class SCController {
       });
     });   
 
+    let knobA = this.store.getState().knobs.A;
     this.store.subscribe(() => {
       var state = this.store.getState();
       if (state.supercolliderIsReady) {
         this.call("taw.setState", [state]);
       }
-    })
+
+      /*setTimeout(() => {
+        this.store.dispatch(actions.changeSequencerMeter("lead", 3));
+      }, 10000);*/
+
+      if (state.knobs.A !== knobA) {
+        console.log("state.knobs.A.position");
+        console.log(state.knobs.A.position);
+      }
+
+
+    });
   }
   getAPICallIndex () {
     if (this._apiCallIndex < Number.MAX_SAFE_INTEGER - 1) {
