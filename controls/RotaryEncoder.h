@@ -2,30 +2,34 @@
 #define RotaryEncoder_h
 
 #include <Arduino.h>
-
 #include <string.h>
+#include <Encoder.h>
+#include <Math.h>
 
 class RotaryEncoder {
 
   private:
     int _aPin;
     int _bPin;
+    Encoder* _e;
     const char* _uid;
-    
-    unsigned int enc_prev_pos   = 0;
-    unsigned int enc_flags      = 0;
-    //static char    sw_was_pressed = 0;
-    
-    void sendUpdate(int direction);
+
+    long _lastRead;
+    long _newRead;
+
+    void sendUpdate(long value);
+
   public:
   RotaryEncoder (const char* uid) {
+    _lastRead = INFINITY;
     _uid = uid;
   }
-
+  ~RotaryEncoder () {
+    delete _e;
+  }
   void attach (int aPin, int bPin);
-
-  
   void tick ();
+
 };
 
 #endif
