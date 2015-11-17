@@ -8,7 +8,7 @@ class LightController {
   constructor (store) {
     this.store = store;
 
-    store.dispatch(actions.startArduinoInit());
+    store.dispatch(actions.lightingInit());
 
     this.board = new five.Board({
       repl: false
@@ -43,7 +43,7 @@ class LightController {
       });
 
       this.strip.on("ready", () => {
-        this.store.dispatch(actions.arduinoReady());
+        this.store.dispatch(actions.lightingReady());
       });
     };
 

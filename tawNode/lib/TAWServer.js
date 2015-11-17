@@ -71,7 +71,7 @@ class TAWServer {
       console.log(this.store.getState().sequencers.lead.currentBeat);*/
       
       // once supercollider and arduino are ready
-      if (!this.isRendering && state.supercolliderIsReady && state.arduinoIsReady) {
+      if (!this.isRendering && state.supercolliderIsReady && state.lightingIsReady) {
        
         // if we're not already rendering, start
         this.renderInterval = setInterval(() => {

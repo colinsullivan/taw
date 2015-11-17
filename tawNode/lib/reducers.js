@@ -79,16 +79,16 @@ function tempo (state = {value: 96}, action) {
   return state;
 }
 
-function arduinoInitializationStarted (state = false, action) {
-  if (action.type === actionTypes.ARDUINO_INIT_START) {
+function lightingInitializationStarted (state = false, action) {
+  if (action.type === actionTypes.LIGHTING_INIT_START) {
     return true;
   } else {
     return state;
   }
 }
 
-function arduinoIsReady (state = false, action) {
-  if (action.type === actionTypes.ARDUINO_READY) {
+function lightingIsReady (state = false, action) {
+  if (action.type === actionTypes.LIGHTING_READY) {
     return true;
   } else {
     return state;
@@ -100,7 +100,7 @@ export default combineReducers({
   supercolliderIsReady,
   supercolliderInitializationStarted,
   supercolliderInitializationComplete,
-  arduinoInitializationStarted,
-  arduinoIsReady,
+  lightingInitializationStarted,
+  lightingIsReady,
   tempo
 });

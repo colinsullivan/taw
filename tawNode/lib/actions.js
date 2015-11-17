@@ -8,8 +8,8 @@ export const actionTypes = {
   SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
   SEQUENCERS_QUEUED: "SEQUENCERS_QUEUED",
   SEQUENCE_PLAYING: "SEQUENCE_PLAYING",
-  ARDUINO_INIT_START: "ARDUINO_INIT_START",
-  ARDUINO_READY: "ARDUINO_READY"
+  LIGHTING_INIT_START: "LIGHTING_INIT_START",
+  LIGHTING_READY: "LIGHTING_READY"
 };
 
 /*export function clockTick (quant) {
@@ -52,15 +52,15 @@ export function queueAllSequencers () {
   };
 }
 
-export function startArduinoInit () {
+export function lightingInit () {
   return {
-    type: actionTypes.ARDUINO_INIT_START
+    type: actionTypes.LIGHTING_INIT_START
   };
 }
 
-export function arduinoReady () {
+export function lightingReady () {
   return {
-    type: actionTypes.ARDUINO_READY
+    type: actionTypes.LIGHTING_READY
   };
 }
 
