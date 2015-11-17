@@ -1,10 +1,39 @@
 #include "RotaryEncoder.h"
 
-bool bitIsClearRegisterForPin(int pinNum) {
+/*bool bitIsClearRegisterForPin(int pinNum) {
   if (pinNum < 8) {
     return bit_is_clear(PIND, pinNum);
   } else {
     return bit_is_clear(PINB, pinNum);
+  }
+}*/
+bool bitIsClearRegisterForPin(int pinNum) {
+  if (pinNum < 6) {
+    return bit_is_clear(PINE, pinNum);
+  } else if (pinNum < 10) {
+    return bit_is_clear(PINH, pinNum);
+  } else if (pinNum < 14) {
+    return bit_is_clear(PINB, pinNum);
+  } else if (pinNum < 16) {
+    return bit_is_clear(PINJ, pinNum);
+  } else if (pinNum < 18) {
+    return bit_is_clear(PINH, pinNum);
+  } else if (pinNum < 22) {
+    return bit_is_clear(PIND, pinNum);
+  } else if (pinNum < 30) {
+    return bit_is_clear(PINA, pinNum);
+  } else if (pinNum < 38) {
+    return bit_is_clear(PINC, pinNum);
+  } else if (pinNum < 39) {
+    return bit_is_clear(PIND, pinNum);
+  } else if (pinNum < 42) {
+    return bit_is_clear(PING, pinNum);
+  } else if (pinNum < 50) {
+    return bit_is_clear(PINL, pinNum);
+  } else if (pinNum < 54) {
+    return bit_is_clear(PINB, pinNum);
+  } else {
+    return 0;
   }
 }
 

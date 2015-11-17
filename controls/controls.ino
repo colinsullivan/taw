@@ -29,6 +29,9 @@
 RotaryEncoder knobOne("1");
 RotaryEncoder knobTwo("2");
 
+#include <Encoder.h>
+Encoder knobLeft(22, 23);
+
 void setup()
 {
   // set pins as input with internal pull-up resistors enabled
@@ -37,16 +40,31 @@ void setup()
   Serial.begin(9600);
   
 
-  knobOne.attach(2, 3);
-  knobTwo.attach(4, 5);
+  /*knobOne.attach(22, 23);
+  knobTwo.attach(24, 25);*/
+
+
 
 }
+
+long positionLeft  = -999;
+long newLeft;
 
 void loop()
 {
 
-  knobOne.tick();
-  knobTwo.tick();
+  /*knobOne.tick();
+  knobTwo.tick();*/
+  newLeft = knobLeft.read();
+  if (newLeft != 0) {
+    Serial.print("Left = ");
+    Serial.print(newLeft);
+    Serial.println();
+    positionLeft = 0;
+    knobLeft.write(0);
+  }
+
+
 
   // remember that the switch is active low 
   /*if (bit_is_clear(TRINKET_PINx, PIN_ENCODER_SWITCH)) */
