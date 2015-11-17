@@ -75,15 +75,6 @@ function supercolliderInitializationStarted (state = false, action) {
   }
 }
 
-function supercolliderInitializationComplete (state = false, action) {
-  switch (action.type) {
-    case actionTypes.SUPERCOLLIDER_INIT_COMPLETE:
-      return true;
-    default:
-      return state;
-  }
-}
-
 function tempo (state = {value: 96}, action) {
   return state;
 }

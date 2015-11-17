@@ -6,7 +6,6 @@ export const actionTypes = {
   SEQUENCER_CLOCK_METER_CHANGED: "SEQUENCER_CLOCK_METER_CHANGED",
   SUPERCOLLIDER_READY: "SUPERCOLLIDER_READY",
   SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
-  SUPERCOLLIDER_INIT_COMPLETE: "SUPERCOLLIDER_INIT_COMPLETE",
   SEQUENCERS_QUEUED: "SEQUENCERS_QUEUED",
   SEQUENCE_PLAYING: "SEQUENCE_PLAYING",
   ARDUINO_INIT_START: "ARDUINO_INIT_START",
@@ -44,12 +43,6 @@ export function supercolliderReady () {
 export function supercolliderInitStarted () {
   return {
     type: actionTypes.SUPERCOLLIDER_INIT_START
-  };
-}
-
-export function supercolliderInitCompleted () {
-  return {
-    type: actionTypes.SUPERCOLLIDER_INIT_COMPLETE
   };
 }
 
