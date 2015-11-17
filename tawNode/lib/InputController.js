@@ -1,4 +1,5 @@
 import serialport from "serialport"
+import _ from "underscore"
 
 import * as actions from "./actions.js"
 
@@ -20,6 +21,10 @@ class InputController {
     this.arduinoPort.on("data", (data) => {
       this.handleIncomingData(data);
     });
+
+    this.throttledDeviceHandlers = { 
+    };
+
   }
 
   handleKnobMessage (data) {
@@ -29,7 +34,13 @@ class InputController {
     //console.log(knobId);
     //console.log("knobPos");
     //console.log(knobPos);
-    this.store.dispatch(actions.knobPosChanged(knobId, knobPos));
+    if (!this.throttledDeviceHandlers[knobId]) {
+      this.throttledDeviceHandlers[knobId] = _.debounce((knobId, knobPos) => {
+        this.store.dispatch(actions.knobPosChanged(knobId, knobPos));
+      }, 150);
+    }
+
+    this.throttledDeviceHandlers[knobId](knobId, knobPos);
   }
 
   handleIncomingData (data) {

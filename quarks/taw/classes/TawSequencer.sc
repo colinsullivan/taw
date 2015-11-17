@@ -28,7 +28,7 @@ TawSequencer {
 
     playingState = initialState[\playingState];
 
-    clock = TempoClock.new(state.tempo, 0, 0);
+    clock = TempoClock.new(state.tempo / 60.0, 0, 0);
     /*AppClock.sched(0, {
       clock.gui();
     });*/
@@ -137,6 +137,18 @@ TawSequencer {
       clock.playNextBar({
         clock.beatsPerBar = newBeatsPerBar;
       });
+      clock.setTempoAtBeat(
+        (state.tempo * (newBeatsPerBar / 4.0)) / 60.0,
+        clock.nextBar()
+      );
+      /*if (newBeatsPerBar > 4, {
+
+      }, {
+        clock.setTempoAtBeat(
+          state.tempo / 60.0,
+          clock.nextBar()
+        );
+      });*/
       beatsPerBar = newBeatsPerBar;
     });
   }

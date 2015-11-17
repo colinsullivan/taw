@@ -75,7 +75,7 @@ function supercolliderInitializationStarted (state = false, action) {
   }
 }
 
-function tempo (state = {value: 96}, action) {
+function tempo (state = 96, action) {
   return state;
 }
 

@@ -45,13 +45,24 @@ class SCController {
         this.call("taw.setState", [state]);
       }
 
-      /*setTimeout(() => {
-        this.store.dispatch(actions.changeSequencerMeter("lead", 3));
-      }, 10000);*/
 
       if (state.knobs.A !== knobA) {
-        console.log("state.knobs.A.position");
-        console.log(state.knobs.A.position);
+        let possibleMeters = [1, 2, 3, 4, 6, 8, 16, 24, 32];
+        let knobMin = -50.0;
+        let knobMax = 50.0;
+        let knobRangeSize = (knobMax - knobMin);
+        let knobRangeChunkSize = knobRangeSize / (possibleMeters.length - 1);
+
+        let selectedMeterIndex = Math.floor(
+          (state.knobs.A.position - knobMin) / knobRangeChunkSize
+        );
+
+        let selectedMeter = possibleMeters[selectedMeterIndex];
+
+        knobA = state.knobs.A;
+        this.store.dispatch(
+          actions.changeSequencerMeter("lead", selectedMeter)
+        );
       }
 
 

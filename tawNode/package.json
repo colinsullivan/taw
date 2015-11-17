@@ -15,7 +15,9 @@
     "node-osc": "^1.1.0",
     "node-pixel": "^0.4.1",
     "redux": "^3.0.4",
-    "supercolliderjs": "^0.8.2"
+    "serialport": "^2.0.5",
+    "supercolliderjs": "^0.8.2",
+    "underscore": "^1.8.3"
   },
   "babel": {
     "presets": [
