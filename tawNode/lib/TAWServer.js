@@ -6,7 +6,7 @@ import rootReducer from "./reducers.js"
 import * as actions from "./actions.js"
 import TAWScheduler from "./TAWScheduler.js"
 import SCController from "./SCController.js"
-import ArduinoController from "./ArduinoController.js"
+import LightController from "./LightController.js"
 
 class TAWServer {
   constructor () {
@@ -80,13 +80,13 @@ class TAWServer {
         this.isRendering = true;
         
         // testing
-        setTimeout(() => {
+        /*setTimeout(() => {
           this.store.dispatch(actions.queueAllSequencers());
 
           setTimeout(() => {
             this.store.dispatch(actions.changeSequencerMeter("lead", 3));
           }, 10000);
-        }, 1000);
+        }, 1000);*/
 
       }
 
@@ -96,13 +96,13 @@ class TAWServer {
     
     this.scController = new SCController(this.store);
 
-    this.arduinoController = new ArduinoController(this.store);
+    this.lightController = new LightController(this.store);
 
 
   }
 
   render () {
-    this.arduinoController.render();
+    this.lightController.render();
   }
 }
 export default TAWServer;

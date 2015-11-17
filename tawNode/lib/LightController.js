@@ -4,7 +4,7 @@ var five = require("johnny-five");
 
 import * as actions from "./actions.js"
 
-class ArduinoController {
+class LightController {
   constructor (store) {
     this.store = store;
 
@@ -48,7 +48,7 @@ class ArduinoController {
     };
 
     this.board.on("ready", function () {
-      // confusing - johnnyfive changes context.  `this` refers to the board.
+      // confusing - five changes context.  `this` refers to the board.
       handleBoardReady(this);
     });
   }
@@ -69,4 +69,4 @@ class ArduinoController {
     this.strip.show();
   }
 }
-export default ArduinoController;
+export default LightController;
