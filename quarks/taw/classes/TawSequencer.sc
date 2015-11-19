@@ -5,8 +5,7 @@ TawSequencer {
     store,
     patch,
     outputChannel,
-    playingState,
-    beatsPerBar;
+    currentState;
   
   *new {
     arg params;
@@ -17,18 +16,16 @@ TawSequencer {
   init {
     arg params;
     var instr,  
-      state,
-      initialState;
+      state;
 
     store = params.store;
     state = store.getState();
     name = params.name;
 
-    initialState = state.sequencers[name.asSymbol()];
+    currentState = state.sequencers[name.asSymbol()];
 
-    playingState = initialState[\playingState];
 
-    clock = TempoClock.new(state.tempo / 60.0, 0, 0);
+    //clock = TempoClock.new(state.tempo / 60.0, 0, 0);
     /*AppClock.sched(0, {
       clock.gui();
     });*/
@@ -36,6 +33,7 @@ TawSequencer {
     //quant = 4;
     //numBeats = 16;
     //currentBeat = 0;
+    clock = TempoClock.default();
     outputChannel = params.outputChannel;
 
     patch = this.createPatch();
@@ -75,7 +73,9 @@ TawSequencer {
   }
 
   startPlayingNextBar {
+    "TawSequencer.startPlayingNextBar".postln();
     clock.playNextBar({
+      "playing first beat".postln();
       this.playBeat();
       store.dispatch((
         type: "SEQUENCE_PLAYING",
@@ -93,9 +93,8 @@ TawSequencer {
     clock.play({
       this.playBeat();
       store.dispatch((
-        type: "SEQUENCER_CLOCK_UPDATE",
-        beats: clock.beats,
-        beatInBar: clock.beatInBar,
+        type: "SEQUENCER_TRANSPORT_UPDATED",
+        beats: currentState.transport.beat + 1,
         name: name
       ));
       if (store.getState().sequencers[name.asSymbol()].playingState == "PLAYING", {
@@ -108,49 +107,46 @@ TawSequencer {
 
   handleStateChange {
     var state = store.getState();
-    var sequencerState,
-      newPlayingState,
-      newBeatsPerBar;
+    var newState;
 
-    //"TawSequencer.handleStateChange".postln();
+    "TawSequencer.handleStateChange".postln();
 
-    sequencerState = state.sequencers[name.asSymbol()];
-    newPlayingState = sequencerState.playingState;
-    newBeatsPerBar = sequencerState.clock.beatsPerBar;
+    newState = state.sequencers[name.asSymbol()];
 
     // if playing state has changed
-    if (playingState != newPlayingState, {
+    if (currentState.playingState != newState.playingState, {
 
-      if (playingState == "STOPPED" && newPlayingState == "QUEUED", {
+      if (currentState.playingState == "STOPPED" && newState.playingState == "QUEUED", {
         this.startPlayingNextBar();
       });
 
-      if (playingState == "QUEUED" && newPlayingState == "PLAYING", {
+      if (currentState.playingState == "QUEUED" && newState.playingState == "PLAYING", {
         this.startPlaying();    
       });
 
-      playingState = newPlayingState;
     });
 
+    currentState = newState;
+
     // if beats per bar has changed
-    if (beatsPerBar != newBeatsPerBar, {
-      clock.playNextBar({
+    /*if (beatsPerBar != newBeatsPerBar, {
+      [>clock.playNextBar({
         clock.beatsPerBar = newBeatsPerBar;
       });
       clock.setTempoAtBeat(
         (state.tempo * (newBeatsPerBar / 4.0)) / 60.0,
         clock.nextBar()
-      );
-      /*if (newBeatsPerBar > 4, {
+      );<]
+      [>if (newBeatsPerBar > 4, {
 
       }, {
         clock.setTempoAtBeat(
           state.tempo / 60.0,
           clock.nextBar()
         );
-      });*/
+      });<]
       beatsPerBar = newBeatsPerBar;
-    });
+    });*/
   }
 
 }

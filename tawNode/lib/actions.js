@@ -2,8 +2,8 @@ export const actionTypes = {
   //CLOCK_TICKED: Symbol("The clock has moved forward")
   //SEQUENCER_STEPPED: "SEQUENCER_STEPPED_FORWARD",
   //SEQUENCER_STEP_SCHEDULED: "SEQUENCER_STEP_SCHEDULED",
-  SEQUENCER_CLOCK_UPDATE: "SEQUENCER_CLOCK_UPDATE",
-  SEQUENCER_CLOCK_METER_CHANGED: "SEQUENCER_CLOCK_METER_CHANGED",
+  SEQUENCER_TRANSPORT_UPDATED: "SEQUENCER_TRANSPORT_UPDATED",
+  SEQUENCER_METER_UPDATED: "SEQUENCER_METER_UPDATED",
   SUPERCOLLIDER_READY: "SUPERCOLLIDER_READY",
   SUPERCOLLIDER_INIT_START: "SUPERCOLLIDER_INIT_START",
   SEQUENCERS_QUEUED: "SEQUENCERS_QUEUED",
@@ -65,11 +65,12 @@ export function lightingReady () {
   };
 }
 
-export function changeSequencerMeter (sequencerName, beatsPerBar) {
+export function changeSequencerMeter (sequencerName, numBeats, beatDur) {
   return {
-    type: actionTypes.SEQUENCER_CLOCK_METER_CHANGED,
+    type: actionTypes.SEQUENCER_METER_UPDATED,
     name: sequencerName,
-    beatsPerBar: beatsPerBar
+    numBeats,
+    beatDur
   };
 }
 

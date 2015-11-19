@@ -5,9 +5,12 @@ import { actionTypes } from "./actions.js"
 let initialSequencers = {
   lead: {
     name: "lead",
-    clock: {
-      beats: 0,
-      beatInBar: 0
+    transport: {
+      beat: 0
+    },
+    meter: {
+      numBeats: 8,
+      beatDur: 1
     },
     playingState: "STOPPED"
   }
@@ -41,16 +44,18 @@ function sequencers (state = initialSequencers, action) {
       seq = state[action.name];
       seq.playingState = "PLAYING";
       return state;
-    case actionTypes.SEQUENCER_CLOCK_UPDATE:
+    case actionTypes.SEQUENCER_TRANSPORT_UPDATED:
       seq = state[action.name];
-      seq.clock = Object.assign({}, seq.clock);
-      seq.clock.beats = action.beats;
-      seq.clock.beatInBar = action.beatInBar;
+      seq.transport = Object.assign({
+        beats: action.beats
+      }, seq.transport);
       return state;
-    case actionTypes.SEQUENCER_CLOCK_METER_CHANGED:
+    case actionTypes.SEQUENCER_METER_UPDATED:
       seq = state[action.name];
-      seq.clock = Object.assign({}, seq.clock);
-      seq.clock.beatsPerBar = action.beatsPerBar;
+      seq.meter = Object.assign({
+        numBeats: action.numBeats,
+        beatDur: action.beatDur
+      }, seq.meter);
       return state;
     default:
       return state;

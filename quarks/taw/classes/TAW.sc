@@ -9,7 +9,8 @@ TawController {
     <>patch,
     <>state,
     <>store,
-    <>sequencers;
+    <>sequencers,
+    dispatchListener;
 
   *new {
     arg params;
@@ -54,6 +55,13 @@ TawController {
     this.sequencers = List.new();
     
     this.outputChannel = this.create_output_channel();
+
+    dispatchListener = OSCFunc.newMatching({
+      arg msg, time, addr, recvPort;
+
+      "msg:".postln;
+      msg.postln;
+    }, "/dispatch", NetAddr.new("127.0.0.1", 3333));
     
     ^this;
   }
@@ -77,6 +85,8 @@ TawController {
 
     this.store = StateStore.new(initialState);
     state = this.store.getState();
+
+    TempoClock.default.tempo = state.tempo / 60.0;
 
     // TODO: Kill any currently running sequencers
 

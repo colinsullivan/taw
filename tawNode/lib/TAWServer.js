@@ -39,6 +39,8 @@ class TAWServer {
       }
     });
 
+    this.oscClient = new osc.Client("127.0.0.1", 3333);
+
     const logger = store => next => action => {
       //console.group(action.type)
       console.info('dispatching', action)
@@ -72,7 +74,14 @@ class TAWServer {
       console.log(this.store.getState().sequencers.lead.currentBeat);*/
       
       // once supercollider and arduino are ready
-      if (!this.isRendering && state.supercolliderIsReady && state.lightingIsReady) {
+      if (
+        // we haven't started rendering yet
+        !this.isRendering
+        // if we are running with sc, make sure sc is ready
+        && (!this.scController || state.supercolliderIsReady)
+        // if we are running with lighting, make sure lighting is ready
+        && (!this.lightController || state.lightingIsReady)
+      ) {
        
         // if we're not already rendering, start
         this.renderInterval = setInterval(() => {
@@ -93,14 +102,14 @@ class TAWServer {
     //this.scheduler = new TAWScheduler(this.store);
     
     this.scController = new SCController(this.store);
-    this.lightController = new LightController(this.store);
+    //this.lightController = new LightController(this.store);
     this.inputController = new InputController(this.store);
 
 
   }
 
   render () {
-    this.lightController.render();
+    //this.lightController.render();
   }
 }
 export default TAWServer;

@@ -60,9 +60,9 @@ class SCController {
         let selectedMeter = possibleMeters[selectedMeterIndex];
 
         knobA = state.knobs.A;
-        this.store.dispatch(
+        /*this.store.dispatch(
           actions.changeSequencerMeter("lead", selectedMeter)
-        );
+        );*/
       }
 
 
@@ -77,6 +77,7 @@ class SCController {
     return this._apiCallIndex;
   }
   call (apiMethodName, args) {
+    console.log("SCController.call");
     return this.scapi.call(this.getAPICallIndex(), apiMethodName, args);
   }
 }
