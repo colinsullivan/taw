@@ -94,7 +94,7 @@ TawSequencer {
       this.playBeat();
       store.dispatch((
         type: "SEQUENCER_TRANSPORT_UPDATED",
-        beats: currentState.transport.beat + 1,
+        beat: (currentState.transport.beat + 1) % currentState.meter.numBeats,
         name: name
       ));
       if (store.getState().sequencers[name.asSymbol()].playingState == "PLAYING", {
@@ -127,26 +127,6 @@ TawSequencer {
     });
 
     currentState = newState;
-
-    // if beats per bar has changed
-    /*if (beatsPerBar != newBeatsPerBar, {
-      [>clock.playNextBar({
-        clock.beatsPerBar = newBeatsPerBar;
-      });
-      clock.setTempoAtBeat(
-        (state.tempo * (newBeatsPerBar / 4.0)) / 60.0,
-        clock.nextBar()
-      );<]
-      [>if (newBeatsPerBar > 4, {
-
-      }, {
-        clock.setTempoAtBeat(
-          state.tempo / 60.0,
-          clock.nextBar()
-        );
-      });<]
-      beatsPerBar = newBeatsPerBar;
-    });*/
   }
 
 }

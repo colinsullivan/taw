@@ -77,7 +77,6 @@ class SCController {
     return this._apiCallIndex;
   }
   call (apiMethodName, args) {
-    console.log("SCController.call");
     return this.scapi.call(this.getAPICallIndex(), apiMethodName, args);
   }
 }

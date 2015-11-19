@@ -43,19 +43,18 @@ function sequencers (state = initialSequencers, action) {
     case actionTypes.SEQUENCE_PLAYING:
       seq = state[action.name];
       seq.playingState = "PLAYING";
+      seq.transport.beat = 1;
       return state;
     case actionTypes.SEQUENCER_TRANSPORT_UPDATED:
       seq = state[action.name];
-      seq.transport = Object.assign({
-        beats: action.beats
-      }, seq.transport);
+      seq.transport = Object.assign({}, seq.transport);
+      seq.transport.beat = action.beat;
       return state;
     case actionTypes.SEQUENCER_METER_UPDATED:
       seq = state[action.name];
-      seq.meter = Object.assign({
-        numBeats: action.numBeats,
-        beatDur: action.beatDur
-      }, seq.meter);
+      seq.meter = Object.assign({}, seq.meter);
+      seq.numBeats = action.numBeats,
+      seq.beatDur = action.beatDur
       return state;
     default:
       return state;

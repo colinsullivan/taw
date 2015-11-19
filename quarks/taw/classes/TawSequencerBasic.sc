@@ -9,7 +9,7 @@ TawSequencerBasic : TawSequencer {
   }
 
   playBeat {
-    if (clock.beatInBar == 0, {
+    if (currentState.transport.beat == 0, {
       freqControl.value = 880;    
     }, {
       freqControl.value = 440;
