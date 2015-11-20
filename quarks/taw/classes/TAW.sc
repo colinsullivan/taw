@@ -70,7 +70,7 @@ TawController {
     arg sequencer;
 
     this.sequencers.add(
-      TawSequencerBasic.new((
+      LazersSequencer.new((
         store: this.store,
         name: sequencer.name,
         outputChannel: this.outputChannel
