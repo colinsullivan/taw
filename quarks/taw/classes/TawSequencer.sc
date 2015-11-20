@@ -73,9 +73,9 @@ TawSequencer {
   }
 
   startPlayingNextBar {
-    "TawSequencer.startPlayingNextBar".postln();
+    //"TawSequencer.startPlayingNextBar".postln();
     clock.playNextBar({
-      "playing first beat".postln();
+      //"playing first beat".postln();
       this.playBeat();
       store.dispatch((
         type: "SEQUENCE_PLAYING",
@@ -97,8 +97,8 @@ TawSequencer {
         beat: (currentState.transport.beat + 1) % currentState.meter.numBeats,
         name: name
       ));
-      if (store.getState().sequencers[name.asSymbol()].playingState == "PLAYING", {
-        1.0;
+      if (currentState.playingState == "PLAYING", {
+        currentState.meter.beatDur;
       }, {
         nil;
       });
@@ -109,7 +109,7 @@ TawSequencer {
     var state = store.getState();
     var newState;
 
-    "TawSequencer.handleStateChange".postln();
+    //"TawSequencer.handleStateChange".postln();
 
     newState = state.sequencers[name.asSymbol()];
 

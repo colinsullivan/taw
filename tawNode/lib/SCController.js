@@ -47,7 +47,7 @@ class SCController {
 
 
       if (state.knobs.A !== knobA) {
-        let possibleMeters = [1, 2, 3, 4, 6, 8, 16, 24, 32];
+        let possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16, 24, 32];
         let knobMin = -50.0;
         let knobMax = 50.0;
         let knobRangeSize = (knobMax - knobMin);
@@ -60,9 +60,9 @@ class SCController {
         let selectedMeter = possibleMeters[selectedMeterIndex];
 
         knobA = state.knobs.A;
-        /*this.store.dispatch(
-          actions.changeSequencerMeter("lead", selectedMeter)
-        );*/
+        this.store.dispatch(
+          actions.changeSequencerMeter("lead", selectedMeter, 4.0 / selectedMeter)
+        );
       }
 
 

@@ -53,8 +53,8 @@ function sequencers (state = initialSequencers, action) {
     case actionTypes.SEQUENCER_METER_UPDATED:
       seq = state[action.name];
       seq.meter = Object.assign({}, seq.meter);
-      seq.numBeats = action.numBeats,
-      seq.beatDur = action.beatDur
+      seq.meter.numBeats = action.numBeats;
+      seq.meter.beatDur = action.beatDur;
       return state;
     default:
       return state;
