@@ -78,15 +78,15 @@ class TAWServer {
         // we haven't started rendering yet
         !this.isRendering
         // if we are running with sc, make sure sc is ready
-        && (!this.scController || state.supercolliderIsReady)
+        && state.supercolliderIsReady
         // if we are running with lighting, make sure lighting is ready
-        && (!this.lightController || state.lightingIsReady)
+        && state.lightingIsReady
       ) {
        
         // if we're not already rendering, start
-        this.renderInterval = setInterval(() => {
+        /*this.renderInterval = setInterval(() => {
           this.render();
-        }, 30);
+        }, 60);*/
         this.isRendering = true;
         
         // testing
@@ -101,15 +101,15 @@ class TAWServer {
 
     //this.scheduler = new TAWScheduler(this.store);
     
-    this.scController = new SCController(this.store);
-    //this.lightController = new LightController(this.store);
-    this.inputController = new InputController(this.store);
 
+    this.scController = new SCController(this.store);
+    this.lightController = new LightController(this.store);
+    this.inputController = new InputController(this.store);
 
   }
 
   render () {
-    //this.lightController.render();
+    this.lightController.render();
   }
 }
 export default TAWServer;
