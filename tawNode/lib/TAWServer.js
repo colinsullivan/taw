@@ -59,7 +59,7 @@ class TAWServer {
 
     let createStoreWithMiddleware = applyMiddleware(
       //forwardToSC,
-      logger
+      //logger
     )(createStore);
 
 
@@ -70,8 +70,6 @@ class TAWServer {
 
     playListener = this.store.subscribe(() => {
       var state = this.store.getState();
-      /*console.log("this.store.getState().sequencers.lead.currentBeat");
-      console.log(this.store.getState().sequencers.lead.currentBeat);*/
       
       // once supercollider and arduino are ready
       if (
@@ -84,9 +82,9 @@ class TAWServer {
       ) {
        
         // if we're not already rendering, start
-        /*this.renderInterval = setInterval(() => {
-          this.render();
-        }, 60);*/
+        //this.renderInterval = setInterval(() => {
+          //this.render();
+        //}, 200);
         this.isRendering = true;
         
         // testing

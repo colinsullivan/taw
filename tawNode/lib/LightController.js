@@ -3,6 +3,7 @@ var pixel = require("node-pixel");
 var five = require("johnny-five");
 
 import * as actions from "./actions.js"
+import config from "./config.js"
 
 function hsvToRGB (hsvArray) {
   /*
@@ -69,23 +70,38 @@ class LightController {
     //var renderInterval = null;
     //this.renderInterval = renderInterval;
    
-    this.strip = null; 
+    this.sequenceStrips = {};
 
     let handleBoardReady = (board) => {
-      this.strip = new pixel.Strip({
-        data: 6,
-        length: 16,
-        board: board,
-        controller: "FIRMATA"
-      });
-
-      this.strip.on("ready", () => {
+      var numStripsReady = 0;
+      var state = this.store.getState();
+      var handleStripsReady = () => {
         this.store.dispatch(actions.lightingReady());
 
-        this.store.subscribe(() => {
-          this.handleStateChange();
-        });
+        //this.store.subscribe(() => {
+          //this.handleStateChange();
+        //});
         this.handleStateChange();
+      };
+
+      // create a strip for each sequence
+      config.SEQUENCE_NAMES.forEach((sequenceName) => {
+        this.sequenceStrips[sequenceName] = new pixel.Strip({
+          data: config.SEQUENCE_NAME_TO_LED_PIN[sequenceName],
+          length: 16,
+          board: board,
+          controller: "FIRMATA"
+        });
+
+        this.sequenceMeter[sequenceName] = null;
+        this.sequenceTransport[sequenceName] = null;
+
+        this.sequenceStrips[sequenceName].on("ready", () => {
+          numStripsReady++;
+          if (numStripsReady == config.SEQUENCE_NAMES.length) {
+            handleStripsReady();
+          }
+        });
       });
     };
 
@@ -94,72 +110,77 @@ class LightController {
       handleBoardReady(this);
     });
 
-    this.meter = null;
-    this.transport = null;
-    this.ledColors = [];
+    this.sequenceMeter = {};
+    this.sequenceTransport = {};
   }
 
-  handleStateChange() {
-    var state = this.store.getState();
-    var numBeats = state.sequencers.lead.meter.numBeats;
-    var stripLength = this.strip.stripLength();
+  handleSequenceChanged (seqName, seqState) {
+    var numBeats = seqState.meter.numBeats;
+    //console.log("numBeats");
+    //console.log(numBeats);
+    var strip = this.sequenceStrips[seqName];
+    //console.log("strip");
+    //console.log(strip);
+    var stripLength = strip.stripLength();
+    //console.log("stripLength");
+    //console.log(stripLength);
     var i;
     // number of LEDs per beat (if less than one, there are more beats than
     // LEDS in the strip)
     var ledsPerBeat = 1.0 * stripLength / numBeats;
 
-    if (
-      state.sequencers.lead.meter !== this.meter
-      || state.sequencers.lead.transport !== this.transport
-    ) {
-      this.ledColors = [];
-      for (i = 0; i < stripLength; i++) {
-        this.ledColors.push([0.72, 0.01, 0.01]);
-      }
-
-      for (i = 0; i < numBeats; i++) {
-        let ledIndex = Math.floor(ledsPerBeat * i) % stripLength;
-        ledIndex = stripLength - 1 - ledIndex; // clockwise
-        this.ledColors[ledIndex][1] = 0.2;
-        this.ledColors[ledIndex][2] = 0.2;
-
-        if (i === state.sequencers.lead.transport.beat) {
-          this.ledColors[ledIndex][1] = 0.5;
-          this.ledColors[ledIndex][2] = 0.5;
-        }
-
-      }
-      
-      for (i = 0; i < stripLength; i++) {
-        let p = this.strip.pixel(i);
-        p.color(null, {
-          rgb: hsvToRGB(this.ledColors[i])
-        });
-      }
-
-      this.meter = state.sequencers.lead.meter;
-      this.transport = state.sequencers.lead.transport;
-      this.strip.show();
+    var ledColors = [];
+    for (i = 0; i < stripLength; i++) {
+      ledColors.push([0.72, 0.01, 0.01]);
     }
+
+    for (i = 0; i < numBeats; i++) {
+      let ledIndex = Math.floor(ledsPerBeat * i) % stripLength;
+      ledIndex = stripLength - 1 - ledIndex; // clockwise
+      ledColors[ledIndex][1] = 0.2;
+      ledColors[ledIndex][2] = 0.2;
+
+      if (i === seqState.transport.beat) {
+        ledColors[1] = 0.5;
+        ledColors[2] = 0.5;
+      }
+
+    }
+    
+    for (i = 0; i < stripLength; i++) {
+      let p = strip.pixel(i);
+      p.color(null, {
+        rgb: hsvToRGB(ledColors[i])
+      });
+    }
+    strip.show();
+  }
+
+  handleStateChange() {
+    var state = this.store.getState();
+
+    // for each sequence
+    config.SEQUENCE_NAMES.forEach((seqName) => {
+      let seqState = state.sequencers[seqName];
+
+      // if transport or meter have changed
+      if (
+        seqState.meter !== this.sequenceMeter[seqName]
+      || seqState.transport !== this.sequenceTransport[seqName]
+      ) {
+        this.sequenceMeter[seqName] = seqState.meter;
+        this.sequenceTransport[seqName] = seqState.transport;
+
+        // re-render lights for that sequence
+        this.handleSequenceChanged(seqName, seqState);
+      }
+    });
   }
 
   render () {
-    var stripLength = this.strip.stripLength();
-    var i;
-
-
-
-    /*for (i = 0; i < stripLength; i++) {
-      let p = this.strip.pixel(i);
-      if (seq.clock.beatInBar === i) {
-        p.color("teal");
-      } else {
-        p.color("black");
-      }
-    }*/
-
-
-    this.strip.show();
+    //config.SEQUENCE_NAMES.forEach((seqName) => {
+      //this.sequenceStrips[seqName].show();
+    //});
   }
 }
 export default LightController;

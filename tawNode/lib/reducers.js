@@ -2,9 +2,9 @@ import { combineReducers  } from 'redux'
 
 import { actionTypes } from "./actions.js"
 
-let initialSequencers = {
-  lead: {
-    name: "lead",
+let createSequencerFromTemplate = function (name) {
+  return {
+    name: name,
     transport: {
       beat: 0
     },
@@ -13,7 +13,12 @@ let initialSequencers = {
       beatDur: 1
     },
     playingState: "STOPPED"
-  }
+  };
+};
+
+let initialSequencers = {
+  zaps: createSequencerFromTemplate("zaps"),
+  orgperc: createSequencerFromTemplate("orgperc")
 };
 
 function sequencers (state = initialSequencers, action) {

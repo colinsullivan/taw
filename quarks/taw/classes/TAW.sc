@@ -10,7 +10,9 @@ TawController {
     <>state,
     <>store,
     <>sequencers,
-    dispatchListener;
+    dispatchListener,
+    sequencerNameToClass;
+
 
   *new {
     arg params;
@@ -35,6 +37,11 @@ TawController {
     var tickClock;
 
     "TawController.init".postln();
+
+    sequencerNameToClass = (
+      zaps: LazersSequencer,
+      orgperc: OrganicPercussionSequencer
+    );
 
 
     //this.clock = TempoClock.new(tempo, 0, now);
@@ -70,7 +77,7 @@ TawController {
     arg sequencer;
 
     this.sequencers.add(
-      LazersSequencer.new((
+      sequencerNameToClass[sequencer.name.asSymbol()].new((
         store: this.store,
         name: sequencer.name,
         outputChannel: this.outputChannel

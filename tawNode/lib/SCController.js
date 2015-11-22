@@ -1,4 +1,5 @@
 import * as actions from "./actions.js"
+import config from "./config.js";
 
 var supercolliderjs = require("supercolliderjs");
 
@@ -38,35 +39,58 @@ class SCController {
       });
     });   
 
-    let knobA = this.store.getState().knobs.A;
+    // save a reference to knob states so we can handle changes
+    let knobStates = {};
+    config.KNOB_NAMES.forEach((knobName) => {
+      knobStates[knobName] = this.store.getState().knobs[knobName];
+    });
+
     this.store.subscribe(() => {
       var state = this.store.getState();
       if (state.supercolliderIsReady) {
         this.call("taw.setState", [state]);
       }
 
+      // for each knob
+      config.KNOB_NAMES.forEach((knobName) => {
 
-      if (state.knobs.A !== knobA) {
-        let possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16, 24, 32];
-        let knobMin = -50.0;
-        let knobMax = 50.0;
-        let knobRangeSize = (knobMax - knobMin);
-        let knobRangeChunkSize = knobRangeSize / (possibleMeters.length - 1);
+        // if state has changed
+        let savedKnobState = knobStates[knobName];
+        let currentKnobState = state.knobs[knobName];
 
-        let selectedMeterIndex = Math.floor(
-          (state.knobs.A.position - knobMin) / knobRangeChunkSize
-        );
+        if (savedKnobState !== currentKnobState) {
+          // update saved knob state
+          knobStates[knobName] = currentKnobState;
 
-        let selectedMeter = possibleMeters[selectedMeterIndex];
-
-        knobA = state.knobs.A;
-        this.store.dispatch(
-          actions.changeSequencerMeter("lead", selectedMeter, 4.0 / selectedMeter)
-        );
-      }
-
+          // handle changes
+          this.handleKnobChanged(knobName, currentKnobState);
+        }
+      });
 
     });
+  }
+  handleKnobChanged (knobName, knobState) {
+    console.log(`handleKnobChanged: ${knobName}`);
+    var sequencerName = config.KNOB_NAME_TO_SEQUENCE_NAME[knobName];
+    var possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16, 24, 32];
+    var knobMin = -50.0;
+    var knobMax = 50.0;
+    var knobRangeSize = (knobMax - knobMin);
+    var knobRangeChunkSize = knobRangeSize / (possibleMeters.length - 1);
+
+    var selectedMeterIndex = Math.floor(
+      (knobState.position - knobMin) / knobRangeChunkSize
+    );
+
+    var selectedMeter = possibleMeters[selectedMeterIndex];
+
+    this.store.dispatch(
+      actions.changeSequencerMeter(
+        sequencerName,
+        selectedMeter,
+        4.0 / selectedMeter
+      )
+    );
   }
   getAPICallIndex () {
     if (this._apiCallIndex < Number.MAX_SAFE_INTEGER - 1) {

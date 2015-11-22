@@ -34,13 +34,28 @@ TawSequencer {
     //numBeats = 16;
     //currentBeat = 0;
     clock = TempoClock.default();
-    outputChannel = params.outputChannel;
+    outputChannel = this.create_output_channel(params.outputChannel);
 
+    this.createPat();
     patch = this.createPatch();
 
     store.subscribe(this);
 
     ^this;
+  }
+  
+  create_output_channel {
+    arg parentOutputChannel;
+    ^MixerChannel.new(
+      "TawController",
+      Server.default,
+      2, 2,
+      outbus: parentOutputChannel
+    );
+  }
+
+  createPat {
+    
   }
 
   createPatch {
