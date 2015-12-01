@@ -2,6 +2,8 @@ import { combineReducers  } from 'redux'
 
 import { actionTypes } from "./actions.js"
 
+import config from "./config.js"
+
 let createSequencerFromTemplate = function (name) {
   return {
     name: name,
@@ -16,10 +18,11 @@ let createSequencerFromTemplate = function (name) {
   };
 };
 
-let initialSequencers = {
-  zaps: createSequencerFromTemplate("zaps"),
-  orgperc: createSequencerFromTemplate("orgperc")
-};
+let initialSequencers = {};
+
+config.SEQUENCE_NAMES.forEach(function (sequencerName) {
+  initialSequencers[sequencerName] = createSequencerFromTemplate(sequencerName);
+});
 
 function sequencers (state = initialSequencers, action) {
   var seq;

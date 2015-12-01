@@ -51,7 +51,8 @@ TawController {
 
     sequencerNameToClass = (
       zaps: LazersSequencer,
-      orgperc: OrganicPercussionSequencer
+      orgperc: OrganicPercussionSequencer,
+      pad: PadSequencer
     );
 
 
