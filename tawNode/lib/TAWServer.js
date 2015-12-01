@@ -82,16 +82,17 @@ class TAWServer {
       ) {
        
         // if we're not already rendering, start
+        console.log("[TAWServer] starting render loop...");
         this.renderInterval = setInterval(() => {
           this.render();
-        }, 200);
+        }, 10);
         this.isRendering = true;
         
         // testing
-        //setTimeout(() => {
-          //this.store.dispatch(actions.queueAllSequencers());
+        setTimeout(() => {
+          this.store.dispatch(actions.queueAllSequencers());
 
-        //}, 1000);
+        }, 1000);
 
       }
 

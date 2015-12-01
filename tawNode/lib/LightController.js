@@ -2,7 +2,9 @@
 //var pixel = require("node-pixel");
 //var five = require("johnny-five");
 
-import OPC from "./opc.js"
+import net from "net"
+import createOPCStream from "opc"
+import createOPCStrand from "opc/strand"
 
 import * as actions from "./actions.js"
 import config from "./config.js"
@@ -48,43 +50,32 @@ class LightController {
 
     this.store.dispatch(actions.lightingInit());
 
-    //this.socket = new net.Socket();
-    //this.socket.setNoDelay();
-    this.opcClient = new OPC("localhost", 7890);
-
-    this.opcClient.setPixelCount(
-      config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
-    );
-
-    /*let handleSocketClosed = () => {
+    this.socket = new net.Socket();
+    this.socket.setNoDelay();
+    let handleSocketClosed = () => {
       console.log("Lighting connection closed.");
       this.connect();
     }
     this.socket.on("close", handleSocketClosed);
-    this.socket.on("error", handleSocketClosed);*/
-    console.log("Connecting to fadecandy...");
-    this.opcClient.writePixels();
-
-    var handleConnected = () => {
-      console.log("Connected to fadecandy.");
+    this.socket.on("error", handleSocketClosed);
+    this.socket.on("connect", () => {
+      console.log("LightController connected to fadecandy.");
       this.store.dispatch(actions.lightingReady());
       this.handleStateChange();
       this.store.subscribe(() => { this.handleStateChange(); })
-    }
+    });
 
-    this.opcClient.socket.on("connect", );
-
-    //this.opcStream = createOPCStream();
-    //this.opcStream.pipe(this.socket);
+    this.opcStream = createOPCStream();
+    this.opcStream.pipe(this.socket);
 
     /*this.fadecandyPixels = createOPCStrand(
       config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
     );*/
-    //this.fadecandyPixels = createOPCStrand(
-      //512
-    //);
+    this.fadecandyPixels = createOPCStrand(
+      config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
+    );
 
-    //this.connect();
+    this.connect();
 
 
     // cache the meter and transport of each sequence so we can handle when
@@ -106,7 +97,7 @@ class LightController {
 
       this.sequenceMeter[sequenceName] = null;
       this.sequenceTransport[sequenceName] = null;
-      this.sequencePixels[sequenceName] = this.opcClient.pixelBuffer.slice(
+      this.sequencePixels[sequenceName] = this.fadecandyPixels.slice(
         pixelAddrs[0],
         pixelAddrs[1]
       );
@@ -122,10 +113,10 @@ class LightController {
 
   }
 
-  //connect () {
-    //console.log("Connecting to fadecandy...");
-    //this.socket.connect(7890);
-  //}
+  connect () {
+    console.log("Connecting to fadecandy...");
+    this.socket.connect(7890);
+  }
 
   handleSequenceChanged (seqName, seqState) {
     var numBeats = seqState.meter.numBeats;
@@ -144,30 +135,26 @@ class LightController {
 
     var ledColors = [];
     for (i = 0; i < pixels.length; i++) {
-      ledColors.push([0.72, 0.5, 0.5]);
+      ledColors.push([0.72, 0.2, 0.2]);
     }
 
     for (i = 0; i < numBeats; i++) {
       let ledIndex = Math.floor(ledsPerBeat * i) % pixels.length;
-      //ledIndex = pixels.length - 1 - ledIndex; // clockwise
-      ledColors[ledIndex][1] *= 1.25;
-      ledColors[ledIndex][2] *= 1.25;
+      ledIndex = pixels.length - 1 - ledIndex; // clockwise
+      ledColors[ledIndex][1] = 0.5;
+      ledColors[ledIndex][2] = 0.5;
 
       if (i === seqState.transport.beat) {
-        console.log("seqState.transport.beat");
-        console.log(seqState.transport.beat);
-        //ledColors[1] = 0.5;
-        //ledColors[2] = 1.0;
+        ledColors[ledIndex][1] = 0.5;
+        ledColors[ledIndex][2] = 1.0;
       }
 
     }
   
-    console.log("pixels.length");
-    console.log(pixels.length); 
     for (i = 0; i < pixels.length; i++) {
       color = hsvToRGB(ledColors[i]);
-      pixels.setPixel(i, 255, 0, 0);
-      //pixels.setPixel.apply(pixels, [i].concat(color));
+      //pixels.setPixel(i, 255, 0, 0);
+      pixels.setPixel.apply(pixels, [i].concat(color));
     }
   }
 
@@ -189,21 +176,19 @@ class LightController {
         this.sequenceTransport[seqName] = seqState.transport;
 
         // re-render lights for that sequence
-        //this.handleSequenceChanged(seqName, seqState);
+        this.handleSequenceChanged(seqName, seqState);
       }
     });
   }
 
   render () {
-    console.log("render");
-    //console.log(render);
+    //console.log("render");
 
     //var i;
     //for (i = 0; i < this.fadecandyPixels.length; i++) {
       //this.fadecandyPixels.setPixel(i, 255, 0, 0);
     //}
-    //this.opcStream.writePixels(0, this.fadecandyPixels.buffer);
-    opcClient.writePixels();
+    this.opcStream.writePixels(0, this.fadecandyPixels.buffer);
   }
 }
 export default LightController;
