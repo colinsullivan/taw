@@ -5,28 +5,21 @@ TawController {
     <>tickClock,
     <>playCallback,
     // MixerChannel instance
-    <>outputChannel,
+    outputChannel,
     <>patch,
     <>state,
     <>store,
     <>sequencers,
     dispatchListener,
-    sequencerNameToClass;
+    sequencerNameToClass,
+    bufManager,
+    ambientSoundscape;
 
 
   *new {
     arg params;
 
     ^super.new.init(params);
-  }
-  
-  create_output_channel {
-    ^MixerChannel.new(
-      "TawController",
-      Server.default,
-      2, 2,
-      outbus: 0
-    );
   }
 
   init {
@@ -37,6 +30,24 @@ TawController {
     var tickClock;
 
     "TawController.init".postln();
+
+    outputChannel = MixerChannel.new(
+      "TawController",
+      Server.default,
+      2, 2,
+      outbus: 0
+    );
+
+    //  create the buffer manager that will load the samples we need for this
+    //  patch.
+    //bufManager = BufferManager.new().init((
+      //rootDir: "/Users/colin/Samples/Recorded Sounds/Sound Effects/"
+    //));
+
+    //ambientSoundscape = Soundscape.new().init((
+      //bufManager: bufManager,
+      //outbus: outputChannel
+    //));
 
     sequencerNameToClass = (
       zaps: LazersSequencer,
@@ -61,7 +72,6 @@ TawController {
 
     this.sequencers = List.new();
     
-    this.outputChannel = this.create_output_channel();
 
     dispatchListener = OSCFunc.newMatching({
       arg msg, time, addr, recvPort;
@@ -80,7 +90,7 @@ TawController {
       sequencerNameToClass[sequencer.name.asSymbol()].new((
         store: this.store,
         name: sequencer.name,
-        outputChannel: this.outputChannel
+        outputChannel: outputChannel
       ))
     );
   }

@@ -1,6 +1,8 @@
 
-var pixel = require("node-pixel");
-var five = require("johnny-five");
+//var pixel = require("node-pixel");
+//var five = require("johnny-five");
+
+import OPC from "./opc.js"
 
 import * as actions from "./actions.js"
 import config from "./config.js"
@@ -44,120 +46,135 @@ class LightController {
   constructor (store) {
     this.store = store;
 
-    store.dispatch(actions.lightingInit());
+    this.store.dispatch(actions.lightingInit());
 
-    this.board = new five.Board({
-      repl: false,
-      debug: true,
-      port: process.env.LIGHTING_ARDUINO_SERIALPORT
-    });
-    
-    //var renderStrip = (strip) => {
-      //var i;
-      //var p;
-      //console.log("renderStrip");
-      //for (i = 0; i < this.store.getState().sequence.numSteps; i++) {
-        //p = strip.pixel(i);
-        //if (state.sequence.currentStep == i) {
-          //p.color("teal");
-        //} else {
-          //p.color("black");
-        //}
-      //}
-      //strip.show();
-    //};
+    //this.socket = new net.Socket();
+    //this.socket.setNoDelay();
+    this.opcClient = new OPC("localhost", 7890);
 
-    //var renderInterval = null;
-    //this.renderInterval = renderInterval;
-   
-    this.sequenceStrips = {};
+    this.opcClient.setPixelCount(
+      config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
+    );
 
-    let handleBoardReady = (board) => {
-      var numStripsReady = 0;
-      var state = this.store.getState();
-      var handleStripsReady = () => {
-        this.store.dispatch(actions.lightingReady());
+    /*let handleSocketClosed = () => {
+      console.log("Lighting connection closed.");
+      this.connect();
+    }
+    this.socket.on("close", handleSocketClosed);
+    this.socket.on("error", handleSocketClosed);*/
+    console.log("Connecting to fadecandy...");
+    this.opcClient.writePixels();
 
-        //this.store.subscribe(() => {
-          //this.handleStateChange();
-        //});
-        this.handleStateChange();
-      };
+    var handleConnected = () => {
+      console.log("Connected to fadecandy.");
+      this.store.dispatch(actions.lightingReady());
+      this.handleStateChange();
+      this.store.subscribe(() => { this.handleStateChange(); })
+    }
 
-      // create a strip for each sequence
-      config.SEQUENCE_NAMES.forEach((sequenceName) => {
-        this.sequenceStrips[sequenceName] = new pixel.Strip({
-          data: config.SEQUENCE_NAME_TO_LED_PIN[sequenceName],
-          length: 16,
-          board: board,
-          controller: "FIRMATA"
-        });
+    this.opcClient.socket.on("connect", );
 
-        this.sequenceMeter[sequenceName] = null;
-        this.sequenceTransport[sequenceName] = null;
+    //this.opcStream = createOPCStream();
+    //this.opcStream.pipe(this.socket);
 
-        this.sequenceStrips[sequenceName].on("ready", () => {
-          numStripsReady++;
-          if (numStripsReady == config.SEQUENCE_NAMES.length) {
-            handleStripsReady();
-          }
-        });
-      });
-    };
+    /*this.fadecandyPixels = createOPCStrand(
+      config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
+    );*/
+    //this.fadecandyPixels = createOPCStrand(
+      //512
+    //);
 
-    this.board.on("ready", function () {
-      // confusing - five changes context.  `this` refers to the board.
-      handleBoardReady(this);
-    });
+    //this.connect();
 
+
+    // cache the meter and transport of each sequence so we can handle when
+    // it changes.
     this.sequenceMeter = {};
     this.sequenceTransport = {};
+
+    // create a strip for each sequence
+    this.sequencePixels = {};
+
+    config.SEQUENCE_NAMES.forEach((sequenceName) => {
+      var pixelAddrs = config.SEQUENCE_NAME_TO_PIXEL_ADDRESSES[sequenceName];
+      //this.sequenceStrips[sequenceName] = new pixel.Strip({
+        //data: config.SEQUENCE_NAME_TO_LED_PIN[sequenceName],
+        //length: 16,
+        //board: board,
+        //controller: "FIRMATA"
+      //});
+
+      this.sequenceMeter[sequenceName] = null;
+      this.sequenceTransport[sequenceName] = null;
+      this.sequencePixels[sequenceName] = this.opcClient.pixelBuffer.slice(
+        pixelAddrs[0],
+        pixelAddrs[1]
+      );
+
+      //this.sequenceStrips[sequenceName].on("ready", () => {
+        //numStripsReady++;
+        //if (numStripsReady == config.SEQUENCE_NAMES.length) {
+          //handleStripsReady();
+        //}
+      //});
+    });
+
+
   }
+
+  //connect () {
+    //console.log("Connecting to fadecandy...");
+    //this.socket.connect(7890);
+  //}
 
   handleSequenceChanged (seqName, seqState) {
     var numBeats = seqState.meter.numBeats;
     //console.log("numBeats");
     //console.log(numBeats);
-    var strip = this.sequenceStrips[seqName];
+    var pixels = this.sequencePixels[seqName];
     //console.log("strip");
     //console.log(strip);
-    var stripLength = strip.stripLength();
-    //console.log("stripLength");
-    //console.log(stripLength);
     var i;
     // number of LEDs per beat (if less than one, there are more beats than
     // LEDS in the strip)
-    var ledsPerBeat = 1.0 * stripLength / numBeats;
+    var ledsPerBeat = 1.0 * pixels.length / numBeats;
+    var color;
+
+    //console.log(`handleSequenceChanged(${seqName})`);
 
     var ledColors = [];
-    for (i = 0; i < stripLength; i++) {
-      ledColors.push([0.72, 0.01, 0.01]);
+    for (i = 0; i < pixels.length; i++) {
+      ledColors.push([0.72, 0.5, 0.5]);
     }
 
     for (i = 0; i < numBeats; i++) {
-      let ledIndex = Math.floor(ledsPerBeat * i) % stripLength;
-      ledIndex = stripLength - 1 - ledIndex; // clockwise
-      ledColors[ledIndex][1] = 0.2;
-      ledColors[ledIndex][2] = 0.2;
+      let ledIndex = Math.floor(ledsPerBeat * i) % pixels.length;
+      //ledIndex = pixels.length - 1 - ledIndex; // clockwise
+      ledColors[ledIndex][1] *= 1.25;
+      ledColors[ledIndex][2] *= 1.25;
 
       if (i === seqState.transport.beat) {
-        ledColors[1] = 0.5;
-        ledColors[2] = 0.5;
+        console.log("seqState.transport.beat");
+        console.log(seqState.transport.beat);
+        //ledColors[1] = 0.5;
+        //ledColors[2] = 1.0;
       }
 
     }
-    
-    for (i = 0; i < stripLength; i++) {
-      let p = strip.pixel(i);
-      p.color(null, {
-        rgb: hsvToRGB(ledColors[i])
-      });
+  
+    console.log("pixels.length");
+    console.log(pixels.length); 
+    for (i = 0; i < pixels.length; i++) {
+      color = hsvToRGB(ledColors[i]);
+      pixels.setPixel(i, 255, 0, 0);
+      //pixels.setPixel.apply(pixels, [i].concat(color));
     }
-    strip.show();
   }
 
   handleStateChange() {
     var state = this.store.getState();
+
+    //console.log("handleStateChange");
 
     // for each sequence
     config.SEQUENCE_NAMES.forEach((seqName) => {
@@ -172,15 +189,21 @@ class LightController {
         this.sequenceTransport[seqName] = seqState.transport;
 
         // re-render lights for that sequence
-        this.handleSequenceChanged(seqName, seqState);
+        //this.handleSequenceChanged(seqName, seqState);
       }
     });
   }
 
   render () {
-    //config.SEQUENCE_NAMES.forEach((seqName) => {
-      //this.sequenceStrips[seqName].show();
-    //});
+    console.log("render");
+    //console.log(render);
+
+    //var i;
+    //for (i = 0; i < this.fadecandyPixels.length; i++) {
+      //this.fadecandyPixels.setPixel(i, 255, 0, 0);
+    //}
+    //this.opcStream.writePixels(0, this.fadecandyPixels.buffer);
+    opcClient.writePixels();
   }
 }
 export default LightController;
