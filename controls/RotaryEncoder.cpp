@@ -1,6 +1,12 @@
 #include "RotaryEncoder.h"
 
-void RotaryEncoder::attach (int aPin, int bPin) {
+int msgLen;
+
+int RotaryEncoder::constrainValue(int in) {
+  return min(50, max(-50, in));
+}
+
+void RotaryEncoder::rotaryPins (int aPin, int bPin) {
   _aPin = aPin;
   _bPin = bPin;
 
@@ -8,8 +14,8 @@ void RotaryEncoder::attach (int aPin, int bPin) {
   
 }
 void RotaryEncoder::tick () {
-  _newRead = _e->read();
-
+  _newRead = constrainValue(_e->read());
+  _e->write(_newRead);
 
   if (_newRead != _lastRead) {
     _lastRead = _newRead;
@@ -18,13 +24,24 @@ void RotaryEncoder::tick () {
 }
 
 void RotaryEncoder::sendUpdate(long value) {
-  int msgLength = 1 + strlen(_uid) + 1;
-  char msg[msgLength];
 
-  // constrain value for now
-  value = max(-50, value);
-  value = min(50, value);
+  // R<_uid>
+  msgLen = 1 + _uidLen;
 
+  if (value == 0) {
+    msgLen += 1;
+  } else {
+    
+    // - sign 
+    if (value < 0) {
+      msgLen += 1;
+    }
+
+    msgLen += floor(log10(abs(value))) + 1;
+
+  }
+
+  char msg[msgLen];
   sprintf(msg, "R%s%ld\n", _uid, value);
   Serial.write(msg);
 }

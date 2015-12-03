@@ -13,21 +13,26 @@ class RotaryEncoder {
     int _bPin;
     Encoder* _e;
     const char* _uid;
+    int _uidLen;
 
     long _lastRead;
     long _newRead;
 
     void sendUpdate(long value);
+    int constrainValue(int in);
 
   public:
-  RotaryEncoder (const char* uid) {
+  RotaryEncoder () {
     _lastRead = INFINITY;
-    _uid = uid;
   }
   ~RotaryEncoder () {
     delete _e;
   }
-  void attach (int aPin, int bPin);
+  void uid(const char* theuid) {
+    _uid = theuid;
+    _uidLen = strlen(_uid);
+  }
+  void rotaryPins (int aPin, int bPin);
   void tick ();
 
 };

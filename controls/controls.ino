@@ -26,8 +26,11 @@
 /*#define PIN_ENCODER_B      4*/
 /*#define PIN_ENCODER_SWITCH 4*/
 
-RotaryEncoder knobA("A");
-RotaryEncoder knobB("B");
+// apparently not using pointers is much more efficient for the 
+// arduino
+RotaryEncoder knobs[3];
+
+unsigned int i;
 
 void setup()
 {
@@ -35,10 +38,16 @@ void setup()
   /*pinMode(PIN_ENCODER_SWITCH, INPUT_PULLUP);*/
 
   Serial.begin(9600);
-  
 
-  knobA.attach(22, 23);
-  knobB.attach(24, 25);
+
+  knobs[0].uid("A");
+  knobs[0].rotaryPins(22, 23);
+
+  knobs[1].uid("B");
+  knobs[1].rotaryPins(24, 25);
+
+  knobs[2].uid("C");
+  knobs[2].rotaryPins(26, 27);
 
 
 
@@ -46,8 +55,13 @@ void setup()
 void loop()
 {
 
-  knobA.tick();
-  knobB.tick();
+  /*for (i = 0; i < sizeof(knobs); i++) {
+    knobs[i].tick();
+  }*/
+
+  knobs[0].tick();
+  knobs[1].tick();
+  knobs[2].tick();
 
   // remember that the switch is active low 
   /*if (bit_is_clear(TRINKET_PINx, PIN_ENCODER_SWITCH)) */
