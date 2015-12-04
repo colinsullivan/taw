@@ -21,6 +21,7 @@
 /*#include <ProTrinketHidCombo.h>*/
 
 #include "RotaryEncoder.h"
+#include "TransmitButton.h"
 
 /*#define PIN_ENCODER_A      2*/
 /*#define PIN_ENCODER_B      4*/
@@ -29,6 +30,9 @@
 // apparently not using pointers is much more efficient for the 
 // arduino
 RotaryEncoder knobs[3];
+
+TransmitButton tbutton;
+
 
 unsigned int i;
 
@@ -42,12 +46,18 @@ void setup()
 
   knobs[0].uid("A");
   knobs[0].rotaryPins(22, 23);
+  knobs[0].switchPin(28);
 
   knobs[1].uid("B");
   knobs[1].rotaryPins(24, 25);
+  knobs[1].switchPin(29);
 
   knobs[2].uid("C");
   knobs[2].rotaryPins(26, 27);
+  knobs[2].switchPin(30);
+
+  tbutton.ledPin(11);
+  tbutton.switchPin(52);
 
 
 
@@ -62,6 +72,8 @@ void loop()
   knobs[0].tick();
   knobs[1].tick();
   knobs[2].tick();
+
+  tbutton.tick();
 
   // remember that the switch is active low 
   /*if (bit_is_clear(TRINKET_PINx, PIN_ENCODER_SWITCH)) */
