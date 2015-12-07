@@ -38,6 +38,8 @@ TawController {
       outbus: 0
     );
 
+    outputChannel.level = 0.1;
+
     //  create the buffer manager that will load the samples we need for this
     //  patch.
     //bufManager = BufferManager.new().init((

@@ -62,24 +62,24 @@ TawSequencer {
     ^Patch("cs.synths.SineBeep");
   }
 
-  //scheduleNextBeat {
-    //var noteBeat,
-      //noteLatency;
+  scheduleNextBeat {
+    var noteBeat,
+      noteLatency;
     
-    ////"scheduleNextBeat".postln();
+    "scheduleNextBeat".postln();
 
-    ////noteBeat = clock.nextTimeOnGrid(
-      ////0,
-      ////0
-    ////);
-    ////noteLatency = clock.beats2secs(noteBeat) - clock.seconds;
+    noteBeat = clock.nextTimeOnGrid(
+      currentState.meter.beatDur,
+      0
+    );
+    noteLatency = clock.beats2secs(noteBeat) - clock.seconds;
     //noteLatency = clock.timeToNextBeat();
-    //patch.playToMixer(
-      //outputChannel,
-      //atTime: noteLatency
-    //);
+    patch.playToMixer(
+      outputChannel,
+      atTime: noteLatency
+    );
 
-  //}
+  }
 
   playBeat {
     patch.playToMixer(
@@ -87,11 +87,15 @@ TawSequencer {
     );
   }
 
-  startPlayingNextBar {
-    //"TawSequencer.startPlayingNextBar".postln();
+  queue {
+    //"TawSequencer.queue".postln();
+    patch.playToMixer(
+      outputChannel,
+      atTime: clock.timeToNextBeat()
+    );
     clock.playNextBar({
       //"playing first beat".postln();
-      this.playBeat();
+      //this.playBeat();
       store.dispatch((
         type: "SEQUENCE_PLAYING",
         name: name
@@ -99,20 +103,20 @@ TawSequencer {
     });
   }
 
-  startPlaying {
+  play {
     var noteLatency,
       me = this;
 
-    //"startPlaying".postln();
+    //"play".postln();
 
     clock.play({
-      this.playBeat();
       store.dispatch((
         type: "SEQUENCER_TRANSPORT_UPDATED",
         beat: (currentState.transport.beat + 1) % currentState.meter.numBeats,
         name: name
       ));
       if (currentState.playingState == "PLAYING", {
+        this.scheduleNextBeat();
         currentState.meter.beatDur;
       }, {
         nil;
@@ -129,16 +133,12 @@ TawSequencer {
     newState = state.sequencers[name.asSymbol()];
 
     // if playing state has changed
-    if (currentState.playingState != newState.playingState, {
+    if (currentState.playingState == "STOPPED" && newState.playingState == "QUEUED", {
+      this.queue();
+    });
 
-      if (currentState.playingState == "STOPPED" && newState.playingState == "QUEUED", {
-        this.startPlayingNextBar();
-      });
-
-      if (currentState.playingState == "QUEUED" && newState.playingState == "PLAYING", {
-        this.startPlaying();    
-      });
-
+    if (currentState.playingState == "QUEUED" && newState.playingState == "PLAYING", {
+      this.play();    
     });
 
     currentState = newState;

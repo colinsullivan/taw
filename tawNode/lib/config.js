@@ -1,5 +1,5 @@
 var config = {};
-config.KNOB_NAMES = ["A", "B"];
+config.KNOB_NAMES = ["A", "B", "C"];
 config.SEQUENCE_NAMES = ["zaps", "orgperc", "pad"];
 config.SEQUENCE_NUM_LEDS = 16;
 config.SEQUENCE_NAME_TO_PIXEL_ADDRESSES = {

@@ -4,7 +4,8 @@ import _ from "underscore"
 import * as actions from "./actions.js"
 
 const INPUT_TYPES = {
-  KNOB: "R"
+  "KNOB": "R",
+  "BUTTON": "B"
 };
 
 class InputController {
@@ -43,17 +44,53 @@ class InputController {
     this.throttledDeviceHandlers[knobId](knobId, knobPos);
   }
 
+  handleButtonMessage (data) {
+    var buttonId = data[1];
+    var buttonSwitchPos = Number(data.slice(2));
+
+    if (buttonId == "T") {
+      if (buttonSwitchPos) {
+        this.store.dispatch({
+          type: actions.actionTypes.TRANSMIT_BUTTON_PRESSED
+        });
+        
+      } else {
+        this.store.dispatch({
+          type: actions.actionTypes.TRANSMIT_BUTTON_UNPRESSED
+        });
+      }
+    }
+
+    //if (!this.throttledDeviceHandlers[buttonId]) {
+      //this.throttledDeviceHandlers[buttonId] = _.debounce((buttonId, buttonSwitchPos) => {
+      //}, 100);
+    //}
+
+    //this.throttledDeviceHandlers[buttonId](buttonId, buttonSwitchPos);
+    console.log("buttonId");
+    console.log(buttonId);
+    console.log("buttonSwitchPos");
+    console.log(buttonSwitchPos);
+  }
+
   handleIncomingData (data) {
     var inputType = data[0];
     //console.log("handleIncomingData");
+    //console.log("data");
+    //console.log(data);
+    switch (inputType) {
+      case INPUT_TYPES.KNOB:
+        this.handleKnobMessage(data);
+        break;
 
-    if (inputType === INPUT_TYPES.KNOB) {
-
-      this.handleKnobMessage(data);
+      case INPUT_TYPES.BUTTON:
+        this.handleButtonMessage(data);
+        break;
       
-    } else {
-      console.warn(`Don't know how to handle input type '${inputType}'.  Ignoring message.`);
+      default:
+        console.warn(`Don't know how to handle input type '${inputType}'.  Ignoring message.`);
     }
+
   }
 }
 export default InputController;
