@@ -1,6 +1,6 @@
 import { combineReducers  } from 'redux'
 
-import { actionTypes } from "./actions.js"
+import { actionTypes, SESSION_STAGES } from "./actions.js"
 
 import config from "./config.js"
 
@@ -31,6 +31,49 @@ config.SEQUENCE_NAMES.forEach(function (sequencerName) {
   initialSequencers[sequencerName] = createSequencerFromTemplate(sequencerName);
 });
 
+let createSoundFromTemplate = function (name) {
+  return {
+    name: name,
+    playingState: PLAYING_STATES.STOPPED
+  };
+};
+
+let initialSounds = {
+  "transmitting": {
+    name: "transmitting",
+    repeat: false,
+    playingState: PLAYING_STATES.STOPPED,
+    bufs: ["transmitting"]
+  }
+};
+
+let initialBufs = [
+  ["transmitting.wav", "transmitting"]
+];
+function bufferList (state = initialBufs, action) {
+  return state;
+}
+
+function sounds (state = initialSounds, action) {
+  switch (action.type) {
+    case actionTypes.TRANSMIT_STARTED:
+      state.transmitting.playingState = PLAYING_STATES.QUEUED;
+      break;
+    case actionTypes.SOUND_PLAYING:
+      state[action.name].playingState = PLAYING_STATES.PLAYING;
+      break;
+    case actionTypes.SOUND_STOP_QUEUED:
+      state[action.name].playingState = PLAYING_STATES.STOP_QUEUED;
+      break;
+    case actionTypes.SOUND_STOPPED:
+      state[action.name].playingState = PLAYING_STATES.STOPPED;
+      break;
+    default:
+      break;
+  }
+  return state;
+}
+
 function sequencers (state = initialSequencers, action) {
   var seq;
   switch (action.type) {
@@ -49,7 +92,7 @@ function sequencers (state = initialSequencers, action) {
       seq.currentBeat = currentBeat;
 
       return state;*/
-    case actionTypes.TRANSMIT_BUTTON_UNPRESSED:
+    case actionTypes.TRANSMIT_STARTED:
       Object.keys(state).forEach(function (sequencerName) {
         let seq = state[sequencerName];
         seq.playingState = PLAYING_STATES.STOP_QUEUED;
@@ -90,31 +133,6 @@ function sequencers (state = initialSequencers, action) {
   }
 };
 
-let initialBufs = [
-  ["transmitting.wav", "transmitting"]
-];
-function bufferList (state = initialBufs, action) {
-  return state;
-}
-
-let initialSoundscape = {
-  elements: [
-    {
-      name: "transmitting",
-      repeat: false,
-      playingState: PLAYING_STATES.STOPPED,
-      bufs: ["transmitting"]
-    }
-  ]
-};
-function soundscape (state = initialSoundscape, action) {
-  switch (action.type) {
-    default:
-      break;
-  }
-
-  return state;
-}
 
 function supercolliderIsReady (state = false, action) {
   switch (action.type) {
@@ -177,12 +195,16 @@ function knobs (state = defaultKnobs, action) {
 }
 
 let defaultSession = {
-  stage: "START"
+  stage: SESSION_STAGES.INIT
 };
 function session (state = defaultSession, action) {
   switch (action.type) {
-    case actionTypes.TRANSMIT_BUTTON_PRESSED:
-      state.stage = "TRANSMIT";
+    case actionTypes.SESSION_STARTED:
+      state.stage = SESSION_STAGES.STARTED;
+      break;
+    
+    case actionTypes.TRANSMIT_STARTED:
+      state.stage = SESSION_STAGES.TRANSMIT_STARTED;
       break;
     
     default:
@@ -194,8 +216,8 @@ function session (state = defaultSession, action) {
 
 export default combineReducers({
   bufferList,
+  sounds,
   sequencers,
-  soundscape,
   supercolliderIsReady,
   supercolliderInitializationStarted,
   lightingInitializationStarted,
@@ -204,3 +226,18 @@ export default combineReducers({
   tempo,
   session
 });
+
+/*export default function (state, action) {
+  state.bufferList = bufferList(state.bufferList, action);
+  state.sequencers = sequencers(state.sequencers, action);
+  state.supercolliderIsReady = supercolliderIsReady(state.supercolliderIsReady, action);
+  state.supercolliderInitializationStarted = supercolliderInitializationStarted(state.supercolliderInitializationStarted, action);
+  state.lightingInitializationStarted = lightingInitializationStarted(state.lightingInitializationStarted, action);
+  state.lightingIsReady = lightingIsReady(state.lightingIsReady, action);
+  state.knobs = knobs(state.knobs, action);
+  state.tempo = tempo(state.tempo, action);
+  state.session = session(state.session, action);
+  
+  state.sounds = sounds(state.sounds, action, state.session);
+  return state;
+}*/

@@ -47,7 +47,7 @@ TawSequencer {
   create_output_channel {
     arg parentOutputChannel;
     ^MixerChannel.new(
-      "TawController",
+      "TawSequencer[" ++ currentState.name ++ "]" ,
       Server.default,
       2, 2,
       outbus: parentOutputChannel
@@ -86,11 +86,11 @@ TawSequencer {
 
   }
 
-  playBeat {
-    patch.playToMixer(
-      outputChannel
-    );
-  }
+  //playBeat {
+    //patch.playToMixer(
+      //outputChannel
+    //);
+  //}
 
   queue {
     //"TawSequencer.queue".postln();

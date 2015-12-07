@@ -10,6 +10,7 @@ TawController {
     <>state,
     <>store,
     <>sequencers,
+    sounds,
     dispatchListener,
     sequencerNameToClass,
     bufManager,
@@ -75,6 +76,7 @@ TawController {
     //this.tickClock.play(this.playCallback);
 
     this.sequencers = List.new();
+    sounds = List.new();
     
 
     dispatchListener = OSCFunc.newMatching({
@@ -99,6 +101,18 @@ TawController {
     );
   }
 
+  initSound {
+    arg sound;
+
+    sounds.add(
+      QueuableSound.new((
+        store: this.store,
+        name: sound.name,
+        outputChannel: outputChannel
+      ));
+    );
+  }
+
   initFromAPI {
     arg initialState;
     var state,
@@ -112,15 +126,26 @@ TawController {
     // TODO: Kill any currently running sequencers
 
     // load all bufs
-    bufManager.load_bufs(state.bufferList);
+    "loading buffers...".postln();
+    bufManager.load_bufs(state.bufferList, {
+      "initializing sounds...".postln();
+      state.sounds.do({
+        arg sound;
+        me.initSound(sound);
+      });
 
-    // create sequencers
-    state.sequencers.do({
-      arg sequencer;
-      "sequencer:".postln;
-      sequencer.postln;
-      me.initSequencer(sequencer);
+      "initializing sequencers...".postln();
+      // create sequencers
+      state.sequencers.do({
+        arg sequencer;
+        "sequencer:".postln;
+        sequencer.postln;
+        me.initSequencer(sequencer);
+      });
+
+
     });
+
 
   
     

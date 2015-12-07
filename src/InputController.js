@@ -53,6 +53,12 @@ class InputController {
       }, 150);
     }
 
+    if (this.store.getState().session.stage == actions.SESSION_STAGES.INIT) {
+      this.store.dispatch({
+        type: actions.actionTypes.SESSION_STARTED
+      });
+    }
+
     this.throttledDeviceHandlers[knobId](knobId, knobPos);
   }
 
@@ -61,15 +67,12 @@ class InputController {
     var buttonSwitchPos = Number(data.slice(2));
 
     if (buttonId == "T") {
-      if (buttonSwitchPos) {
-        this.store.dispatch({
-          type: actions.actionTypes.TRANSMIT_BUTTON_PRESSED
-        });
-        
-      } else {
-        this.store.dispatch({
-          type: actions.actionTypes.TRANSMIT_BUTTON_UNPRESSED
-        });
+      if (buttonSwitchPos == 0) {
+        if (this.store.getState().session.stage == actions.SESSION_STAGES.STARTED) {
+          this.store.dispatch({
+            type: actions.actionTypes.TRANSMIT_STARTED
+          });
+        }
       }
     }
 
