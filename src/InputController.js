@@ -13,6 +13,8 @@ import _ from "underscore"
 
 import * as actions from "./actions.js"
 
+import getOrError from "./EnvUtils.js"
+
 const INPUT_TYPES = {
   "KNOB": "R",
   "BUTTON": "B"
@@ -23,7 +25,7 @@ class InputController {
     this.store = store;
 
     this.arduinoPort = new serialport.SerialPort(
-      process.env.INPUT_ARDUINO_SERIALPORT,
+      getOrError("INPUT_ARDUINO_SERIALPORT"),
       {
         parser: serialport.parsers.readline("\n")
       }
