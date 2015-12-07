@@ -108,7 +108,8 @@ TawController {
       QueuableSound.new((
         store: this.store,
         name: sound.name,
-        outputChannel: outputChannel
+        outputChannel: outputChannel,
+        bufManager: bufManager
       ));
     );
   }

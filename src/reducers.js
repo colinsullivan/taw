@@ -43,7 +43,7 @@ let initialSounds = {
     name: "transmitting",
     repeat: false,
     playingState: PLAYING_STATES.STOPPED,
-    bufs: ["transmitting"]
+    bufName: "transmitting"
   }
 };
 

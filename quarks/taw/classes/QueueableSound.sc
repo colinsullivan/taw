@@ -4,6 +4,8 @@ QueuableSound {
     outputChannel,
     store,
     name,
+    buf,
+    bufManager,
     patch;
 
   *new {
@@ -17,7 +19,9 @@ QueuableSound {
 
     store = params.store;
     name = params.name;
+    bufManager = params.bufManager;
     currentState = store.getState().sounds[params.name.asSymbol()];
+    buf = bufManager.bufs[currentState.bufName.asSymbol()];
 
     clock = TempoClock.default();
     outputChannel = this.create_output_channel(params.outputChannel);
@@ -36,7 +40,14 @@ QueuableSound {
     );
   }
   createPatch {
-    ^Patch("cs.synths.SineBeep");
+    ^Patch("cs.sfx.PlayBuf", (
+      buf: buf,
+      gate: 1,
+      attackTime: 0.01,
+      releaseTime: 0.01,
+      amp: 1.0,
+      playbackRate: 1.0
+    ));
   }
   queue {
     "QueueableSound.queue".postln();
@@ -59,6 +70,8 @@ QueuableSound {
       type: "SOUND_STOP_QUEUED",
       name: name
     ));
+    "buf.duration:".postln;
+    buf.duration.postln;
     clock.playNextBar({
       store.dispatch((
         type: "SOUND_STOPPED",

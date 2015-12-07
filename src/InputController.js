@@ -65,10 +65,12 @@ class InputController {
   handleButtonMessage (data) {
     var buttonId = data[1];
     var buttonSwitchPos = Number(data.slice(2));
+    var state = this.store.getState();
 
     if (buttonId == "T") {
       if (buttonSwitchPos == 0) {
-        if (this.store.getState().session.stage == actions.SESSION_STAGES.STARTED) {
+
+        if (state.session.stage == actions.SESSION_STAGES.STARTED) {
           this.store.dispatch({
             type: actions.actionTypes.TRANSMIT_STARTED
           });
