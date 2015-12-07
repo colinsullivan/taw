@@ -4,8 +4,8 @@ QueuableSound {
     outputChannel,
     store,
     name,
-    buf,
     bufManager,
+    currentlyPlayingBuf,
     patch;
 
   *new {
@@ -21,7 +21,6 @@ QueuableSound {
     name = params.name;
     bufManager = params.bufManager;
     currentState = store.getState().sounds[params.name.asSymbol()];
-    buf = bufManager.bufs[currentState.bufName.asSymbol()];
 
     clock = TempoClock.default();
     outputChannel = this.create_output_channel(params.outputChannel);
@@ -30,6 +29,7 @@ QueuableSound {
 
     ^this;
   }
+
   create_output_channel {
     arg parentOutputChannel;
     ^MixerChannel.new(
@@ -40,6 +40,9 @@ QueuableSound {
     );
   }
   createPatch {
+    var buf;
+    buf = bufManager.bufs[currentState.bufName.asSymbol()];
+
     ^Patch("cs.sfx.PlayBuf", (
       buf: buf,
       gate: 1,
@@ -50,12 +53,17 @@ QueuableSound {
     ));
   }
   queue {
+    var t;
     "QueueableSound.queue".postln();
+    patch = this.createPatch();
+    t = clock.beats2secs(clock.nextBar) - clock.seconds + currentState.delay;
+
     patch.playToMixer(
       outputChannel,
-      atTime: clock.beats2secs(clock.nextBar) - clock.seconds
+      atTime: t
     );
-    clock.playNextBar({
+
+    AppClock.sched(t, {
       //"playing first beat".postln();
       //this.playBeat();
       store.dispatch((
@@ -68,11 +76,13 @@ QueuableSound {
   queueStop {
     store.dispatch((
       type: "SOUND_STOP_QUEUED",
-      name: name
+      name: name,
+      delay: patch.buf.duration
     ));
-    "buf.duration:".postln;
-    buf.duration.postln;
-    clock.playNextBar({
+  }
+
+  scheduleStop {
+    AppClock.sched(patch.buf.duration, {
       store.dispatch((
         type: "SOUND_STOPPED",
         name: name
@@ -108,16 +118,19 @@ QueuableSound {
 
     // if playing state has changed
     if (currentState.playingState == "STOPPED" && newState.playingState == "QUEUED", {
+      currentState = newState;
       this.queue();
     });
 
     if (currentState.playingState == "QUEUED" && newState.playingState == "PLAYING", {
+      currentState = newState;
       this.queueStop();    
     });
 
-    //if (currentState.playingState == "PLAYING" && newState.playingState == "STOP_QUEUED", {
-    //});
+    if (currentState.playingState == "PLAYING" && newState.playingState == "STOP_QUEUED", {
+      currentState = newState;
+      this.scheduleStop();
+    });
 
-    currentState = newState;
   }
 }

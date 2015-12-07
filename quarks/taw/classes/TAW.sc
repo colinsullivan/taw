@@ -77,7 +77,7 @@ TawController {
 
     this.sequencers = List.new();
     sounds = List.new();
-    
+
 
     dispatchListener = OSCFunc.newMatching({
       arg msg, time, addr, recvPort;

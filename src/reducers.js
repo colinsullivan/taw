@@ -41,14 +41,23 @@ let createSoundFromTemplate = function (name) {
 let initialSounds = {
   "transmitting": {
     name: "transmitting",
-    repeat: false,
     playingState: PLAYING_STATES.STOPPED,
-    bufName: "transmitting"
+    bufName: "transmitting",
+    delay: 0
+  },
+  "response": {
+    name: "response",
+    playingState: PLAYING_STATES.STOPPED,
+    delay: 0
   }
 };
 
 let initialBufs = [
-  ["transmitting.wav", "transmitting"]
+  ["transmitting.wav", "transmitting"],
+  ["dark_bass_lukebeats.wav", "darklukebeats"]
+];
+let possibleResponses = [
+  "darklukebeats"
 ];
 function bufferList (state = initialBufs, action) {
   return state;
@@ -58,12 +67,25 @@ function sounds (state = initialSounds, action) {
   switch (action.type) {
     case actionTypes.TRANSMIT_STARTED:
       state.transmitting.playingState = PLAYING_STATES.QUEUED;
+
+      // choose random response
+      state.response.bufName = possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+
+      break;
+    case actionTypes.SOUND_QUEUED:
+      state[action.name].playingState = PLAYING_STATES.QUEUED;
       break;
     case actionTypes.SOUND_PLAYING:
       state[action.name].playingState = PLAYING_STATES.PLAYING;
       break;
     case actionTypes.SOUND_STOP_QUEUED:
       state[action.name].playingState = PLAYING_STATES.STOP_QUEUED;
+
+      if (action.name == "transmitting") {
+        // queue response with delay
+        state.response.playingState = PLAYING_STATES.QUEUED;
+        state.response.delay = action.delay - 6;
+      }
       break;
     case actionTypes.SOUND_STOPPED:
       state[action.name].playingState = PLAYING_STATES.STOPPED;
@@ -207,6 +229,16 @@ function session (state = defaultSession, action) {
       state.stage = SESSION_STAGES.TRANSMIT_STARTED;
       break;
     
+    case actionTypes.SOUND_STOPPED:
+
+      // if transmitting sound just finished
+      if (action.name == "transmitting") {
+        state.stage = SESSION_STAGES.RESPONSE;
+      } else if (action.name == "response") {
+        state.stage = SESSION_STAGES.INIT;
+      }
+
+      break;
     default:
       break;
   }
