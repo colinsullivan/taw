@@ -4,6 +4,13 @@ import { actionTypes } from "./actions.js"
 
 import config from "./config.js"
 
+var PLAYING_STATES = {
+  STOPPED: "STOPPED",
+  QUEUED: "QUEUED",
+  PLAYING: "PLAYING",
+  STOP_QUEUED: "STOP_QUEUED"
+};
+
 let createSequencerFromTemplate = function (name) {
   return {
     name: name,
@@ -14,7 +21,7 @@ let createSequencerFromTemplate = function (name) {
       numBeats: 8,
       beatDur: 1
     },
-    playingState: "STOPPED"
+    playingState: PLAYING_STATES.STOPPED
   };
 };
 
@@ -45,25 +52,25 @@ function sequencers (state = initialSequencers, action) {
     case actionTypes.TRANSMIT_BUTTON_UNPRESSED:
       Object.keys(state).forEach(function (sequencerName) {
         let seq = state[sequencerName];
-        seq.playingState = "STOP_QUEUED";
+        seq.playingState = PLAYING_STATES.STOP_QUEUED;
       })
       return state;
     
     case actionTypes.SEQUENCERS_QUEUED:
       Object.keys(state).forEach(function (sequencerName) {
         let seq = state[sequencerName];
-        seq.playingState = "QUEUED";
+        seq.playingState = PLAYING_STATES.QUEUED;
         seq.transport.beat = 0;
       });
       return state;
     case actionTypes.SEQUENCE_PLAYING:
       seq = state[action.name];
-      seq.playingState = "PLAYING";
+      seq.playingState = PLAYING_STATES.PLAYING;
       seq.transport.beat = 1;
       return state;
     case actionTypes.SEQUENCE_STOPPED:
       seq = state[action.name];
-      seq.playingState = "STOPPED";
+      seq.playingState = PLAYING_STATES.STOPPED;
       seq.transport.beat = 1;
       return state;
     
@@ -82,6 +89,32 @@ function sequencers (state = initialSequencers, action) {
       return state;
   }
 };
+
+let initialBufs = [
+  ["transmitting.wav", "transmitting"]
+];
+function bufferList (state = initialBufs, action) {
+  return state;
+}
+
+let initialSoundscape = {
+  elements: [
+    {
+      name: "transmitting",
+      repeat: false,
+      playingState: PLAYING_STATES.STOPPED,
+      bufs: ["transmitting"]
+    }
+  ]
+};
+function soundscape (state = initialSoundscape, action) {
+  switch (action.type) {
+    default:
+      break;
+  }
+
+  return state;
+}
 
 function supercolliderIsReady (state = false, action) {
   switch (action.type) {
@@ -143,12 +176,31 @@ function knobs (state = defaultKnobs, action) {
   }
 }
 
+let defaultSession = {
+  stage: "START"
+};
+function session (state = defaultSession, action) {
+  switch (action.type) {
+    case actionTypes.TRANSMIT_BUTTON_PRESSED:
+      state.stage = "TRANSMIT";
+      break;
+    
+    default:
+      break;
+  }
+
+  return state;
+}
+
 export default combineReducers({
+  bufferList,
   sequencers,
+  soundscape,
   supercolliderIsReady,
   supercolliderInitializationStarted,
   lightingInitializationStarted,
   lightingIsReady,
   knobs,
-  tempo
+  tempo,
+  session
 });

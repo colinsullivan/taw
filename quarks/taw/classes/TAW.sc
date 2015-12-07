@@ -28,6 +28,7 @@ TawController {
     var now = thisThread.clock.seconds;
     var tempo = 150.0/60.0;
     var tickClock;
+    var projDir = File.getcwd();
 
     "TawController.init".postln();
 
@@ -42,9 +43,9 @@ TawController {
 
     //  create the buffer manager that will load the samples we need for this
     //  patch.
-    //bufManager = BufferManager.new().init((
-      //rootDir: "/Users/colin/Samples/Recorded Sounds/Sound Effects/"
-    //));
+    bufManager = BufferManager.new().init((
+      rootDir: projDir +/+ "sounds"
+    ));
 
     //ambientSoundscape = Soundscape.new().init((
       //bufManager: bufManager,
@@ -110,6 +111,9 @@ TawController {
 
     // TODO: Kill any currently running sequencers
 
+    // load all bufs
+    bufManager.load_bufs(state.bufferList);
+
     // create sequencers
     state.sequencers.do({
       arg sequencer;
@@ -117,6 +121,7 @@ TawController {
       sequencer.postln;
       me.initSequencer(sequencer);
     });
+
   
     
     //this.clock.play(this.playCallback);
