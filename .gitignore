@@ -2,3 +2,6 @@
 *node_modules
 *.swo
 *.env
+*~.skp
+ideas\ Project
+NOTES.md
