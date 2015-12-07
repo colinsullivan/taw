@@ -57,7 +57,7 @@ void setup()
   knobs[2].switchPin(30);
 
   tbutton.ledPin(11);
-  tbutton.switchPin(52);
+  tbutton.switchPin(31);
 
 
 
