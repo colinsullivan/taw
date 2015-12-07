@@ -1,3 +1,13 @@
+/**
+ *  @file       InputController.js
+ *
+ *
+ *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
+ *
+ *  @copyright  2015 Colin Sullivan
+ *  @license    Licensed under the MIT license.
+ **/
+
 import serialport from "serialport"
 import _ from "underscore"
 
