@@ -108,6 +108,15 @@ TawSequencer {
     });
   }
 
+  queueStop {
+    clock.playNextBar({
+      store.dispatch((
+        type: "SEQUENCE_STOPPED",
+        name: name
+      ));
+    });
+  }
+
   play {
     var noteLatency,
       me = this;
@@ -143,6 +152,10 @@ TawSequencer {
 
     if (currentState.playingState == "QUEUED" && newState.playingState == "PLAYING", {
       this.play();    
+    });
+
+    if (currentState.playingState == "PLAYING" && newState.playingState == "STOP_QUEUED", {
+      this.queueStop();    
     });
 
     if (newState.playingState == "PLAYING", {

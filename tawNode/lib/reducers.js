@@ -42,6 +42,13 @@ function sequencers (state = initialSequencers, action) {
       seq.currentBeat = currentBeat;
 
       return state;*/
+    case actionTypes.TRANSMIT_BUTTON_UNPRESSED:
+      Object.keys(state).forEach(function (sequencerName) {
+        let seq = state[sequencerName];
+        seq.playingState = "STOP_QUEUED";
+      })
+      return state;
+    
     case actionTypes.SEQUENCERS_QUEUED:
       Object.keys(state).forEach(function (sequencerName) {
         let seq = state[sequencerName];
@@ -54,6 +61,12 @@ function sequencers (state = initialSequencers, action) {
       seq.playingState = "PLAYING";
       seq.transport.beat = 1;
       return state;
+    case actionTypes.SEQUENCE_STOPPED:
+      seq = state[action.name];
+      seq.playingState = "STOPPED";
+      seq.transport.beat = 1;
+      return state;
+    
     case actionTypes.SEQUENCER_TRANSPORT_UPDATED:
       seq = state[action.name];
       seq.transport = Object.assign({}, seq.transport);
