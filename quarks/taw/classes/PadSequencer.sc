@@ -11,8 +11,8 @@ PadSequencer : TawSequencer {
     ));
   }
 
-  playBeat {
+  preparePatch {
+    super.preparePatch();
     patch = this.createPatch();
-    super.playBeat();
   }
 }

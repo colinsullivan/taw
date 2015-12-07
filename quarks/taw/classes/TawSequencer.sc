@@ -62,12 +62,17 @@ TawSequencer {
     ^Patch("cs.synths.SineBeep");
   }
 
+  preparePatch {
+    
+  }
+
   scheduleNextBeat {
     var noteBeat,
       noteLatency;
     
-    "scheduleNextBeat".postln();
+    //"scheduleNextBeat".postln();
 
+    this.preparePatch();
     noteBeat = clock.nextTimeOnGrid(
       currentState.meter.beatDur,
       0
@@ -91,7 +96,7 @@ TawSequencer {
     //"TawSequencer.queue".postln();
     patch.playToMixer(
       outputChannel,
-      atTime: clock.timeToNextBeat()
+      atTime: clock.beats2secs(clock.nextBar) - clock.seconds
     );
     clock.playNextBar({
       //"playing first beat".postln();
@@ -116,7 +121,6 @@ TawSequencer {
         name: name
       ));
       if (currentState.playingState == "PLAYING", {
-        this.scheduleNextBeat();
         currentState.meter.beatDur;
       }, {
         nil;
@@ -139,6 +143,12 @@ TawSequencer {
 
     if (currentState.playingState == "QUEUED" && newState.playingState == "PLAYING", {
       this.play();    
+    });
+
+    if (newState.playingState == "PLAYING", {
+      if (newState.transport.beat != currentState.transport.beat, {
+        this.scheduleNextBeat();    
+      });
     });
 
     currentState = newState;

@@ -25,7 +25,8 @@ LazersSequencer : TawSequencer {
     ));
   }
 
-  playBeat {
+  preparePatch {
+    super.preparePatch();
 
     gateControl.value = 0;
     patch = this.createPatch();
@@ -38,9 +39,5 @@ LazersSequencer : TawSequencer {
       mod2IndexControl.value = exprand(0.02, 6);
       freqControl.value = 440;
     });
-
-
-
-    super.playBeat();
   }
 }

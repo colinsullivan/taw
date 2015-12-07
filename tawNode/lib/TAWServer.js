@@ -45,21 +45,21 @@ class TAWServer {
       //console.group(action.type)
       console.info('dispatching', action)
       let result = next(action)
-      console.log('next state', JSON.stringify(store.getState()))
+      //console.log('next state', JSON.stringify(store.getState()))
       //console.groupEnd(action.type)
       return result
     };
 
-    const forwardToSC = store => next => action => {
-      if (this.scController) {
-        this.scController.call("taw.dispatch", [action]);
-      }
-      return next(action);
-    };
+    //const forwardToSC = store => next => action => {
+      //if (this.scController) {
+        //this.scController.call("taw.dispatch", [action]);
+      //}
+      //return next(action);
+    //};
 
     let createStoreWithMiddleware = applyMiddleware(
       //forwardToSC,
-      //logger
+      logger
     )(createStore);
 
 

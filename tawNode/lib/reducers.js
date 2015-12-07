@@ -46,6 +46,7 @@ function sequencers (state = initialSequencers, action) {
       Object.keys(state).forEach(function (sequencerName) {
         let seq = state[sequencerName];
         seq.playingState = "QUEUED";
+        seq.transport.beat = 0;
       });
       return state;
     case actionTypes.SEQUENCE_PLAYING:
