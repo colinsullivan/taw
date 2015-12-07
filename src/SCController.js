@@ -69,6 +69,8 @@ class SCController {
 
     });
   }
+
+  // TODO: this should be in reducers
   handleKnobChanged (knobName, knobState) {
     console.log(`handleKnobChanged: ${knobName}`);
     var sequencerName = config.KNOB_NAME_TO_SEQUENCE_NAME[knobName];

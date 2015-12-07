@@ -132,5 +132,7 @@ QueuableSound {
       this.scheduleStop();
     });
 
+    currentState = newState;
+
   }
 }

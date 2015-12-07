@@ -53,11 +53,6 @@ class InputController {
       }, 150);
     }
 
-    if (this.store.getState().session.stage == actions.SESSION_STAGES.INIT) {
-      this.store.dispatch({
-        type: actions.actionTypes.SESSION_STARTED
-      });
-    }
 
     this.throttledDeviceHandlers[knobId](knobId, knobPos);
   }

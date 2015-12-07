@@ -89,10 +89,10 @@ class TAWServer {
         this.isRendering = true;
         
         // testing
-        setTimeout(() => {
-          this.store.dispatch(actions.queueAllSequencers());
+        //setTimeout(() => {
+          //this.store.dispatch(actions.queueAllSequencers());
 
-        }, 1000);
+        //}, 1000);
 
       }
 

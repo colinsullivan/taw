@@ -1,8 +1,11 @@
 import { combineReducers  } from 'redux'
+import moment from "moment"
 
 import { actionTypes, SESSION_STAGES } from "./actions.js"
 
 import config from "./config.js"
+
+
 
 var PLAYING_STATES = {
   STOPPED: "STOPPED",
@@ -96,9 +99,20 @@ function sounds (state = initialSounds, action) {
   return state;
 }
 
-function sequencers (state = initialSequencers, action) {
+function sequencers (state = initialSequencers, action, session) {
   var seq;
   switch (action.type) {
+    case actionTypes.KNOB_POS_CHANGED:
+      seq = state[config.KNOB_NAME_TO_SEQUENCE_NAME[action.id]];
+
+      if (
+          session.stage == SESSION_STAGES.STARTED
+          && seq.playingState == PLAYING_STATES.STOPPED
+      ) {
+        seq.playingState = PLAYING_STATES.QUEUED;
+      }
+
+      return state;
     /*case actionTypes.SEQUENCER_STEP_SCHEDULED:
       // copy sequencer
       let seq = Object.assign({}, state[action.name]);
@@ -216,13 +230,27 @@ function knobs (state = defaultKnobs, action) {
   }
 }
 
-let defaultSession = {
-  stage: SESSION_STAGES.INIT
+let createNewSession = function () {
+  return {
+    stage: SESSION_STAGES.INIT,
+    initTime: moment()
+  };
 };
+let defaultSession = createNewSession();
 function session (state = defaultSession, action) {
+  let now = moment();
+  let timeSinceInit = now.diff(state.initTime, 'seconds');
   switch (action.type) {
-    case actionTypes.SESSION_STARTED:
-      state.stage = SESSION_STAGES.STARTED;
+    case actionTypes.KNOB_POS_CHANGED:
+      if (state.stage == SESSION_STAGES.INIT) {
+      
+        if (timeSinceInit < 8) {
+          console.log("not starting during init cooldown period...");
+        } else {
+          state.stage = SESSION_STAGES.STARTED;
+        }
+ 
+      }
       break;
     
     case actionTypes.TRANSMIT_STARTED:
@@ -235,7 +263,7 @@ function session (state = defaultSession, action) {
       if (action.name == "transmitting") {
         state.stage = SESSION_STAGES.RESPONSE;
       } else if (action.name == "response") {
-        state.stage = SESSION_STAGES.INIT;
+        state = createNewSession();
       }
 
       break;
@@ -246,22 +274,21 @@ function session (state = defaultSession, action) {
   return state;
 }
 
-export default combineReducers({
-  bufferList,
-  sounds,
-  sequencers,
-  supercolliderIsReady,
-  supercolliderInitializationStarted,
-  lightingInitializationStarted,
-  lightingIsReady,
-  knobs,
-  tempo,
-  session
-});
+//export default combineReducers({
+  //bufferList,
+  //sounds,
+  //sequencers,
+  //supercolliderIsReady,
+  //supercolliderInitializationStarted,
+  //lightingInitializationStarted,
+  //lightingIsReady,
+  //knobs,
+  //tempo,
+  //session
+//});
 
-/*export default function (state, action) {
+export default function (state = {}, action) {
   state.bufferList = bufferList(state.bufferList, action);
-  state.sequencers = sequencers(state.sequencers, action);
   state.supercolliderIsReady = supercolliderIsReady(state.supercolliderIsReady, action);
   state.supercolliderInitializationStarted = supercolliderInitializationStarted(state.supercolliderInitializationStarted, action);
   state.lightingInitializationStarted = lightingInitializationStarted(state.lightingInitializationStarted, action);
@@ -269,7 +296,9 @@ export default combineReducers({
   state.knobs = knobs(state.knobs, action);
   state.tempo = tempo(state.tempo, action);
   state.session = session(state.session, action);
+
+  state.sequencers = sequencers(state.sequencers, action, state.session);
   
-  state.sounds = sounds(state.sounds, action, state.session);
+  state.sounds = sounds(state.sounds, action);
   return state;
-}*/
+}
