@@ -241,6 +241,26 @@ function knobs (state = defaultKnobs, action) {
   }
 }
 
+//let initialTransmitButton = {
+  //ledactive: 0
+//};
+//function transmitButton (state = initialTransmitButton, action) {
+  //switch (action.type) {
+    //case actionTypes.TRANSMIT_BUTTON_ACTIVATED:
+      //state = Object.assign({}, state);
+      //state.ledactive = 1;
+      //break;
+    //case actionTypes.TRANSMIT_BUTTON_DEACTIVATED:
+      //state = Object.assign({}, state);
+      //state.ledactive = 0;
+      //break;
+    //default:
+      //break;
+  //}
+
+  //return state;
+//}
+
 let createNewSession = function () {
   return {
     stage: SESSION_STAGES.INIT,
@@ -251,13 +271,14 @@ let defaultSession = createNewSession();
 function session (state = defaultSession, action) {
   let now = moment();
   let timeSinceInit = now.diff(state.initTime, 'seconds');
+  let newState = state;
   switch (action.type) {
     case actionTypes.SUPERCOLLIDER_READY:
-      state = createNewSession();
+      newState = createNewSession();
       break;
 
     case actionTypes.LIGHTING_READY:
-      state = createNewSession();
+      newState = createNewSession();
       break;
     
     case actionTypes.KNOB_POS_CHANGED:
@@ -266,23 +287,26 @@ function session (state = defaultSession, action) {
         if (timeSinceInit < 8) {
           console.log("not starting during init cooldown period...");
         } else {
-          state.stage = SESSION_STAGES.STARTED;
+          newState = Object.assign({}, state);
+          newState.stage = SESSION_STAGES.STARTED;
         }
  
       }
       break;
     
     case actionTypes.TRANSMIT_STARTED:
-      state.stage = SESSION_STAGES.TRANSMIT_STARTED;
+      newState = Object.assign({}, state);
+      newState.stage = SESSION_STAGES.TRANSMIT_STARTED;
       break;
     
     case actionTypes.SOUND_STOPPED:
 
       // if transmitting sound just finished
       if (action.name == "transmitting") {
-        state.stage = SESSION_STAGES.RESPONSE;
+        newState = Object.assign({}, state);
+        newState.stage = SESSION_STAGES.RESPONSE;
       } else if (action.name == "response") {
-        state = createNewSession();
+        newState = createNewSession();
       }
 
       break;
@@ -290,7 +314,7 @@ function session (state = defaultSession, action) {
       break;
   }
 
-  return state;
+  return newState;
 }
 
 //export default combineReducers({

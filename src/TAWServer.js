@@ -59,7 +59,7 @@ class TAWServer {
 
     let createStoreWithMiddleware = applyMiddleware(
       //forwardToSC,
-      logger
+      //logger
     )(createStore);
 
 
