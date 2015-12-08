@@ -2,7 +2,11 @@ var TAWServer = require("./lib/TAWServer.js").default;
 
 console.log("Waiting to start the TAW server...");
 var server;
-setTimeout(function () {
+if (process.env.NODE_ENV == "production") {
+  setTimeout(function () {
+    server = new TAWServer();
+  }, 20000);
+} else {
   server = new TAWServer();
-}, 20000);
+}
 
