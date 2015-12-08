@@ -11,7 +11,7 @@ TawController {
     <>store,
     <>sequencers,
     sounds,
-    dispatchListener,
+    //dispatchListener,
     sequencerNameToClass,
     bufManager,
     ambientSoundscape;
@@ -40,7 +40,7 @@ TawController {
       outbus: 0
     );
 
-    outputChannel.level = 0.1;
+    outputChannel.level = 0.25;
 
     //  create the buffer manager that will load the samples we need for this
     //  patch.
@@ -56,7 +56,7 @@ TawController {
     sequencerNameToClass = (
       zaps: LazersSequencer,
       orgperc: OrganicPercussionSequencer,
-      pad: PadSequencer
+      pad: RightSequencer
     );
 
 
@@ -79,12 +79,12 @@ TawController {
     sounds = List.new();
 
 
-    dispatchListener = OSCFunc.newMatching({
+    /*dispatchListener = OSCFunc.newMatching({
       arg msg, time, addr, recvPort;
 
       "msg:".postln;
       msg.postln;
-    }, "/dispatch", NetAddr.new("127.0.0.1", 3333));
+    }, "/dispatch", NetAddr.new("127.0.0.1", 3333));*/
     
     ^this;
   }
@@ -96,7 +96,8 @@ TawController {
       sequencerNameToClass[sequencer.name.asSymbol()].new((
         store: this.store,
         name: sequencer.name,
-        outputChannel: outputChannel
+        outputChannel: outputChannel,
+        bufManager: bufManager
       ))
     );
   }
