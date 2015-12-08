@@ -6,7 +6,7 @@ OrganicPercussionSequencer : TawSequencer {
     arg params;
     baseFreq = "A4".notemidi().midicps();
     super.init(params);
-    outputChannel.level = 0.3;
+    outputChannel.level = 0.2;
   }
 
   createPat {

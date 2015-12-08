@@ -8,7 +8,7 @@ RightSequencer : TawSequencer {
     bufManager = params[\bufManager];
     super.init(params);
 
-    outputChannel.level = 0.3;
+    outputChannel.level = 0.2;
   }
 
   createPatch {
