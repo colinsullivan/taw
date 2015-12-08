@@ -264,13 +264,13 @@ function knobs (state = defaultKnobs, action) {
 let createNewSession = function () {
   return {
     stage: SESSION_STAGES.INIT,
-    initTime: moment()
+    stageStartTime: moment(),
   };
 };
 let defaultSession = createNewSession();
 function session (state = defaultSession, action) {
   let now = moment();
-  let timeSinceInit = now.diff(state.initTime, 'seconds');
+  let timeSinceStageStart = now.diff(state.stageStartTime, 'seconds');
   let newState = state;
   switch (action.type) {
     case actionTypes.SUPERCOLLIDER_READY:
@@ -284,11 +284,12 @@ function session (state = defaultSession, action) {
     case actionTypes.KNOB_POS_CHANGED:
       if (state.stage == SESSION_STAGES.INIT) {
       
-        if (timeSinceInit < 8) {
+        if (timeSinceStageStart < 8) {
           console.log("not starting during init cooldown period...");
         } else {
           newState = Object.assign({}, state);
           newState.stage = SESSION_STAGES.STARTED;
+          newState.stageStartTime = moment();
         }
  
       }
@@ -297,6 +298,7 @@ function session (state = defaultSession, action) {
     case actionTypes.TRANSMIT_STARTED:
       newState = Object.assign({}, state);
       newState.stage = SESSION_STAGES.TRANSMIT_STARTED;
+      newState.stageStartTime = moment();
       break;
     
     case actionTypes.SOUND_STOPPED:
@@ -305,6 +307,7 @@ function session (state = defaultSession, action) {
       if (action.name == "transmitting") {
         newState = Object.assign({}, state);
         newState.stage = SESSION_STAGES.RESPONSE;
+        newState.stageStartTime = moment();
       } else if (action.name == "response") {
         newState = createNewSession();
       }

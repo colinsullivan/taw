@@ -69,7 +69,9 @@ class InputController {
       //this.store.dispatch({
         //type: actions.actionTypes.TRANSMIT_BUTTON_ACTIVATED
       //});
-      this.arduinoPort.write("TL1\n");
+      if (this.currentSessionStage == actions.SESSION_STAGES.STARTED) {
+        this.arduinoPort.write("TL1\n");
+      }
     }, 5000);
   }
 
