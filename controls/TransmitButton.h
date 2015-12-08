@@ -14,6 +14,8 @@ class TransmitButton
     float _ledBrightness;
     float _ledBrightnessMultiplier;
     void sendSwitchUpdate();
+
+    int _ledIsOn;
 public:
   TransmitButton();
   ~TransmitButton();
@@ -22,6 +24,7 @@ public:
 
   void ledPin(unsigned int thePin);
   void switchPin(unsigned int thePin);
+  void ledIsOn(int val) { _ledIsOn = val; }
 };
 
 #endif

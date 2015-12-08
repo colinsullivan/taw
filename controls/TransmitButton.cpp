@@ -7,6 +7,7 @@ TransmitButton::TransmitButton() {
 
   _ledBrightness = 1;
   _ledBrightnessMultiplier = 0.05;
+  _ledIsOn = 0;
 }
 
 TransmitButton::~TransmitButton() {
@@ -32,6 +33,8 @@ void TransmitButton::tick() {
     _ledBrightnessMultiplier *= -1.0 ;
     _ledBrightness = 0;
   }
+  _ledBrightness *= _ledIsOn;
+
   analogWrite(_ledPin, floor(_ledBrightness));    
 
   newSwitchRead = digitalRead(_switchPin);
