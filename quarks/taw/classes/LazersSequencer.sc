@@ -30,7 +30,7 @@ LazersSequencer : TawSequencer {
   preparePatch {
     super.preparePatch();
 
-    gateControl.value = 0;
+    //gateControl.value = 0;
     patch = this.createPatch();
     if (currentState.transport.beat == 0, {
       modIndexControl.value = 1.12004;
