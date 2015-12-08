@@ -241,6 +241,14 @@ function session (state = defaultSession, action) {
   let now = moment();
   let timeSinceInit = now.diff(state.initTime, 'seconds');
   switch (action.type) {
+    case actionTypes.SUPERCOLLIDER_READY:
+      state = createNewSession();
+      break;
+
+    case actionTypes.LIGHTING_READY:
+      state = createNewSession();
+      break;
+    
     case actionTypes.KNOB_POS_CHANGED:
       if (state.stage == SESSION_STAGES.INIT) {
       
