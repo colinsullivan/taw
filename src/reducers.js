@@ -57,10 +57,21 @@ let initialSounds = {
 
 let initialBufs = [
   ["transmitting.wav", "transmitting"],
-  ["dark_bass_lukebeats.wav", "darklukebeats"]
+  ["dark_bass_lukebeats.wav", "darklukebeats"],
+  ["2014-09-30_mis-studio-jam_sample.wav", "misjam"],
+  ["deep-forest-lounge_sample.wav", "deepforest"],
+  ["determinism_sample.wav", "determinism"],
+  ["homebrew_sample.wav", "homebrew"],
+  ["luke_kick.wav", "lukekick"],
+  ["luke_snare.wav", "lukesnare"]
 ];
+
 let possibleResponses = [
-  "darklukebeats"
+  "darklukebeats",
+  "misjam",
+  "deepforest",
+  "determinism",
+  "homebrew"
 ];
 function bufferList (state = initialBufs, action) {
   return state;

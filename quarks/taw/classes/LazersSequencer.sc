@@ -13,6 +13,8 @@ LazersSequencer : TawSequencer {
     freqControl = KrNumberEditor(440, \freq);
     
     super.init(params);
+
+    outputChannel.level = 0.3;
   }
     
   createPatch {
