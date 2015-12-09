@@ -33,6 +33,9 @@ RotaryEncoder knobs[3];
 
 TransmitButton tbutton;
 
+String inputString = "";
+boolean stringComplete = false;
+
 
 unsigned int i;
 
@@ -59,6 +62,7 @@ void setup()
   tbutton.ledPin(11);
   tbutton.switchPin(31);
 
+  inputString.reserve(200);
 
 
 }
@@ -74,6 +78,17 @@ void loop()
   knobs[2].tick();
 
   tbutton.tick();
+
+  serialEvent();
+
+  if (stringComplete) {
+    // handle turning on and off the transmit button LED (TL0, TL1)
+    if (inputString[0] == 'T' && inputString[1] == 'L') {
+      tbutton.ledIsOn(atoi(&inputString[2]));
+    }
+    inputString = "";
+    stringComplete = false;
+  }
 
   // remember that the switch is active low 
   /*if (bit_is_clear(TRINKET_PINx, PIN_ENCODER_SWITCH)) */
@@ -94,4 +109,18 @@ void loop()
   /*}*/
 
   /*TrinketHidCombo.poll(); // check if USB needs anything done, do every 10 ms or so*/
+}
+
+void serialEvent() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag
+    // so the main loop can do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
 }
