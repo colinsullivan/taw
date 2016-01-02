@@ -42,8 +42,9 @@ class TAWServer {
     this.oscClient = new osc.Client("127.0.0.1", 3333);
 
     const logger = store => next => action => {
+      let now = new Date();
       //console.group(action.type)
-      console.info('dispatching', action)
+      console.info(`${now.toString()}: [TAW] dispatching`, action)
       let result = next(action)
       //console.log('next state', JSON.stringify(store.getState()))
       //console.groupEnd(action.type)
@@ -59,7 +60,7 @@ class TAWServer {
 
     let createStoreWithMiddleware = applyMiddleware(
       //forwardToSC,
-      //logger
+      logger
     )(createStore);
 
 

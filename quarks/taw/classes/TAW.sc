@@ -40,7 +40,7 @@ TawController {
       outbus: 0
     );
 
-    outputChannel.level = 0.25;
+    outputChannel.level = 0.6;
 
     //  create the buffer manager that will load the samples we need for this
     //  patch.
