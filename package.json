@@ -8,7 +8,8 @@
     "build": "babel src --out-dir lib",
     "dev_build": "babel src --watch --out-dir lib --source-maps",
     "serialportlist": "serialportlist",
-    "push_sounds_to_tawpi": "rsync -rvt ./sounds/ tawpi:projects/taw/sounds"
+    "push_sounds_to_tawpi": "rsync -rvt ./sounds/ tawpi:projects/taw/sounds",
+    "build_docs": "plantuml -v -tsvg docs/*.puml"
   },
   "author": "Colin Sullivan <colin@colin-sullivan.net>",
   "license": "ISC",
