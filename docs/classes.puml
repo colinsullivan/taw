@@ -1,0 +1,84 @@
+
+@startuml
+
+skinparam backgroundColor transparent
+skinparam defaultFontName Monaco
+hide circle
+skinparam class {
+  backgroundColor Azure
+  borderColor DarkGrey
+  arrowColor Black
+  fontColor Black
+}
+
+class TAWServer {
+  Top-level TAW controller.
+  ..
+  scController
+  lightController
+  inputController
+  store
+}
+
+class LightController {
+
+  Socket connection to Fadecandy.
+  Translates sequence state to Fadecandy lighting state.
+  
+}
+TAWServer *-- LightController
+
+class InputController {
+  Socket connection to Arduino.
+  Translates input to state changes.
+  ..
+  + handleKnobMessage(data)
+  + handleButtonMessage(data)
+}
+TAWServer *-- InputController
+
+class State {
+  bufferList[] (Just buffer names)
+  sounds{}
+  sequencers{}
+  bool supercolliderIsReady
+  bool supercolliderInitializationStarted
+  float tempo
+  bool lightingInitializationStarted
+  bool lightingIsReady
+  knobs{}
+  session{}
+}
+TAWServer *-- State
+
+class SoundState {
+  name
+  playingState
+  bufName
+  delay
+}
+State *-- SoundState
+
+class SequencerState {
+  name
+  transport{}
+    int beat
+  meter{}
+    int numBeats
+    int beatDur
+  playingState
+}
+State *-- SequencerState
+
+class KnobsState {
+  position
+}
+State *-- KnobsState
+
+class SessionState {
+  Enum stage
+  Moment initTime
+}
+State *-- SessionState
+
+@enduml
