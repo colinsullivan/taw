@@ -77,6 +77,10 @@ function bufferList (state = initialBufs, action) {
   return state;
 }
 
+/**
+ * TODO: These are really one shot "events", which could be generative modules
+ * or just playback buffers as they are currently.
+ **/
 function sounds (state = initialSounds, action) {
   switch (action.type) {
     case actionTypes.TRANSMIT_STARTED:
@@ -95,6 +99,8 @@ function sounds (state = initialSounds, action) {
     case actionTypes.SOUND_STOP_QUEUED:
       state[action.name].playingState = PLAYING_STATES.STOP_QUEUED;
 
+      // TODO: think about what is actually happening here, the oneshots are
+      // triggering other sounds.  This should be part of the session flow?
       if (action.name == "transmitting") {
         // queue response with delay
         state.response.playingState = PLAYING_STATES.QUEUED;
