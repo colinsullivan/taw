@@ -1,15 +1,7 @@
 
 @startuml
 
-skinparam backgroundColor transparent
-skinparam defaultFontName Monaco
-hide circle
-skinparam class {
-  backgroundColor Azure
-  borderColor DarkGrey
-  arrowColor Black
-  fontColor Black
-}
+!include styles.puml
 
 class TAWServer {
   Top-level TAW controller.

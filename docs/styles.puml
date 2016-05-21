@@ -1,0 +1,15 @@
+skinparam backgroundColor transparent
+skinparam defaultFontName Monaco
+hide circle
+skinparam class {
+  backgroundColor Azure
+  borderColor DarkGrey
+  arrowColor Black
+  fontColor Black
+}
+skinparam state {
+  backgroundColor Azure
+  borderColor DarkGrey
+  arrowColor Black
+  fontColor Black
+}

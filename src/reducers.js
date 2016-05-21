@@ -225,6 +225,9 @@ let defaultKnobs = {
   },
   "B": {
     position: 0
+  },
+  "C": {
+    position: 0
   }
 };
 function knobs (state = defaultKnobs, action) {
