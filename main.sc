@@ -5,6 +5,7 @@
   s.doWhenBooted({
     TawController.getInstance();
   });
-  
+
+  API.mountDuplexOSC;
   s.boot();
 }.value());

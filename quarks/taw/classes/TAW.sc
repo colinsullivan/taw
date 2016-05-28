@@ -29,6 +29,9 @@ TawController {
     var now = thisThread.clock.seconds;
     var tempo = 150.0/60.0;
     var tickClock;
+    
+    // TODO: This only works when sclang is launched from a terminal, not from
+    // the GUI.
     var projDir = File.getcwd();
 
     "TawController.init".postln();

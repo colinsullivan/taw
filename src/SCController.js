@@ -14,7 +14,7 @@ class SCController {
       stdin: false
     }).then((options) => {
 
-      var api = new supercolliderjs.scapi(
+      var api = new supercolliderjs.scapi.SCAPI(
         options.host,
         options.langPort
       );
@@ -27,13 +27,13 @@ class SCController {
         console.log(err);
       });
 
-      console.log("connecting...");
+      console.log("sc api connecting...");
       api.connect();
 
-      console.log("connected.");
 
       this.call("taw.init", [this.store.getState()]).then((resp) => {
         if (resp.result.status === "ok") {
+          console.log("sc api connected.");
           this.store.dispatch(actions.supercolliderReady());
         }
       });
