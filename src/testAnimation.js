@@ -17,6 +17,11 @@ animation.play();
 // stop after 2 seconds
 setTimeout(() => {
   animation.stop();
-}, 2000);
+  
+  // start again after 2 seconds
+  setTimeout(() => {
+    animation.play();
+  }, 2000);
 
+}, 2000);
 
