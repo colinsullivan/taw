@@ -72,9 +72,9 @@ class SCController {
 
   // TODO: this should be in reducers
   handleKnobChanged (knobName, knobState) {
-    console.log(`handleKnobChanged: ${knobName}`);
+    //console.log(`handleKnobChanged: ${knobName}`);
     var sequencerName = config.KNOB_NAME_TO_SEQUENCE_NAME[knobName];
-    var possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16, 24, 32];
+    var possibleMeters = [1, 2, 3, 4, 5, 6, 8];
     var knobMin = -50.0;
     var knobMax = 50.0;
     var knobRangeSize = (knobMax - knobMin);
