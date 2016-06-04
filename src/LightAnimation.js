@@ -7,6 +7,7 @@ class LightAnimation {
     for (i = 0; i < this.numPixels; i++) {
       this.pixelColors.push([0.0, 0.0, 0.0]);
     }
+    this.startTime = (new Date()).getTime();
 
   }
 
