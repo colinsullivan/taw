@@ -10,7 +10,8 @@
     "dev_build": "babel src --watch --out-dir lib --source-maps",
     "serialportlist": "serialportlist",
     "push_sounds_to_tawpi": "rsync -rvt ./sounds/ tawpi:projects/taw/sounds",
-    "build_docs": "plantuml -v -tsvg docs/*.puml"
+    "build_docs": "plantuml -v -tsvg docs/*.puml",
+    "test_animation": "babel-node src/testAnimation.js"
   },
   "author": "Colin Sullivan <colin@colin-sullivan.net>",
   "license": "ISC",
