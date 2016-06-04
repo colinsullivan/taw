@@ -1,5 +1,14 @@
 import AnimationTester from "./AnimationTester.js";
 
-var tester = new AnimationTester();
+import QueuedSequencerAnimation from "./QueuedSequencerAnimation.js";
+
+var animation = new QueuedSequencerAnimation();
+var tester = new AnimationTester({
+  animation: animation
+});
+
+setInterval(() => {
+  tester.render();
+}, 10);
 
 
