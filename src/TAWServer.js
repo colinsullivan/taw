@@ -4,7 +4,6 @@ import osc from "node-osc"
 
 import rootReducer from "./reducers.js"
 import * as actions from "./actions.js"
-//import TAWScheduler from "./TAWScheduler.js"
 import SCController from "./SCController.js"
 import LightController from "./LightController.js"
 import InputController from "./InputController.js"
@@ -98,8 +97,6 @@ class TAWServer {
 
     });
 
-    //this.scheduler = new TAWScheduler(this.store);
-    
 
     this.scController = new SCController(this.store);
     this.lightController = new LightController(this.store);
