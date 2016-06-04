@@ -124,11 +124,18 @@ TawSequencer {
     //"play".postln();
 
     clock.play({
-      store.dispatch((
-        type: "SEQUENCER_TRANSPORT_UPDATED",
-        beat: (currentState.transport.beat + 1) % currentState.meter.numBeats,
-        name: name
-      ));
+
+      // make sure we haven't stopped already (this may have been scheduled
+      // before sequencer was actually stopped)
+      if (currentState.playingState != "STOPPED", {
+        store.dispatch((
+          type: "SEQUENCER_TRANSPORT_UPDATED",
+          beat: (currentState.transport.beat + 1) % currentState.meter.numBeats,
+          name: name
+        ));
+      });
+
+      // if we're playing, schedule next.
       if (currentState.playingState == "PLAYING", {
         currentState.meter.beatDur;
       }, {
