@@ -11,4 +11,12 @@ setInterval(() => {
   tester.render();
 }, 10);
 
+// play animation
+animation.play();
+
+// stop after 2 seconds
+setTimeout(() => {
+  animation.stop();
+}, 2000);
+
 
