@@ -1,20 +1,20 @@
 TawController {
   classvar <>instance;
 
-  var <>clock,
-    <>tickClock,
-    <>playCallback,
+  //var <>clock,
+    //<>tickClock,
+    //<>playCallback,
     // MixerChannel instance
-    outputChannel,
-    <>patch,
-    <>state,
+  var outputChannel,
+    //<>patch,
+    //<>state,
     <>store,
     <>sequencers,
     sounds,
     //dispatchListener,
     sequencerNameToClass,
-    bufManager,
-    ambientSoundscape;
+    bufManager;
+    //ambientSoundscape;
 
 
   *new {
@@ -157,41 +157,41 @@ TawController {
     //this.clock.play(this.playCallback);
   }
 
-  handlePlayCallback {
-    arg beats, time, clock;
+  //handlePlayCallback {
+    //arg beats, time, clock;
 
-    "TawController.handlePlayCallback".postln();
+    //"TawController.handlePlayCallback".postln();
     
-    //this.sequencers[0].scheduleNextBeat(clock);
+    ////this.sequencers[0].scheduleNextBeat(clock);
 
-    [beats, time, clock].postln();
+    //[beats, time, clock].postln();
 
-    ^1.0;
-  }
+    //^1.0;
+  //}
 
-  play {
-    arg task;
-    var eventBeat, eventTime;
-    "TawController.play".postln();
+  //play {
+    //arg task;
+    //var eventBeat, eventTime;
+    //"TawController.play".postln();
 
-    eventBeat = this.clock.nextTimeOnGrid(1, 0);
-    "eventBeat:".postln;
-    eventBeat.postln;
+    //eventBeat = this.clock.nextTimeOnGrid(1, 0);
+    //"eventBeat:".postln;
+    //eventBeat.postln;
 
-    this.clock.play(this.playCallback);
-    this.clock.play(task);
-  }
+    //this.clock.play(this.playCallback);
+    //this.clock.play(task);
+  //}
 
-  onNextTick {
-    arg task;
-    this.tickClock.sched(1, task);
-  }
+  //onNextTick {
+    //arg task;
+    //this.tickClock.sched(1, task);
+  //}
 
-  scheduleAction {
-    arg action, quant, task;
-    // TODO: use quant to select clock
-    this.clock.playNextBar(task);
-  }
+  //scheduleAction {
+    //arg action, quant, task;
+    //// TODO: use quant to select clock
+    //this.clock.playNextBar(task);
+  //}
 
   *getInstance {
 
