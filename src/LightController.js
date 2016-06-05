@@ -101,77 +101,9 @@ class LightController {
     this.socket.connect(7890);
   }
 
-  //handleSequenceChanged (seqName, seqState) {
-    //var numBeats = seqState.meter.numBeats;
-    ////console.log("numBeats");
-    ////console.log(numBeats);
-    //var pixels = this.sequencePixels[seqName];
-    ////console.log("strip");
-    ////console.log(strip);
-    //var i;
-    //// number of LEDs per beat (if less than one, there are more beats than
-    //// LEDS in the strip)
-    //var ledsPerBeat = 1.0 * pixels.length / numBeats;
-    //var color;
-
-    ////console.log(`handleSequenceChanged(${seqName})`);
-
-    //var ledColors = [];
-    //for (i = 0; i < pixels.length; i++) {
-      //ledColors.push([0.72, 0.2, 0.2]);
-    //}
-
-    //for (i = 0; i < numBeats; i++) {
-      //let ledIndex = Math.floor(ledsPerBeat * i) % pixels.length;
-      //ledIndex = pixels.length - 1 - ledIndex; // clockwise
-      //ledColors[ledIndex][1] = 0.5;
-      //ledColors[ledIndex][2] = 0.5;
-
-      //if (i === seqState.transport.beat) {
-        //ledColors[ledIndex][1] = 0.5;
-        //ledColors[ledIndex][2] = 1.0;
-      //}
-
-    //}
-
-    //for (i = 0; i < pixels.length; i++) {
-      //color = ColorUtils.hsvToRGB(ledColors[i]);
-      ////pixels.setPixel(i, 255, 0, 0);
-      //pixels.setPixel.apply(pixels, [i].concat(color));
-    //}
-  //}
-
-  //handleStateChange() {
-    //var state = this.store.getState();
-
-    ////console.log("handleStateChange");
-
-    //// for each sequence
-    //config.SEQUENCE_NAMES.forEach((seqName) => {
-      //let seqState = state.sequencers[seqName];
-
-      //// if transport or meter have changed
-      //if (
-        //seqState.meter !== this.sequenceMeter[seqName]
-      //|| seqState.transport !== this.sequenceTransport[seqName]
-      //) {
-        //this.sequenceMeter[seqName] = seqState.meter;
-        //this.sequenceTransport[seqName] = seqState.transport;
-
-        //// re-render lights for that sequence
-        //this.handleSequenceChanged(seqName, seqState);
-      //}
-    //});
-  //}
 
   render () {
     var t = (new Date()).getTime();
-    //console.log("render");
-
-    //var i;
-    //for (i = 0; i < this.fadecandyPixels.length; i++) {
-      //this.fadecandyPixels.setPixel(i, 255, 0, 0);
-    //}
 
     // for each sequence
     config.SEQUENCE_NAMES.forEach((sequenceName) => {
@@ -190,6 +122,8 @@ class LightController {
         pixels.setPixel.apply(pixels, [i].concat(color));
       }
     });
+
+    // write all pixels to the fadecandy
     this.opcStream.writePixels(0, this.fadecandyPixels.buffer);
   }
 }
