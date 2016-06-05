@@ -126,6 +126,7 @@ function sequencers (state = initialSequencers, action, session) {
           session.stage == SESSION_STAGES.STARTED
           && seq.playingState == PLAYING_STATES.STOPPED
       ) {
+        console.log("queueing sequencers");
         seq.playingState = PLAYING_STATES.QUEUED;
       }
 

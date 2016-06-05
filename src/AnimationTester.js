@@ -42,7 +42,7 @@ class AnimationTester {
     this.animation.render(t);
 
     for (i = 0; i < pixels.length; i++) {
-      color = ColorUtils.hsvToRGB(this.animation.buffer.colors[i]);
+      color = ColorUtils.hsvToRGB(this.animation.buffer.getPixel(i));
       //pixels.setPixel(i, 255, 0, 0);
       pixels.setPixel.apply(pixels, [i].concat(color));
     }

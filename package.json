@@ -34,5 +34,28 @@
     "presets": [
       "es2015"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^2.11.1"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "impliedStrict": true
+      }
+    },
+    "env": {
+      "browser": false,
+      "node": true,
+      "es6": true
+    },
+    "rules": {
+      "no-console": false,
+      "no-use-before-define": "error",
+      "block-scoped-var": "error"
+    }
   }
 }

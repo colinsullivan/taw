@@ -21,18 +21,35 @@ class PixelBuffer {
     this.length = params.length;
 
     // initialize pixel values (HSV)
-    this.colors = [];
+    this.pixels = [];
     for (i = 0; i < this.length; i++) {
-      this.colors.push([0.0, 0.0, 0.0]);
+      this.pixels.push([0.0, 0.0, 0.0]);
     }
+  }
+
+  setPixel(i, h, s, v) {
+
+    // second parameter can be object with `h`, `s`, `v` props.
+    if (typeof(h) == "object") {
+      let hsv = h;
+      h = hsv.h || this.pixels[i][0];
+      s = hsv.s || this.pixels[i][1];
+      v = hsv.v || this.pixels[i][2];
+    }
+
+    this.pixels[i][0] = h;
+    this.pixels[i][1] = s;
+    this.pixels[i][2] = v;
+  }
+
+  getPixel(i) {
+    return this.pixels[i];
   }
 
   allOff() {
     var i;
-    for (i = 0; i < this.colors.length; i++) {
-      this.colors[i][0] = 0.0;
-      this.colors[i][1] = 0.0;
-      this.colors[i][2] = 0.0;
+    for (i = 0; i < this.pixels.length; i++) {
+      this.setPixel(i, 0.0, 0.0, 0.0);
     }
   }
 };
