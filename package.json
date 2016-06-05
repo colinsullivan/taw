@@ -6,12 +6,12 @@
   "scripts": {
     "start": "node build/main.js",
     "dev_start": "babel-node src/main.js",
-    "build": "babel src --out-dir lib",
-    "dev_build": "babel src --watch --out-dir lib --source-maps",
+    "build": "babel src --out-dir build",
+    "watch": "babel src --watch --out-dir build --source-maps",
     "serialportlist": "serialportlist",
     "push_sounds_to_tawpi": "rsync -rvt ./sounds/ tawpi:projects/taw/sounds",
     "build_docs": "plantuml -v -tsvg docs/*.puml",
-    "test_animation": "babel-node src/testAnimation.js"
+    "test_animation": "node build/testAnimation.js"
   },
   "author": "Colin Sullivan <colin@colin-sullivan.net>",
   "license": "ISC",

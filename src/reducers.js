@@ -7,7 +7,7 @@ import config from "./config.js"
 
 
 
-var PLAYING_STATES = {
+export var PLAYING_STATES = {
   STOPPED: "STOPPED",
   QUEUED: "QUEUED",
   PLAYING: "PLAYING",

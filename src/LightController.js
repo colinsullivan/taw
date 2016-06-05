@@ -1,6 +1,12 @@
-
-//var pixel = require("node-pixel");
-//var five = require("johnny-five");
+/**
+ *  @file       LightController.js
+ *
+ *
+ *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
+ *
+ *  @copyright  2016 Colin Sullivan
+ *  @license    Licensed under the GPLv3 license.
+ **/
 
 import net from "net"
 import createOPCStream from "opc"
@@ -10,6 +16,13 @@ import * as actions from "./actions.js"
 import config from "./config.js"
 import ColorUtils from "./ColorUtils.js"
 
+/**
+ *  @class        LightController
+ *
+ *  @classdesc    This class takes care of mapping the lighting renders to
+ *  the physical lights, communicating this out to the serial port.
+ *
+ */
 class LightController {
   constructor (store) {
     this.store = store;
@@ -116,7 +129,7 @@ class LightController {
       }
 
     }
-  
+
     for (i = 0; i < pixels.length; i++) {
       color = ColorUtils.hsvToRGB(ledColors[i]);
       //pixels.setPixel(i, 255, 0, 0);

@@ -1,20 +1,33 @@
+/**
+ *  @file       LightAnimation.js
+ *
+ *
+ *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
+ *
+ *  @copyright  2016 Colin Sullivan
+ *  @license    Licensed under the GPLv3 license.
+ **/
+
+import PixelBuffer from "./PixelBuffer";
+
 export const PLAYING_STATES = {
   STOPPED: 0,
   PLAYING: 1
 };
 
+
+/**
+ *  @class        LightAnimation
+ *
+ *  @classdesc    A manipulation of pixels over time.
+ **/
 class LightAnimation {
   constructor(params) {
-    var i;
 
-    // number of pixels in this light animation is defined in subclasses.
-    this.numPixels = this.getNumPixels();
-
-    // initialize pixel values (HSV)
-    this.pixelColors = [];
-    for (i = 0; i < this.numPixels; i++) {
-      this.pixelColors.push([0.0, 0.0, 0.0]);
-    }
+    this.buffer = new PixelBuffer({
+      // number of pixels in this light animation is defined in subclasses.
+      length: this.getNumPixels()
+    });
 
     // this animation hasn't started yet
     this.startTime = null;
@@ -32,7 +45,9 @@ class LightAnimation {
     this.playingState = PLAYING_STATES.STOPPED;
   }
 
-  render() {
+  render(t) {
+
+    return;
     
   }
 
