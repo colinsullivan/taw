@@ -109,15 +109,17 @@ class LightController {
     config.SEQUENCE_NAMES.forEach((sequenceName) => {
       // `KnobLightsRenderer` for this knob
       var knobLightRenderer = this.knobLightRenderers[sequenceName],
+        knobLightRendererOutput,
         // hardware pixels
         pixels = this.sequencePixels[sequenceName],
         color,
         i;
 
       knobLightRenderer.render(t);
+      knobLightRendererOutput = knobLightRenderer.getOutputBuffer();
 
-      for (i = 0; i < knobLightRenderer.buffer.length; i++) {
-        color = ColorUtils.hsvToRGB(knobLightRenderer.buffer.getPixel(i));
+      for (i = 0; i < knobLightRendererOutput.length; i++) {
+        color = ColorUtils.hsvToRGB(knobLightRendererOutput.getPixel(i));
         //pixels.setPixel(i, 255, 0, 0);
         pixels.setPixel.apply(pixels, [i].concat(color));
       }

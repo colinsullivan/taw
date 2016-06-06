@@ -46,7 +46,7 @@ class KnobLightsRenderer {
     // the animation that will happen as the sequencer is queued
     this.queuedAnimation = new QueuedSequencerAnimation();
 
-    this.buffer = this.playbackAnimation.buffer;
+    this.currentAnimation = this.playbackAnimation;
 
     this.store.subscribe(() => {this.handleStateChange()});
     
@@ -63,10 +63,10 @@ class KnobLightsRenderer {
       // if queued, start the queued animation and switch to it
       if (sequencerState.playingState == PLAYING_STATES.QUEUED) {
         this.queuedAnimation.play();
-        this.buffer = this.queuedAnimation.buffer;
+        this.currentAnimation = this.queuedAnimation;
       } else {
         // if playing, start the playback renderer and switch to it
-        this.buffer = this.playbackAnimation.buffer;
+        this.currentAnimation = this.playbackAnimation;
       }
     }
 
@@ -79,6 +79,10 @@ class KnobLightsRenderer {
   render(t) {
     this.playbackAnimation.render(t);
     this.queuedAnimation.render(t);
+  }
+
+  getOutputBuffer() {
+    return this.currentAnimation.buffer;
   }
 };
 

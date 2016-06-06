@@ -20,6 +20,14 @@ const INPUT_TYPES = {
   "BUTTON": "B"
 };
 
+/**
+ *  @class        InputController
+ *
+ *  @classdesc    Takes input from knobs, connected to the Arduino with a 
+ *  serial connection over USB.  Translates input messages to state changes.
+ *  Arduino is running this script: `controls/controls.ino`.
+ **/
+
 class InputController {
   constructor (store) {
     this.store = store;

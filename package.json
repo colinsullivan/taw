@@ -10,7 +10,8 @@
     "watch": "babel src --watch --out-dir build --source-maps",
     "serialportlist": "serialportlist",
     "push_sounds_to_tawpi": "rsync -rvt ./sounds/ tawpi:projects/taw/sounds",
-    "build_docs": "plantuml -v -tsvg docs/*.puml",
+    "build_docs": "rm -f docs/*.svg && plantuml -tsvg docs/*.puml",
+    "push_docs": "rsync -rvt docs/ awakeningio@awakening.io:taw.awakening.io/docs/",
     "test_animation": "node build/testAnimation.js"
   },
   "author": "Colin Sullivan <colin@colin-sullivan.net>",

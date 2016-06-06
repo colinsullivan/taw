@@ -10,10 +10,10 @@
 
 import PixelBuffer from "./PixelBuffer";
 
-export const PLAYING_STATES = {
-  STOPPED: 0,
-  PLAYING: 1
-};
+//export const PLAYING_STATES = {
+  //STOPPED: 0,
+  //PLAYING: 1
+//};
 
 
 /**
@@ -33,16 +33,16 @@ class LightAnimation {
     this.startTime = null;
 
     // it is initially stopped
-    this.playingState = PLAYING_STATES.STOPPED;
+    //this.playingState = PLAYING_STATES.STOPPED;
   }
 
   play() {
     this.startTime = (new Date()).getTime();
-    this.playingState = PLAYING_STATES.PLAYING;
+    //this.playingState = PLAYING_STATES.PLAYING;
   }
 
   stop() {
-    this.playingState = PLAYING_STATES.STOPPED;
+    //this.playingState = PLAYING_STATES.STOPPED;
   }
 
   render(t) {
@@ -50,7 +50,6 @@ class LightAnimation {
     return;
     
   }
-
 };
 
 export default LightAnimation;
