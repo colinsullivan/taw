@@ -1,11 +1,13 @@
-
+"main.sc".postln();
 ({
 
   //s.options.blockSize = 8;
-  s.doWhenBooted({
+  "Setting up".postln();
+  {
+    5.0.wait();
+    "starting taw".postln();
     TawController.getInstance();
-  });
+  }.fork();
 
-  API.mountDuplexOSC;
   s.boot();
 }.value());
