@@ -20,7 +20,7 @@ class QueuedSequencerAnimation extends LightAnimation {
 
     x = 0.5 * Math.sin((t - this.startTime) * 0.01) + 0.5;
     for (i = 0; i < this.buffer.length; i++) {
-      this.buffer.setPixel(i, 0.4, 0.8, 0.4 + 0.4*x);
+      this.buffer.setPixel(i, 0.4, 0.7, 0.2 + 0.3*x);
     }
   }
 
