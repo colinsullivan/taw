@@ -1,0 +1,10 @@
+(
+  name:    "taw",
+  path:    "taw",
+  summary:    "The Transdimensional Audio Workstation allows one to make music with themselves in another dimension.",
+  author:    "Colin Sullivan",
+  version:    0.1,
+//  helpdoc:    "",
+  url:      "https://taw.awakening.io",
+  dependencies:  #["https://github.com/colinsullivan/cs-supercollider-lib.git", "API"]
+)
