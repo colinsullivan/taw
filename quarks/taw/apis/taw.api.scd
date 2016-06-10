@@ -9,7 +9,7 @@
   setState: {
     arg reply, state;
     var tawController = TawController.getInstance();
-    "taw.api.setState".postln;
+    //"taw.api.setState".postln;
     tawController.store.setState(state);
     reply.value();
   }

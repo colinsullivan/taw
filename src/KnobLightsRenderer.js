@@ -22,7 +22,7 @@ import {PLAYING_STATES} from "./reducers.js";
 class KnobLightsRenderer {
   constructor(params) {
 
-    console.log("[KnobLightsRenderer] constructor");
+    //console.log("[KnobLightsRenderer] constructor");
 
     this.store = params.store;
 
@@ -56,7 +56,7 @@ class KnobLightsRenderer {
     var newState = this.store.getState();
     var sequencerState = newState.sequencers[this.sequencerName];
 
-    console.log("[KnobLightsRenderer] handleStateChange");
+    //console.log("[KnobLightsRenderer] handleStateChange");
 
     // if sequencer playingState has changed, need to switch view
     if (sequencerState.playingState !== this.lastState.playingState) {

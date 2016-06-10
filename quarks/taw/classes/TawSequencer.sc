@@ -93,7 +93,7 @@ TawSequencer {
   //}
 
   queue {
-    "TawSequencer.queue".postln();
+    //"TawSequencer.queue".postln();
     patch.playToMixer(
       outputChannel,
       atTime: clock.beats2secs(clock.nextBar) - clock.seconds
@@ -155,10 +155,10 @@ TawSequencer {
     // if playing state has changed
     if (currentState.playingState != newState.playingState, {
 
-      (
+      /*(
         "[TAWSequencer (" + name + ")]: Playing state has changed from "
         + currentState.playingState + "->" + newState.playingState
-      ).postln();
+      ).postln();*/
 
       switch(newState.playingState)
         {"QUEUED"} {
@@ -176,7 +176,7 @@ TawSequencer {
     if (
       newState.transport.beat != currentState.transport.beat
       && newState.playingState == "PLAYING", {
-      ("[TAWSequencer (" + name + ")]: Transport has changed.").postln();
+      //("[TAWSequencer (" + name + ")]: Transport has changed.").postln();
       // schedule next beat
       this.scheduleNextBeat();
     });

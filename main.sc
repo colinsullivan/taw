@@ -9,5 +9,8 @@
     TawController.getInstance();
   }.fork();
 
-  s.boot();
+  s.options.sampleRate = 32000;
+  s.options.hardwareBufferSize = 1024;
+  s.options.memSize = 8192 * 2;
+  s.reboot();
 }.value());
