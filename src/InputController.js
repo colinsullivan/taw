@@ -12,8 +12,8 @@ import serialport from "serialport"
 import _ from "underscore"
 
 import * as actions from "./actions.js"
-
 import getOrError from "./EnvUtils.js"
+import KnobActivityController from "./KnobActivityController.js"
 
 const INPUT_TYPES = {
   "KNOB": "R",
@@ -23,7 +23,7 @@ const INPUT_TYPES = {
 /**
  *  @class        InputController
  *
- *  @classdesc    Takes input from knobs, connected to the Arduino with a 
+ *  @classdesc    Takes input from knobs, connected to the Arduino with a
  *  serial connection over USB.  Translates input messages to state changes.
  *  Arduino is running this script: `controls/controls.ino`.
  **/
@@ -32,6 +32,7 @@ class InputController {
   constructor (store) {
     this.store = store;
 
+    // set up serial port connection to Arduino
     this.arduinoPort = new serialport.SerialPort(
       getOrError("INPUT_ARDUINO_SERIALPORT"),
       {
@@ -43,35 +44,50 @@ class InputController {
       this.handleIncomingData(data);
     });
 
-    this.throttledDeviceHandlers = { 
+    // these handlers will be throttled so they can only be called once every
+    // x milliseconds
+    this.throttledDeviceHandlers = {
     };
 
+    // cache some state so we can determine if it changes
     this.currentSessionStage = store.getState().session.stage;
+
     //this.currentTransmitButtonState = store.getState().transmitButton;
+
+    // when state changes
     store.subscribe(() => {
+
       let newSessionStage = store.getState().session.stage;
       //let newTransmitButtonState = store.getState().transmitButton;
-      // if session stage has changed
-      if (
-        this.currentSessionStage == actions.SESSION_STAGES.INIT
-      && newSessionStage == actions.SESSION_STAGES.STARTED
-      ) {
-        this.handleSessionStarted();
-      } else if (
-        this.currentSessionStage == actions.SESSION_STAGES.STARTED
-      && newSessionStage == actions.SESSION_STAGES.TRANSMIT_STARTED
-      ) {
 
-        this.handleTransmitStarted();
-        
+      // if session stage has changed
+      if (this.currentSessionStage !== newSessionStage) {
+        if (newSessionStage == actions.SESSION_STAGES.STARTED) {
+          this.handleSessionStarted();
+        } else if (newSessionStage == actions.SESSION_STAGES.TRANSMIT_STARTED) {
+          this.handleTransmitStarted();
+        }
       }
-      //this.currentState = newState;
+
       this.currentSessionStage = newSessionStage;
       //this.currentTransmitButtonState = newTransmitButtonState;
     });
 
+    // set up controllers to determine when knobs become inactive
+    this.knobActivityControllers = {};
+    var knobs = this.store.getState().knobs;
+    for (var knobId in knobs) {
+      this.knobActivityControllers[knobId] = new KnobActivityController(
+        this.store,
+        knobId
+      );
+    }
+
   }
 
+  // when session starts, send message to Arduino to turn on button light.
+  // TODO: This could be in lighting controller
+  // TODO: This should be a separate session stage (when ready to transmit)
   handleSessionStarted () {
     setTimeout(() => {
       //this.store.dispatch({
@@ -83,6 +99,10 @@ class InputController {
     }, 5000);
   }
 
+  /**
+   *  When transmit starts, turn off light.
+   *  TOOD: This could also be in lighting controller.
+   **/
   handleTransmitStarted () {
     this.arduinoPort.write("TL0\n");
     //this.store.dispatch({
@@ -90,6 +110,9 @@ class InputController {
     //});
   }
 
+  /**
+   *  When knobs are turned, handle them here.
+   **/
   handleKnobMessage (data) {
     var knobId = data[1];
     var knobPos = Number(data.slice(2));
@@ -98,9 +121,16 @@ class InputController {
     //console.log("knobPos");
     //console.log(knobPos);
     if (!this.throttledDeviceHandlers[knobId]) {
+
       this.throttledDeviceHandlers[knobId] = _.debounce((knobId, knobPos) => {
+
+        var currentState = this.store.getState().knobs[knobId];
+
+        // and the knob's position was changed
         this.store.dispatch(actions.knobPosChanged(knobId, knobPos));
-      }, 150);
+
+      }, 25);
+
     }
 
 
@@ -148,7 +178,7 @@ class InputController {
       case INPUT_TYPES.BUTTON:
         this.handleButtonMessage(data);
         break;
-      
+
       default:
         console.warn(`Don't know how to handle input type '${inputType}'.  Ignoring message.`);
     }

@@ -18,7 +18,8 @@ export const actionTypes = {
   SOUND_STOP_QUEUED: "SOUND_STOP_QUEUED",
   SOUND_STOPPED: "SOUND_STOPPED",
   TRANSMIT_BUTTON_ACTIVATED: "TRANSMIT_BUTTON_ACTIVATED",
-  TRANSMIT_BUTTON_DEACTIVATED: "TRANSMIT_BUTTON_DEACTIVATED"
+  TRANSMIT_BUTTON_DEACTIVATED: "TRANSMIT_BUTTON_DEACTIVATED",
+  KNOB_INACTIVE: "KNOB_INACTIVE"
 };
 
 export const SESSION_STAGES = {
@@ -94,5 +95,15 @@ export function knobPosChanged (id, position) {
     type: actionTypes.KNOB_POS_CHANGED,
     id: id,
     position: position
+  };
+}
+
+/**
+ *  When a knob becomes inactive (i.e. person just stopped twiddling)
+ **/
+export function knobInactive (id) {
+  return {
+    type: actionTypes.KNOB_INACTIVE,
+    id: id
   };
 }

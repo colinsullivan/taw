@@ -119,7 +119,7 @@ function sounds (state = initialSounds, action) {
 }
 
 
-function sequencers (state = initialSequencers, action, session) {
+function sequencers (state = initialSequencers, action, session, knobs) {
   var seq;
   switch (action.type) {
     // if a knob changed
@@ -137,50 +137,23 @@ function sequencers (state = initialSequencers, action, session) {
         seq.playingState = PLAYING_STATES.QUEUED;
       }
 
-      // determine what meter should be
-      var possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16];
-      var knobMin = -50.0;
-      var knobMax = 50.0;
-      var knobRangeSize = (knobMax - knobMin);
-      var knobRangeChunkSize = knobRangeSize / (possibleMeters.length - 1);
-
-      var selectedMeterIndex = Math.floor(
-        (action.position - knobMin) / knobRangeChunkSize
-      );
-
-      var selectedMeter = possibleMeters[selectedMeterIndex];
-
-      // if meter should be different now
-      if (selectedMeter != seq.meter.numBeats) {
-        seq.queuedMeter = {
-          numBeats: selectedMeter,
-          beatDur: 4.0 / selectedMeter
-        }
-      }
 
       return state;
-    /*case actionTypes.SEQUENCER_STEP_SCHEDULED:
-      // copy sequencer
-      let seq = Object.assign({}, state[action.name]);
-      seq.updateScheduled = true;
-      // update sequencer
-      state[action.name] = seq;
-      return state;*/
-    /*case actionTypes.SEQUENCER_STEPPED:
-      let seq = state[action.name];
-      let currentBeat = Object.assign({}, seq.currentBeat);
-      // step forward
-      currentBeat.value = (currentBeat.value + 1) % seq.quant.value;
-      seq.currentBeat = currentBeat;
+    case actionTypes.KNOB_INACTIVE:
+      // get sequencer associated with that knob
+      seq = state[config.KNOB_NAME_TO_SEQUENCE_NAME[action.id]];
+      // copy the knob's `selectedMeter` into our sequencer's `queuedMeter`,
+      // SuperCollider will actually queue the meter change.
+      seq.queuedMeter = Object.assign({}, knobs[action.id].selectedMeter);
+      return state;
 
-      return state;*/
     case actionTypes.TRANSMIT_STARTED:
       Object.keys(state).forEach(function (sequencerName) {
         let seq = state[sequencerName];
         seq.playingState = PLAYING_STATES.STOP_QUEUED;
       })
       return state;
-    
+
     case actionTypes.SEQUENCERS_QUEUED:
       Object.keys(state).forEach(function (sequencerName) {
         let seq = state[sequencerName];
@@ -198,7 +171,7 @@ function sequencers (state = initialSequencers, action, session) {
       seq.playingState = PLAYING_STATES.STOPPED;
       seq.transport.beat = 1;
       return state;
-    
+
     case actionTypes.SEQUENCER_TRANSPORT_UPDATED:
       seq = state[action.name];
       seq.transport = Object.assign({}, seq.transport);
@@ -255,24 +228,61 @@ function lightingIsReady (state = false, action) {
   }
 }
 
-let defaultKnobs = {
-  "A": {
-    position: 0
-  },
-  "B": {
-    position: 0
-  },
-  "C": {
-    position: 0
+let createKnobState = function () {
+  return {
+    // The current position of the knob from [-50.0, 50.0]
+    position: 0,
+
+    // when knob is actively being touched, this will be true
+    active: false,
+
+    // when user is selecting a meter, this will be the meter state currently
+    // selected
+    selectedMeter: false
   }
 };
+let defaultKnobs = {
+  "A": createKnobState(),
+  "B": createKnobState(),
+  "C": createKnobState()
+};
 function knobs (state = defaultKnobs, action) {
-  var knob;
+  var knob,
+    selectedMeterIndex,
+    selectedMeter;
   switch (action.type) {
     case actionTypes.KNOB_POS_CHANGED:
       knob = state[action.id]
       knob = Object.assign({}, knob);
       knob.position = action.position;
+
+      // this knob is definitely active
+      // NOTE: An entity outside the state store needs to determine when the
+      // knob has stopped being active.
+      knob.active = true;
+
+      // update selected meter
+
+      // determine what meter should be
+      selectedMeterIndex = Math.floor(
+        (action.position - config.KNOB_SPEC.MIN)
+          / config.KNOB_SPEC.METER_CHUNK_SIZE
+      );
+
+      selectedMeter = config.POSSIBLE_METERS[selectedMeterIndex];
+
+      // update currently selected meter for this knob
+      knob.selectedMeter = {
+        numBeats: selectedMeter,
+        beatDur: 4.0 / selectedMeter
+      };
+
+      state[action.id] = knob;
+      return state;
+    case actionTypes.KNOB_INACTIVE:
+      knob = state[action.id]
+      knob = Object.assign({}, knob);
+      knob.active = false;
       state[action.id] = knob;
       return state;
     default:
@@ -382,7 +392,7 @@ export default function (state = {}, action) {
   state.tempo = tempo(state.tempo, action);
   state.session = session(state.session, action);
 
-  state.sequencers = sequencers(state.sequencers, action, state.session);
+  state.sequencers = sequencers(state.sequencers, action, state.session, state.knobs);
   
   state.sounds = sounds(state.sounds, action);
   return state;
