@@ -329,10 +329,10 @@ function session (state = defaultSession, action) {
     case actionTypes.LIGHTING_READY:
       newState = createNewSession();
       break;
-    
+
     case actionTypes.KNOB_POS_CHANGED:
       if (state.stage == SESSION_STAGES.INIT) {
-      
+
         if (timeSinceStageStart < 8) {
           console.log("not starting during init cooldown period...");
         } else {
@@ -340,16 +340,16 @@ function session (state = defaultSession, action) {
           newState.stage = SESSION_STAGES.STARTED;
           newState.stageStartTime = moment();
         }
- 
+
       }
       break;
-    
+
     case actionTypes.TRANSMIT_STARTED:
       newState = Object.assign({}, state);
       newState.stage = SESSION_STAGES.TRANSMIT_STARTED;
       newState.stageStartTime = moment();
       break;
-    
+
     case actionTypes.SOUND_STOPPED:
 
       // if transmitting sound just finished
@@ -393,7 +393,7 @@ export default function (state = {}, action) {
   state.session = session(state.session, action);
 
   state.sequencers = sequencers(state.sequencers, action, state.session, state.knobs);
-  
+
   state.sounds = sounds(state.sounds, action);
   return state;
 }
