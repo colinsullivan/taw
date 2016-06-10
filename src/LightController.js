@@ -66,32 +66,34 @@ class LightController {
     this.sequenceMeter = {};
     this.sequenceTransport = {};
 
-    // create a strip for each sequence
-    this.sequencePixels = {};
-
     config.SEQUENCE_NAMES.forEach((sequenceName) => {
-      var pixelAddrs = config.SEQUENCE_NAME_TO_PIXEL_ADDRESSES[sequenceName];
-      //this.sequenceStrips[sequenceName] = new pixel.Strip({
-        //data: config.SEQUENCE_NAME_TO_LED_PIN[sequenceName],
-        //length: 16,
-        //board: board,
-        //controller: "FIRMATA"
-      //});
 
       this.sequenceMeter[sequenceName] = null;
       this.sequenceTransport[sequenceName] = null;
-      this.sequencePixels[sequenceName] = this.fadecandyPixels.slice(
+
+    });
+
+    // hardware pixels around each knob (just slices of `fadecandyPixels`
+    // buffer above)
+    this.knobLightPixels = {};
+
+    config.KNOB_NAMES.forEach((knobId) => {
+      var pixelAddrs = config.KNOB_NAME_TO_PIXEL_ADDRESSES[knobId];
+
+      // get buffer slice for each knob
+      this.knobLightPixels[knobId] = this.fadecandyPixels.slice(
         pixelAddrs[0],
         pixelAddrs[1]
       );
 
-      this.knobLightRenderers[sequenceName] = new KnobLightsRenderer({
+      // create a renderer for the lights around each knob
+      this.knobLightRenderers[knobId] = new KnobLightsRenderer({
         store: this.store,
-        sequencerName: sequenceName
+        sequencerName: config.KNOB_NAME_TO_SEQUENCE_NAME[knobId],
+        knobId: knobId
       });
+    })
 
-    });
-    
     // start the connection to fadecandy
     this.connect();
   }
@@ -105,13 +107,13 @@ class LightController {
   render () {
     var t = (new Date()).getTime();
 
-    // for each sequence
-    config.SEQUENCE_NAMES.forEach((sequenceName) => {
+    // for each knob
+    config.KNOB_NAMES.forEach((knobId) => {
       // `KnobLightsRenderer` for this knob
-      var knobLightRenderer = this.knobLightRenderers[sequenceName],
+      var knobLightRenderer = this.knobLightRenderers[knobId],
         knobLightRendererOutput,
         // hardware pixels
-        pixels = this.sequencePixels[sequenceName],
+        pixels = this.knobLightPixels[knobId],
         color,
         i;
 

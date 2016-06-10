@@ -1,4 +1,5 @@
 import LightAnimation, {PLAYING_STATES} from "./LightAnimation.js";
+import config from "./config.js";
 
 /**
  *  @class        QueuedSequencerAnimation
@@ -7,7 +8,7 @@ import LightAnimation, {PLAYING_STATES} from "./LightAnimation.js";
  **/
 class QueuedSequencerAnimation extends LightAnimation {
   getNumPixels() {
-    return 16;
+    return config.SEQUENCE_NUM_LEDS;
   }
 
   render(t) {
