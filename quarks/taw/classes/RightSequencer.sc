@@ -26,7 +26,6 @@ RightSequencer : TawSequencer {
 
   preparePatch {
     super.preparePatch();
-    patch = this.createPatch();
   }
 
 }

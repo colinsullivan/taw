@@ -94,6 +94,7 @@ TawSequencer {
 
   queue {
     //"TawSequencer.queue".postln();
+    this.preparePatch();
     patch.playToMixer(
       outputChannel,
       atTime: clock.beats2secs(clock.nextBar) - clock.seconds

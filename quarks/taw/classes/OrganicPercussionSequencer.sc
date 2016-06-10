@@ -30,6 +30,7 @@ OrganicPercussionSequencer : TawSequencer {
 
   preparePatch {
     super.preparePatch();
+    patch.invalidateSynthDef;
     patch = this.createPatch();
   }
 
