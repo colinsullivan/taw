@@ -88,11 +88,21 @@ TawSequencer {
 
   }
 
-  //playBeat {
-    //patch.playToMixer(
-      //outputChannel
-    //);
-  //}
+  scheduleMeterChange {
+    var changeBeat;
+
+    clock.playNextBar({
+      // if we're still queued (TODO: some race conditions here)
+      if (currentState.queuedMeter != false, {
+        store.dispatch((
+          type: "SEQUENCER_METER_UPDATED",
+          name: currentState.name,
+          numBeats: currentState.queuedMeter.numBeats,
+          beatDur: currentState.queuedMeter.beatDur
+        ));
+      });
+    });
+  }
 
   queue {
     //"TawSequencer.queue".postln();
@@ -183,6 +193,12 @@ TawSequencer {
       // schedule next beat
       this.scheduleNextBeat();
     });
+
+    // if a meter update needs to be queued
+    if (newState.queuedMeter != false, {
+      this.scheduleMeterChange();
+    });
+
 
     currentState = newState;
   }

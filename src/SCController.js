@@ -72,53 +72,16 @@ class SCController {
 
       // send all state changes to sclang process
       if (state.supercolliderIsReady) {
+        //console.log("calling taw.setState with");
+        //console.log("state");
+        //console.log(JSON.stringify(state, " ", 4));
         this.call("taw.setState", [state]);
       }
 
-      // for each knob
-      // TODO: this should be in InputController
-      config.KNOB_NAMES.forEach((knobName) => {
-
-        // if state has changed
-        let savedKnobState = knobStates[knobName];
-        let currentKnobState = state.knobs[knobName];
-
-        if (savedKnobState !== currentKnobState) {
-          // update saved knob state
-          knobStates[knobName] = currentKnobState;
-
-          // handle changes
-          this.handleKnobChanged(knobName, currentKnobState);
-        }
-      });
 
     });
   }
 
-  // TODO: this should be in reducers
-  handleKnobChanged (knobName, knobState) {
-    //console.log(`handleKnobChanged: ${knobName}`);
-    var sequencerName = config.KNOB_NAME_TO_SEQUENCE_NAME[knobName];
-    var possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16];
-    var knobMin = -50.0;
-    var knobMax = 50.0;
-    var knobRangeSize = (knobMax - knobMin);
-    var knobRangeChunkSize = knobRangeSize / (possibleMeters.length - 1);
-
-    var selectedMeterIndex = Math.floor(
-      (knobState.position - knobMin) / knobRangeChunkSize
-    );
-
-    var selectedMeter = possibleMeters[selectedMeterIndex];
-
-    this.store.dispatch(
-      actions.changeSequencerMeter(
-        sequencerName,
-        selectedMeter,
-        4.0 / selectedMeter
-      )
-    );
-  }
   getAPICallIndex () {
     if (this._apiCallIndex < Number.MAX_SAFE_INTEGER - 1) {
       this._apiCallIndex++;

@@ -24,6 +24,8 @@ let createSequencerFromTemplate = function (name) {
       numBeats: 8,
       beatDur: 1
     },
+    // if something is set here, it means meter will change very soon.
+    queuedMeter: false,
     playingState: PLAYING_STATES.STOPPED
   };
 };
@@ -116,18 +118,44 @@ function sounds (state = initialSounds, action) {
   return state;
 }
 
+
 function sequencers (state = initialSequencers, action, session) {
   var seq;
   switch (action.type) {
+    // if a knob changed
     case actionTypes.KNOB_POS_CHANGED:
+
+      // get sequencer associated with that knob
       seq = state[config.KNOB_NAME_TO_SEQUENCE_NAME[action.id]];
 
       if (
+        // if session is running and this sequencer is stopped
           session.stage == SESSION_STAGES.STARTED
           && seq.playingState == PLAYING_STATES.STOPPED
       ) {
-        console.log("queueing sequencers");
+        // time to queue sequencer
         seq.playingState = PLAYING_STATES.QUEUED;
+      }
+
+      // determine what meter should be
+      var possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16];
+      var knobMin = -50.0;
+      var knobMax = 50.0;
+      var knobRangeSize = (knobMax - knobMin);
+      var knobRangeChunkSize = knobRangeSize / (possibleMeters.length - 1);
+
+      var selectedMeterIndex = Math.floor(
+        (action.position - knobMin) / knobRangeChunkSize
+      );
+
+      var selectedMeter = possibleMeters[selectedMeterIndex];
+
+      // if meter should be different now
+      if (selectedMeter != seq.meter.numBeats) {
+        seq.queuedMeter = {
+          numBeats: selectedMeter,
+          beatDur: 4.0 / selectedMeter
+        }
       }
 
       return state;
@@ -181,6 +209,7 @@ function sequencers (state = initialSequencers, action, session) {
       seq.meter = Object.assign({}, seq.meter);
       seq.meter.numBeats = action.numBeats;
       seq.meter.beatDur = action.beatDur;
+      seq.queuedMeter = false;
       return state;
     default:
       return state;
