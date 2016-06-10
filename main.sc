@@ -1,7 +1,5 @@
-"main.sc".postln();
 ({
 
-  //s.options.blockSize = 8;
   "Setting up".postln();
   {
     5.0.wait();
@@ -10,7 +8,7 @@
   }.fork();
 
   s.options.sampleRate = 32000;
-  s.options.hardwareBufferSize = 1024;
+  s.options.hardwareBufferSize = 2048;
   s.options.memSize = 8192 * 2;
-  s.reboot();
+  s.boot();
 }.value());

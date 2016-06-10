@@ -18,7 +18,7 @@ LazersSequencer : TawSequencer {
   }
     
   createPatch {
-    gateControl.value = 1;
+    gateControl = KrNumberEditor(rrand(0.2, 1.0), \gate);
     ^Patch("cs.fm.Lazers", (
       modIndex: modIndexControl,
       mod2Index: mod2IndexControl,
@@ -30,7 +30,6 @@ LazersSequencer : TawSequencer {
   preparePatch {
     super.preparePatch();
 
-    //gateControl.value = 0;
     patch = this.createPatch();
     if (currentState.transport.beat == 0, {
       modIndexControl.value = 1.12004;
