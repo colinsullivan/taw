@@ -29,9 +29,6 @@ LazersSequencer : TawSequencer {
   preparePatch {
     super.preparePatch();
 
-    //patch.invalidateSynthDef;
-    //SynthDef.removeAt(patch.defName);
-    //patch = this.createPatch();
     gateControl.value = rrand(0.2, 1.0);
     if (currentState.transport.beat == 0, {
       modIndexControl.value = 1.12004;

@@ -1,6 +1,11 @@
 OrganicPercussionSequencer : TawSequencer {
-  var pat;
-  var baseFreq;
+  var pat,
+    baseFreq,
+    noteDurationControl,
+    doFreqSweepControl,
+    freqSweepTargetControl,
+    freqControl;
+
 
   init {
     arg params;
@@ -17,21 +22,32 @@ OrganicPercussionSequencer : TawSequencer {
   }
 
   createPatch {
-    var e = pat.next(());
+    freqControl = KrNumberEditor(440, \freq);
+    noteDurationControl = KrNumberEditor(0.1, ControlSpec.new(0.1, 2.0));
+    doFreqSweepControl = KrNumberEditor(0, \unipolar);
+    freqSweepTargetControl = KrNumberEditor(0.5, ControlSpec.new(0.5, 2.0));
     ^Patch("cs.fm.OrganicPercussion", (
       autoDurationOn: 0,
-      noteDuration: exprand(0.1,  2.0 * (1.0 / currentState.meter.numBeats)),
-      doFreqSweep: [1, 0].wchoose([0.2, 0.8]),
-      freqSweepTargetMultiplier: [0.5, 2.0].choose(),
+      noteDuration: noteDurationControl,
+      doFreqSweep: doFreqSweepControl,
+      freqSweepTargetMultiplier: freqSweepTargetControl,
       gate: 1,
-      freq: e.scale.degreeToFreq(e.degree, baseFreq, 1)
+      freq: freqControl
     ));
   }
 
   preparePatch {
+    var e = pat.next(());
     super.preparePatch();
-    patch.invalidateSynthDef;
-    patch = this.createPatch();
+    //patch.releaseArgs;
+    freqControl.value = e.scale.degreeToFreq(e.degree, baseFreq, 1);
+    noteDurationControl.value = exprand(
+      0.1,
+      2.0 * (1.0 / currentState.meter.numBeats)
+    );
+    doFreqSweepControl.value = [1, 0].wchoose([0.2, 0.8]);
+    freqSweepTargetControl.value = [0.5, 2.0].choose();
+    //patch = this.createPatch();
   }
 
   handleStateChange {

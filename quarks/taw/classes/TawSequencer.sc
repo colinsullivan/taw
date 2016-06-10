@@ -64,6 +64,8 @@ TawSequencer {
 
   preparePatch {
 
+    patch.stop();
+
   }
 
   scheduleNextBeat {
