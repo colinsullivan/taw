@@ -12,8 +12,6 @@ import LightAnimation, {PLAYING_STATES} from "./LightAnimation.js";
 import PixelBuffer from "./PixelBuffer.js"
 import config from "./config.js";
 
-const LED_OFFSET = 4;
-
 /**
  *  @class        KnobActiveAnimation
  *
@@ -44,7 +42,7 @@ class KnobActiveAnimation extends LightAnimation {
      
     //selectedMeter = config.POSSIBLE_METERS[knobState.selectedMeterIndex];
 
-    // fill all buffers with the same color (pretty dim)
+    // fill all pixels with the same color (pretty dim)
     for (i = 0; i < this.buffer.length; i++) {
       this.buffer.setPixel(i, 0.4, 0.2, 0.2);
     }

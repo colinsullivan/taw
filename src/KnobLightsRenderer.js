@@ -11,6 +11,7 @@
 import SequencerLightsPlaybackAnimation from "./SequencerLightsPlaybackAnimation.js";
 import QueuedSequencerAnimation from "./QueuedSequencerAnimation.js";
 import KnobActiveAnimation from "./KnobActiveAnimation.js";
+import KnobMeterQueuedAnimation from "./KnobMeterQueuedAnimation.js";
 import {PLAYING_STATES} from "./reducers.js";
 
 
@@ -27,6 +28,7 @@ class KnobLightsRenderer {
 
     this.store = params.store;
 
+    this.allAnimations = [];
 
     // which sequence is this knob controlling
     // TODO: In the future this may be multiple sequencers
@@ -48,15 +50,25 @@ class KnobLightsRenderer {
       store: this.store,
       sequencerName: this.sequencerName
     });
+    this.allAnimations.push(this.playbackAnimation);
 
     // the animation that will happen as the sequencer is queued
     this.queuedAnimation = new QueuedSequencerAnimation();
+    this.allAnimations.push(this.queuedAnimation);
 
     // the animation that will happen as the knob is actively being turned
     this.knobActiveAnimation = new KnobActiveAnimation({
       store: this.store,
       knobId: this.knobId
     });
+    this.allAnimations.push(this.knobActiveAnimation);
+
+    // the animation that will happen when a meter change is queued
+    this.meterQueuedAnimation = new KnobMeterQueuedAnimation({
+      store: this.store,
+      knobId: this.knobId
+    });
+    this.allAnimations.push(this.meterQueuedAnimation);
 
     this.currentAnimation = this.playbackAnimation;
 
@@ -88,6 +100,7 @@ class KnobLightsRenderer {
 
     // if we're playing
     if (sequencerState.playingState == PLAYING_STATES.PLAYING) {
+
       // and the knob activity has changed
       if (knobState.active !== this.lastState.knobActive) {
 
@@ -96,10 +109,16 @@ class KnobLightsRenderer {
             // show knob active animation
             newCurrentAnimation = this.knobActiveAnimation;
           } else {
-            // knob just became inactive, switch back to playback animation
+            // knob just became inactive, our meter is probably queued
             newCurrentAnimation = this.playbackAnimation;
           }
       }
+
+      // if a meter change is queued
+      if (sequencerState.queuedMeter) {
+        newCurrentAnimation = this.meterQueuedAnimation;
+      }
+
     }
 
     // if animation is changing
@@ -119,9 +138,10 @@ class KnobLightsRenderer {
   }
 
   render(t) {
-    this.playbackAnimation.render(t);
-    this.queuedAnimation.render(t);
-    this.knobActiveAnimation.render(t);
+    var i;
+    for (i = 0; i < this.allAnimations.length; i++) {
+      this.allAnimations[i].render(t);
+    }
   }
 
   getOutputBuffer() {
