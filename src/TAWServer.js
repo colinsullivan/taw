@@ -9,11 +9,10 @@
  **/
 
 
-import { createStore, applyMiddleware } from "redux"
 import osc from "node-osc"
 
-import rootReducer from "./reducers.js"
 import * as actions from "./actions.js"
+import configureStore from "./configureStore.js"
 import SCController from "./SCController.js"
 import LightController from "./LightController.js"
 import InputController from "./InputController.js"
@@ -57,19 +56,6 @@ class TAWServer {
 
     this.oscClient = new osc.Client("127.0.0.1", 3333);
 
-    /**
-     *  logging of state-store messages
-     **/
-    const logger = store => next => action => {
-      let now = new Date();
-      //console.group(action.type)
-      console.info(`${now.toString()}: [TAW] dispatching`, action);
-      //let result = next(action)
-      //console.log('next state', JSON.stringify(store.getState()))
-      //console.groupEnd(action.type)
-      //return result
-      return next(action);
-    };
 
     //const forwardToSC = store => next => action => {
       //if (this.scController) {
@@ -82,13 +68,7 @@ class TAWServer {
      *  Start the [redux](http://redux.js.org/docs/api/Store.html) state store.
      **/
 
-    let createStoreWithMiddleware = applyMiddleware(
-      //forwardToSC,
-      logger
-    )(createStore);
-
-
-    this.store = createStoreWithMiddleware(rootReducer);
+    this.store = configureStore();
 
     this.isRendering = false;
     this.renderInterval = null;

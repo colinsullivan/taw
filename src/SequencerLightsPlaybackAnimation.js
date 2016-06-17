@@ -57,7 +57,6 @@ class SequencerLightsPlaybackAnimation extends LightAnimation {
     // for each beat
     for (i = 0; i < numBeats; i++) {
       let ledIndex = Math.floor(ledsPerBeat * i) % this.buffer.length;
-      ledIndex = this.buffer.length - 1 - ledIndex; // clockwise
 
       // make it brighter
       this.buffer.setPixel(ledIndex, {

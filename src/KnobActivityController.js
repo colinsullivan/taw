@@ -55,7 +55,7 @@ class KnobActivityController {
       this.inactiveTimeout = setTimeout(() => {
         // when the knob is inactive, update state
         this.store.dispatch(actions.knobInactive(this.knobId));
-      }, 1000);
+      }, 1500);
 
     }
 

@@ -142,9 +142,11 @@ function sequencers (state = initialSequencers, action, session, knobs) {
     case actionTypes.KNOB_INACTIVE:
       // get sequencer associated with that knob
       seq = state[config.KNOB_NAME_TO_SEQUENCE_NAME[action.id]];
+
       // copy the knob's `selectedMeter` into our sequencer's `queuedMeter`,
       // SuperCollider will actually queue the meter change.
       seq.queuedMeter = Object.assign({}, knobs[action.id].selectedMeter);
+
       return state;
 
     case actionTypes.TRANSMIT_STARTED:
@@ -236,6 +238,10 @@ let createKnobState = function () {
     // when knob is actively being touched, this will be true
     active: false,
 
+    // when user is selecting a meter, this will be the meter index from our
+    // list of possible meters
+    selectedMeterIndex: false,
+
     // when user is selecting a meter, this will be the meter state currently
     // selected
     selectedMeter: false
@@ -272,6 +278,7 @@ function knobs (state = defaultKnobs, action) {
       selectedMeter = config.POSSIBLE_METERS[selectedMeterIndex];
 
       // update currently selected meter for this knob
+      knob.selectedMeterIndex = selectedMeterIndex;
       knob.selectedMeter = {
         numBeats: selectedMeter,
         beatDur: 4.0 / selectedMeter

@@ -115,13 +115,20 @@ class LightController {
         // hardware pixels
         pixels = this.knobLightPixels[knobId],
         color,
-        i;
+        i,
+        pixelIndex;
 
       knobLightRenderer.render(t);
       knobLightRendererOutput = knobLightRenderer.getOutputBuffer();
 
       for (i = 0; i < knobLightRendererOutput.length; i++) {
-        color = ColorUtils.hsvToRGB(knobLightRendererOutput.getPixel(i));
+        // knob pixels rendered in reverse
+        pixelIndex = (knobLightRendererOutput.length - 1 - i);
+
+        color = ColorUtils.hsvToRGB(
+          knobLightRendererOutput.getPixel(pixelIndex)
+        );
+
         //pixels.setPixel(i, 255, 0, 0);
         pixels.setPixel.apply(pixels, [i].concat(color));
       }

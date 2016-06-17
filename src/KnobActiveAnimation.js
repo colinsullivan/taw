@@ -12,6 +12,8 @@ import LightAnimation, {PLAYING_STATES} from "./LightAnimation.js";
 import PixelBuffer from "./PixelBuffer.js"
 import config from "./config.js";
 
+const LED_OFFSET = 4;
+
 /**
  *  @class        KnobActiveAnimation
  *
@@ -30,16 +32,43 @@ class KnobActiveAnimation extends LightAnimation {
   }
   render(t) {
     var i,
-      x;
+      currentState = this.store.getState(),
+      numPossibleMeters = config.POSSIBLE_METERS.length,
+      knobState;
 
     if (this.playingState != PLAYING_STATES.PLAYING) {
       return;
     }
 
-    x = 0.5 * Math.sin((t - this.startTime) * 0.01) + 0.5;
+    knobState = currentState.knobs[this.knobId];
+     
+    //selectedMeter = config.POSSIBLE_METERS[knobState.selectedMeterIndex];
+
+    // fill all buffers with the same color (pretty dim)
     for (i = 0; i < this.buffer.length; i++) {
-      this.buffer.setPixel(i, 0.8, 0.7, 0.2 + 0.3*x);
+      this.buffer.setPixel(i, 0.4, 0.2, 0.2);
     }
+
+    // for each possible meter
+    for (i = 0; i < numPossibleMeters; i++) {
+      // LED that indicates a possible selection
+      let possibleSelectionIndicatorIndex = Math.floor(
+        (i / numPossibleMeters) * this.buffer.length
+      );
+
+      this.buffer.setPixel(possibleSelectionIndicatorIndex, 0.1, 0.5, 0.4);
+    }
+
+    // now show actual selection
+    let actualSelectionLEDIndex = Math.floor(
+      knobState.selectedMeterIndex / numPossibleMeters * this.buffer.length
+    );
+
+    // for each led up to that one
+    for (i = 0; i <= actualSelectionLEDIndex; i++) {
+      this.buffer.setPixel(i, 0.1, 0.9, 0.9);
+    }
+
   }
 };
 
