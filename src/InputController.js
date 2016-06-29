@@ -20,6 +20,14 @@ const INPUT_TYPES = {
   "BUTTON": "B"
 };
 
+/**
+ *  @class        InputController
+ *
+ *  @classdesc    Takes input from knobs, connected to the Arduino with a 
+ *  serial connection over USB.  Translates input messages to state changes.
+ *  Arduino is running this script: `controls/controls.ino`.
+ **/
+
 class InputController {
   constructor (store) {
     this.store = store;
@@ -38,6 +46,48 @@ class InputController {
     this.throttledDeviceHandlers = { 
     };
 
+    this.currentSessionStage = store.getState().session.stage;
+    //this.currentTransmitButtonState = store.getState().transmitButton;
+    store.subscribe(() => {
+      let newSessionStage = store.getState().session.stage;
+      //let newTransmitButtonState = store.getState().transmitButton;
+      // if session stage has changed
+      if (
+        this.currentSessionStage == actions.SESSION_STAGES.INIT
+      && newSessionStage == actions.SESSION_STAGES.STARTED
+      ) {
+        this.handleSessionStarted();
+      } else if (
+        this.currentSessionStage == actions.SESSION_STAGES.STARTED
+      && newSessionStage == actions.SESSION_STAGES.TRANSMIT_STARTED
+      ) {
+
+        this.handleTransmitStarted();
+        
+      }
+      //this.currentState = newState;
+      this.currentSessionStage = newSessionStage;
+      //this.currentTransmitButtonState = newTransmitButtonState;
+    });
+
+  }
+
+  handleSessionStarted () {
+    setTimeout(() => {
+      //this.store.dispatch({
+        //type: actions.actionTypes.TRANSMIT_BUTTON_ACTIVATED
+      //});
+      if (this.currentSessionStage == actions.SESSION_STAGES.STARTED) {
+        this.arduinoPort.write("TL1\n");
+      }
+    }, 5000);
+  }
+
+  handleTransmitStarted () {
+    this.arduinoPort.write("TL0\n");
+    //this.store.dispatch({
+      //type: actions.actionTypes.TRANSMIT_BUTTON_DEACTIVATED
+    //});
   }
 
   handleKnobMessage (data) {
@@ -79,10 +129,10 @@ class InputController {
     //}
 
     //this.throttledDeviceHandlers[buttonId](buttonId, buttonSwitchPos);
-    console.log("buttonId");
-    console.log(buttonId);
-    console.log("buttonSwitchPos");
-    console.log(buttonSwitchPos);
+    //console.log("buttonId");
+    //console.log(buttonId);
+    //console.log("buttonSwitchPos");
+    //console.log(buttonSwitchPos);
   }
 
   handleIncomingData (data) {

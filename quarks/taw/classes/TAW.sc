@@ -1,20 +1,20 @@
 TawController {
   classvar <>instance;
 
-  var <>clock,
-    <>tickClock,
-    <>playCallback,
+  //var <>clock,
+    //<>tickClock,
+    //<>playCallback,
     // MixerChannel instance
-    outputChannel,
-    <>patch,
-    <>state,
+  var outputChannel,
+    //<>patch,
+    //<>state,
     <>store,
     <>sequencers,
     sounds,
     //dispatchListener,
     sequencerNameToClass,
-    bufManager,
-    ambientSoundscape;
+    bufManager;
+    //ambientSoundscape;
 
 
   *new {
@@ -29,6 +29,9 @@ TawController {
     var now = thisThread.clock.seconds;
     var tempo = 150.0/60.0;
     var tickClock;
+    
+    // TODO: This only works when sclang is launched from a terminal, not from
+    // the GUI.
     var projDir = File.getcwd();
 
     "TawController.init".postln();
@@ -40,7 +43,7 @@ TawController {
       outbus: 0
     );
 
-    outputChannel.level = 0.25;
+    outputChannel.level = 0.6;
 
     //  create the buffer manager that will load the samples we need for this
     //  patch.
@@ -154,41 +157,41 @@ TawController {
     //this.clock.play(this.playCallback);
   }
 
-  handlePlayCallback {
-    arg beats, time, clock;
+  //handlePlayCallback {
+    //arg beats, time, clock;
 
-    "TawController.handlePlayCallback".postln();
+    //"TawController.handlePlayCallback".postln();
     
-    //this.sequencers[0].scheduleNextBeat(clock);
+    ////this.sequencers[0].scheduleNextBeat(clock);
 
-    [beats, time, clock].postln();
+    //[beats, time, clock].postln();
 
-    ^1.0;
-  }
+    //^1.0;
+  //}
 
-  play {
-    arg task;
-    var eventBeat, eventTime;
-    "TawController.play".postln();
+  //play {
+    //arg task;
+    //var eventBeat, eventTime;
+    //"TawController.play".postln();
 
-    eventBeat = this.clock.nextTimeOnGrid(1, 0);
-    "eventBeat:".postln;
-    eventBeat.postln;
+    //eventBeat = this.clock.nextTimeOnGrid(1, 0);
+    //"eventBeat:".postln;
+    //eventBeat.postln;
 
-    this.clock.play(this.playCallback);
-    this.clock.play(task);
-  }
+    //this.clock.play(this.playCallback);
+    //this.clock.play(task);
+  //}
 
-  onNextTick {
-    arg task;
-    this.tickClock.sched(1, task);
-  }
+  //onNextTick {
+    //arg task;
+    //this.tickClock.sched(1, task);
+  //}
 
-  scheduleAction {
-    arg action, quant, task;
-    // TODO: use quant to select clock
-    this.clock.playNextBar(task);
-  }
+  //scheduleAction {
+    //arg action, quant, task;
+    //// TODO: use quant to select clock
+    //this.clock.playNextBar(task);
+  //}
 
   *getInstance {
 

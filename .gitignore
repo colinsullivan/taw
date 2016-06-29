@@ -7,3 +7,5 @@ ideas\ Project
 NOTES.md
 lib
 sounds
+*.DS_Store
+docs/*.svg

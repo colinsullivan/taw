@@ -14,11 +14,10 @@ LazersSequencer : TawSequencer {
     
     super.init(params);
 
-    outputChannel.level = 0.3;
+    outputChannel.level = 0.2;
   }
     
   createPatch {
-    gateControl.value = 1;
     ^Patch("cs.fm.Lazers", (
       modIndex: modIndexControl,
       mod2Index: mod2IndexControl,
@@ -30,8 +29,7 @@ LazersSequencer : TawSequencer {
   preparePatch {
     super.preparePatch();
 
-    gateControl.value = 0;
-    patch = this.createPatch();
+    gateControl.value = rrand(0.2, 1.0);
     if (currentState.transport.beat == 0, {
       modIndexControl.value = 1.12004;
       mod2IndexControl.value = 0.254175;

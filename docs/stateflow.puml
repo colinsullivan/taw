@@ -1,0 +1,27 @@
+
+@startuml
+
+!include styles.puml
+
+[*] -> InitialState
+
+state InitialState {
+  
+  state bufferList : [...]
+  state supercolliderIsReady : false
+  state supercolliderInitializationStarted : false
+  state lightingIsReady : false
+  state lightingInitializationStarted : false
+  state knobs {
+    state knob {
+      state position: 0
+    }
+  }
+  state tempo : 96
+  state session : {...}
+  state sequencers : {...}
+  state sounds : {...}
+
+}
+
+@enduml

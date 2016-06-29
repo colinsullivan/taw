@@ -1,6 +1,12 @@
-
-//var pixel = require("node-pixel");
-//var five = require("johnny-five");
+/**
+ *  @file       LightController.js
+ *
+ *
+ *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
+ *
+ *  @copyright  2016 Colin Sullivan
+ *  @license    Licensed under the GPLv3 license.
+ **/
 
 import net from "net"
 import createOPCStream from "opc"
@@ -8,75 +14,52 @@ import createOPCStrand from "opc/strand"
 
 import * as actions from "./actions.js"
 import config from "./config.js"
+import ColorUtils from "./ColorUtils.js"
+import KnobLightsRenderer from "./KnobLightsRenderer.js";
 
-function hsvToRGB (hsvArray) {
-  /*
-   * Converts an HSV color value to RGB.
-   *
-   * Normal hsv range is in [0, 1], RGB range is [0, 255].
-   * Colors may extend outside these bounds. Hue values will wrap.
-   *
-   * Based on tinycolor:
-   * https://github.com/bgrins/TinyColor/blob/master/tinycolor.js
-   * 2013-08-10, Brian Grinstead, MIT License
-   */
 
-  var h = hsvArray[0];
-  var s = hsvArray[1];
-  var v = hsvArray[2];
-
-  h = (h % 1) * 6;
-  if (h < 0) h += 6;
-
-  var j = h | 0,
-      f = h - j,
-      p = v * (1 - s),
-      q = v * (1 - f * s),
-      t = v * (1 - (1 - f) * s),
-      r = [v, q, p, p, t, v][j],
-      g = [t, v, v, q, p, p][j],
-      b = [p, p, t, v, v, q][j];
-
-  return [
-    r * 255,
-    g * 255,
-    b * 255
-  ];
-}
-
+/**
+ *  @class        LightController
+ *
+ *  @classdesc    This class takes care of mapping the lighting renders to
+ *  the physical lights, communicating this out to the serial port.
+ *
+ */
 class LightController {
   constructor (store) {
     this.store = store;
 
+    // we are starting to initialize the lighting
     this.store.dispatch(actions.lightingInit());
 
+    // connecting directly to Fadecandy with this socket
     this.socket = new net.Socket();
     this.socket.setNoDelay();
     let handleSocketClosed = () => {
       console.log("Lighting connection closed.");
       this.connect();
     }
-    this.socket.on("close", handleSocketClosed);
-    this.socket.on("error", handleSocketClosed);
-    this.socket.on("connect", () => {
+    let handleSocketConnected = () => {
       console.log("LightController connected to fadecandy.");
       this.store.dispatch(actions.lightingReady());
-      this.handleStateChange();
-      this.store.subscribe(() => { this.handleStateChange(); })
-    });
+      //this.handleStateChange();
+      //this.store.subscribe(() => { this.handleStateChange(); })
+    };
+    this.socket.on("close", handleSocketClosed);
+    this.socket.on("error", handleSocketClosed);
+    this.socket.on("connect", handleSocketConnected);
 
+    // We will stream OPC data to the fadecandy over the socket
     this.opcStream = createOPCStream();
     this.opcStream.pipe(this.socket);
 
-    /*this.fadecandyPixels = createOPCStrand(
-      config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
-    );*/
+    // This is the fadecandy pixel information, in RGB format
     this.fadecandyPixels = createOPCStrand(
       config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
     );
 
-    this.connect();
-
+    // one knob renderer per sequence
+    this.knobLightRenderers = {};
 
     // cache the meter and transport of each sequence so we can handle when
     // it changes.
@@ -102,15 +85,15 @@ class LightController {
         pixelAddrs[1]
       );
 
-      //this.sequenceStrips[sequenceName].on("ready", () => {
-        //numStripsReady++;
-        //if (numStripsReady == config.SEQUENCE_NAMES.length) {
-          //handleStripsReady();
-        //}
-      //});
+      this.knobLightRenderers[sequenceName] = new KnobLightsRenderer({
+        store: this.store,
+        sequencerName: sequenceName
+      });
+
     });
-
-
+    
+    // start the connection to fadecandy
+    this.connect();
   }
 
   connect () {
@@ -118,76 +101,31 @@ class LightController {
     this.socket.connect(7890);
   }
 
-  handleSequenceChanged (seqName, seqState) {
-    var numBeats = seqState.meter.numBeats;
-    //console.log("numBeats");
-    //console.log(numBeats);
-    var pixels = this.sequencePixels[seqName];
-    //console.log("strip");
-    //console.log(strip);
-    var i;
-    // number of LEDs per beat (if less than one, there are more beats than
-    // LEDS in the strip)
-    var ledsPerBeat = 1.0 * pixels.length / numBeats;
-    var color;
-
-    //console.log(`handleSequenceChanged(${seqName})`);
-
-    var ledColors = [];
-    for (i = 0; i < pixels.length; i++) {
-      ledColors.push([0.72, 0.2, 0.2]);
-    }
-
-    for (i = 0; i < numBeats; i++) {
-      let ledIndex = Math.floor(ledsPerBeat * i) % pixels.length;
-      ledIndex = pixels.length - 1 - ledIndex; // clockwise
-      ledColors[ledIndex][1] = 0.5;
-      ledColors[ledIndex][2] = 0.5;
-
-      if (i === seqState.transport.beat) {
-        ledColors[ledIndex][1] = 0.5;
-        ledColors[ledIndex][2] = 1.0;
-      }
-
-    }
-  
-    for (i = 0; i < pixels.length; i++) {
-      color = hsvToRGB(ledColors[i]);
-      //pixels.setPixel(i, 255, 0, 0);
-      pixels.setPixel.apply(pixels, [i].concat(color));
-    }
-  }
-
-  handleStateChange() {
-    var state = this.store.getState();
-
-    //console.log("handleStateChange");
-
-    // for each sequence
-    config.SEQUENCE_NAMES.forEach((seqName) => {
-      let seqState = state.sequencers[seqName];
-
-      // if transport or meter have changed
-      if (
-        seqState.meter !== this.sequenceMeter[seqName]
-      || seqState.transport !== this.sequenceTransport[seqName]
-      ) {
-        this.sequenceMeter[seqName] = seqState.meter;
-        this.sequenceTransport[seqName] = seqState.transport;
-
-        // re-render lights for that sequence
-        this.handleSequenceChanged(seqName, seqState);
-      }
-    });
-  }
 
   render () {
-    //console.log("render");
+    var t = (new Date()).getTime();
 
-    //var i;
-    //for (i = 0; i < this.fadecandyPixels.length; i++) {
-      //this.fadecandyPixels.setPixel(i, 255, 0, 0);
-    //}
+    // for each sequence
+    config.SEQUENCE_NAMES.forEach((sequenceName) => {
+      // `KnobLightsRenderer` for this knob
+      var knobLightRenderer = this.knobLightRenderers[sequenceName],
+        knobLightRendererOutput,
+        // hardware pixels
+        pixels = this.sequencePixels[sequenceName],
+        color,
+        i;
+
+      knobLightRenderer.render(t);
+      knobLightRendererOutput = knobLightRenderer.getOutputBuffer();
+
+      for (i = 0; i < knobLightRendererOutput.length; i++) {
+        color = ColorUtils.hsvToRGB(knobLightRendererOutput.getPixel(i));
+        //pixels.setPixel(i, 255, 0, 0);
+        pixels.setPixel.apply(pixels, [i].concat(color));
+      }
+    });
+
+    // write all pixels to the fadecandy
     this.opcStream.writePixels(0, this.fadecandyPixels.buffer);
   }
 }

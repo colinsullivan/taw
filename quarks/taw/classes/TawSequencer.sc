@@ -6,7 +6,7 @@ TawSequencer {
     patch,
     outputChannel,
     currentState;
-  
+
   *new {
     arg params;
 
@@ -15,7 +15,7 @@ TawSequencer {
 
   init {
     arg params;
-    var instr,  
+    var instr,
       state;
 
     store = params.store;
@@ -43,7 +43,7 @@ TawSequencer {
 
     ^this;
   }
-  
+
   create_output_channel {
     arg parentOutputChannel;
     ^MixerChannel.new(
@@ -55,7 +55,7 @@ TawSequencer {
   }
 
   createPat {
-    
+
   }
 
   createPatch {
@@ -63,13 +63,15 @@ TawSequencer {
   }
 
   preparePatch {
-    
+
+    patch.stop();
+
   }
 
   scheduleNextBeat {
     var noteBeat,
       noteLatency;
-    
+
     //"scheduleNextBeat".postln();
 
     this.preparePatch();
@@ -94,6 +96,7 @@ TawSequencer {
 
   queue {
     //"TawSequencer.queue".postln();
+    this.preparePatch();
     patch.playToMixer(
       outputChannel,
       atTime: clock.beats2secs(clock.nextBar) - clock.seconds
@@ -124,11 +127,18 @@ TawSequencer {
     //"play".postln();
 
     clock.play({
-      store.dispatch((
-        type: "SEQUENCER_TRANSPORT_UPDATED",
-        beat: (currentState.transport.beat + 1) % currentState.meter.numBeats,
-        name: name
-      ));
+
+      // make sure we haven't stopped already (this may have been scheduled
+      // before sequencer was actually stopped)
+      if (currentState.playingState != "STOPPED", {
+        store.dispatch((
+          type: "SEQUENCER_TRANSPORT_UPDATED",
+          beat: (currentState.transport.beat + 1) % currentState.meter.numBeats,
+          name: name
+        ));
+      });
+
+      // if we're playing, schedule next.
       if (currentState.playingState == "PLAYING", {
         currentState.meter.beatDur;
       }, {
@@ -146,22 +156,32 @@ TawSequencer {
     newState = state.sequencers[name.asSymbol()];
 
     // if playing state has changed
-    if (currentState.playingState == "STOPPED" && newState.playingState == "QUEUED", {
-      this.queue();
+    if (currentState.playingState != newState.playingState, {
+
+      /*(
+        "[TAWSequencer (" + name + ")]: Playing state has changed from "
+        + currentState.playingState + "->" + newState.playingState
+      ).postln();*/
+
+      switch(newState.playingState)
+        {"QUEUED"} {
+          this.queue();
+        }
+        {"PLAYING"} {
+          this.play();
+        }
+        {"STOP_QUEUED"} {
+          this.queueStop();
+        }
     });
 
-    if (currentState.playingState == "QUEUED" && newState.playingState == "PLAYING", {
-      this.play();    
-    });
-
-    if (currentState.playingState == "PLAYING" && newState.playingState == "STOP_QUEUED", {
-      this.queueStop();    
-    });
-
-    if (newState.playingState == "PLAYING", {
-      if (newState.transport.beat != currentState.transport.beat, {
-        this.scheduleNextBeat();    
-      });
+    // if we are playing and the transport changes
+    if (
+      newState.transport.beat != currentState.transport.beat
+      && newState.playingState == "PLAYING", {
+      //("[TAWSequencer (" + name + ")]: Transport has changed.").postln();
+      // schedule next beat
+      this.scheduleNextBeat();
     });
 
     currentState = newState;

@@ -1,0 +1,106 @@
+
+@startuml
+
+!include styles.puml
+
+class TAWServer {
+  scController
+  lightController
+  inputController
+  store
+}
+
+class LightController {
+  net.Socket socket
+  OPCStream opcStream
+  OPCStrand fadecandyPixels
+  Dict knobLightRenderers{\sequencerName: KnobLightsRenderer}
+}
+TAWServer *-- LightController
+
+class KnobLightsRenderer {
+  State store
+  String sequencerName
+  SequencerLightsPlaybackAnimation playbackAnimation
+  QueuedSequencerAnimation queuedAnimation
+  LightAnimation currentAnimation
+}
+KnobLightsRenderer *- LightController
+
+class SequencerLightsPlaybackAnimation {
+  State store
+  String sequencerName
+  ..
+  handleMeterChanged
+}
+SequencerLightsPlaybackAnimation *-- KnobLightsRenderer
+
+class QueuedSequencerAnimation
+QueuedSequencerAnimation *-- KnobLightsRenderer
+
+class LightAnimation {
+  PixelBuffer buffer
+  Number startTime
+}
+LightAnimation <|-- QueuedSequencerAnimation
+LightAnimation <|-- SequencerLightsPlaybackAnimation
+
+class InputController {
+  serialport.SerialPort arduinoPort
+  ..
+  + handleKnobMessage(data)
+  + handleButtonMessage(data)
+}
+TAWServer *-- InputController
+
+class SCController {
+  supercolliderjs.scapi.SCAPI scapi
+}
+TAWServer *-- SCController
+
+class State {
+  Array bufferList[["bufferFileName", \bufferName]]
+  Dict sounds{\soundName: SoundState}
+  Dict sequencers{\sequencerName: SequencerState}
+  bool supercolliderIsReady
+  bool supercolliderInitializationStarted
+  float tempo
+  bool lightingInitializationStarted
+  bool lightingIsReady
+  Dict knobs{\knobName: KnobState}
+  SessionState session
+}
+TAWServer *-- State
+
+
+class SoundState {
+  name
+  playingState
+  bufName
+  delay
+}
+State *-- SoundState
+
+class SequencerState {
+  name
+  transport{}
+    int beat
+  meter{}
+    int numBeats
+    int beatDur
+  playingState
+}
+State *-- SequencerState
+
+class KnobState {
+  position
+}
+State *-- KnobState
+
+class SessionState {
+  Enum stage
+  Moment initTime
+}
+State *-- SessionState
+
+@enduml

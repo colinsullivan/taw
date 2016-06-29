@@ -7,7 +7,7 @@ import config from "./config.js"
 
 
 
-var PLAYING_STATES = {
+export var PLAYING_STATES = {
   STOPPED: "STOPPED",
   QUEUED: "QUEUED",
   PLAYING: "PLAYING",
@@ -77,6 +77,10 @@ function bufferList (state = initialBufs, action) {
   return state;
 }
 
+/**
+ * TODO: These are really one shot "events", which could be generative modules
+ * or just playback buffers as they are currently.
+ **/
 function sounds (state = initialSounds, action) {
   switch (action.type) {
     case actionTypes.TRANSMIT_STARTED:
@@ -95,6 +99,8 @@ function sounds (state = initialSounds, action) {
     case actionTypes.SOUND_STOP_QUEUED:
       state[action.name].playingState = PLAYING_STATES.STOP_QUEUED;
 
+      // TODO: think about what is actually happening here, the oneshots are
+      // triggering other sounds.  This should be part of the session flow?
       if (action.name == "transmitting") {
         // queue response with delay
         state.response.playingState = PLAYING_STATES.QUEUED;
@@ -120,6 +126,7 @@ function sequencers (state = initialSequencers, action, session) {
           session.stage == SESSION_STAGES.STARTED
           && seq.playingState == PLAYING_STATES.STOPPED
       ) {
+        console.log("queueing sequencers");
         seq.playingState = PLAYING_STATES.QUEUED;
       }
 
@@ -225,6 +232,9 @@ let defaultKnobs = {
   },
   "B": {
     position: 0
+  },
+  "C": {
+    position: 0
   }
 };
 function knobs (state = defaultKnobs, action) {
@@ -241,48 +251,75 @@ function knobs (state = defaultKnobs, action) {
   }
 }
 
+//let initialTransmitButton = {
+  //ledactive: 0
+//};
+//function transmitButton (state = initialTransmitButton, action) {
+  //switch (action.type) {
+    //case actionTypes.TRANSMIT_BUTTON_ACTIVATED:
+      //state = Object.assign({}, state);
+      //state.ledactive = 1;
+      //break;
+    //case actionTypes.TRANSMIT_BUTTON_DEACTIVATED:
+      //state = Object.assign({}, state);
+      //state.ledactive = 0;
+      //break;
+    //default:
+      //break;
+  //}
+
+  //return state;
+//}
+
 let createNewSession = function () {
   return {
     stage: SESSION_STAGES.INIT,
-    initTime: moment()
+    stageStartTime: moment(),
   };
 };
 let defaultSession = createNewSession();
 function session (state = defaultSession, action) {
   let now = moment();
-  let timeSinceInit = now.diff(state.initTime, 'seconds');
+  let timeSinceStageStart = now.diff(state.stageStartTime, 'seconds');
+  let newState = state;
   switch (action.type) {
     case actionTypes.SUPERCOLLIDER_READY:
-      state = createNewSession();
+      newState = createNewSession();
       break;
 
     case actionTypes.LIGHTING_READY:
-      state = createNewSession();
+      newState = createNewSession();
       break;
     
     case actionTypes.KNOB_POS_CHANGED:
       if (state.stage == SESSION_STAGES.INIT) {
       
-        if (timeSinceInit < 8) {
+        if (timeSinceStageStart < 8) {
           console.log("not starting during init cooldown period...");
         } else {
-          state.stage = SESSION_STAGES.STARTED;
+          newState = Object.assign({}, state);
+          newState.stage = SESSION_STAGES.STARTED;
+          newState.stageStartTime = moment();
         }
  
       }
       break;
     
     case actionTypes.TRANSMIT_STARTED:
-      state.stage = SESSION_STAGES.TRANSMIT_STARTED;
+      newState = Object.assign({}, state);
+      newState.stage = SESSION_STAGES.TRANSMIT_STARTED;
+      newState.stageStartTime = moment();
       break;
     
     case actionTypes.SOUND_STOPPED:
 
       // if transmitting sound just finished
       if (action.name == "transmitting") {
-        state.stage = SESSION_STAGES.RESPONSE;
+        newState = Object.assign({}, state);
+        newState.stage = SESSION_STAGES.RESPONSE;
+        newState.stageStartTime = moment();
       } else if (action.name == "response") {
-        state = createNewSession();
+        newState = createNewSession();
       }
 
       break;
@@ -290,7 +327,7 @@ function session (state = defaultSession, action) {
       break;
   }
 
-  return state;
+  return newState;
 }
 
 //export default combineReducers({

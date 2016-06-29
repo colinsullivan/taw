@@ -1,20 +1,39 @@
+/**
+ *  @file       SCController.js
+ *
+ *
+ *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
+ *
+ *  @copyright  2016 Colin Sullivan
+ *  @license    Licensed under the GPLv3 license.
+ **/
+
 import * as actions from "./actions.js"
 import config from "./config.js";
 
 var supercolliderjs = require("supercolliderjs");
 
+/**
+ *  @class        SCController
+ *
+ *  @classdesc    Send and receive actions to the state store running in
+ *  a separate [`sclang`](taw.awakening.io/docs/supercollider) process.
+ **/
 class SCController {
   constructor (store) {
     this.store = store;
     this._apiCallIndex = 0;
 
+    // we're starting our journey!
     this.store.dispatch(actions.supercolliderInitStarted());
+
+    // reads config file located at: ./.supercollider.yaml
     supercolliderjs.resolveOptions(null, {
       debug: true,
       stdin: false
     }).then((options) => {
 
-      var api = new supercolliderjs.scapi(
+      var api = new supercolliderjs.scapi.SCAPI(
         options.host,
         options.langPort
       );
@@ -27,14 +46,16 @@ class SCController {
         console.log(err);
       });
 
-      console.log("connecting...");
+      console.log("sc api connecting...");
       api.connect();
 
-      console.log("connected.");
-
+      // send init message to the sc process
       this.call("taw.init", [this.store.getState()]).then((resp) => {
         if (resp.result.status === "ok") {
+          console.log("sc api connected.");
           this.store.dispatch(actions.supercolliderReady());
+        } else {
+          console.error("ERROR: [SCController] Unable to connect to SuperCollider process.");
         }
       });
     });   
@@ -45,13 +66,17 @@ class SCController {
       knobStates[knobName] = this.store.getState().knobs[knobName];
     });
 
+    // when state changes
     this.store.subscribe(() => {
       var state = this.store.getState();
+
+      // send all state changes to sclang process
       if (state.supercolliderIsReady) {
         this.call("taw.setState", [state]);
       }
 
       // for each knob
+      // TODO: this should be in InputController
       config.KNOB_NAMES.forEach((knobName) => {
 
         // if state has changed
@@ -72,9 +97,9 @@ class SCController {
 
   // TODO: this should be in reducers
   handleKnobChanged (knobName, knobState) {
-    console.log(`handleKnobChanged: ${knobName}`);
+    //console.log(`handleKnobChanged: ${knobName}`);
     var sequencerName = config.KNOB_NAME_TO_SEQUENCE_NAME[knobName];
-    var possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16, 24, 32];
+    var possibleMeters = [1, 2, 3, 4, 5, 6, 8, 16];
     var knobMin = -50.0;
     var knobMax = 50.0;
     var knobRangeSize = (knobMax - knobMin);

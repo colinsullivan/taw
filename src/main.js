@@ -1,4 +1,4 @@
-var TAWServer = require("./lib/TAWServer.js").default;
+import TAWServer from "./TAWServer";
 
 console.log("Waiting to start the TAW server...");
 var server;
