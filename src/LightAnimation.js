@@ -24,6 +24,8 @@ export const PLAYING_STATES = {
 class LightAnimation {
   constructor(params) {
 
+    this.params = params;
+
     this.buffer = new PixelBuffer({
       // number of pixels in this light animation is defined in subclasses.
       length: this.getNumPixels()

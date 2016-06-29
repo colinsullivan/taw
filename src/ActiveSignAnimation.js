@@ -1,5 +1,5 @@
 /**
- *  @file       QueuedSequencerAnimation.js
+ *  @file       ActiveSignAnimation.js
  *
  *
  *  @author     Colin Sullivan <colin [at] colin-sullivan.net>
@@ -9,18 +9,16 @@
  **/
 
 import LightAnimation, {PLAYING_STATES} from "./LightAnimation.js";
-import config from "./config.js";
 
 /**
- *  @class        QueuedSequencerAnimation
+ *  @class        ActiveSignAnimation
  *
- *  @classdesc    Pulsing animation for a single sequencer ring.
+ *  @classdesc    The animation for a sign as a session is in progress.
  **/
-class QueuedSequencerAnimation extends LightAnimation {
+class ActiveSignAnimation extends LightAnimation {
   getNumPixels() {
-    return config.SEQUENCE_NUM_LEDS;
+    return this.params.numPixels;
   }
-
   render(t) {
     var i,
       x;
@@ -34,8 +32,6 @@ class QueuedSequencerAnimation extends LightAnimation {
       this.buffer.setPixel(i, 0.4, 0.7, 0.2 + 0.3*x);
     }
   }
-
-
 };
 
-export default QueuedSequencerAnimation;
+export default ActiveSignAnimation;

@@ -8,6 +8,7 @@
  *  @license    Licensed under the GPLv3 license.
  **/
 
+import LightRenderer from "./LightRenderer.js";
 import SequencerLightsPlaybackAnimation from "./SequencerLightsPlaybackAnimation.js";
 import QueuedSequencerAnimation from "./QueuedSequencerAnimation.js";
 import KnobActiveAnimation from "./KnobActiveAnimation.js";
@@ -21,15 +22,11 @@ import {PLAYING_STATES} from "./reducers.js";
  *  @classdesc    Render lights for a single knob.  Translate state changes
  *  into light colors, switch between animations as appropriate.
  **/
-class KnobLightsRenderer {
+class KnobLightsRenderer extends LightRenderer {
   constructor(params) {
+    super(params);
 
     //console.log("[KnobLightsRenderer] constructor");
-
-    this.store = params.store;
-
-    this.allAnimations = [];
-
     // which sequence is this knob controlling
     // TODO: In the future this may be multiple sequencers
     this.sequencerName = params.sequencerName;
@@ -73,7 +70,6 @@ class KnobLightsRenderer {
     this.currentAnimation = this.playbackAnimation;
 
     this.store.subscribe(() => {this.handleStateChange()});
-
   }
 
   handleStateChange() {
@@ -137,16 +133,6 @@ class KnobLightsRenderer {
     this.lastState.session = newState.session;
   }
 
-  render(t) {
-    var i;
-    for (i = 0; i < this.allAnimations.length; i++) {
-      this.allAnimations[i].render(t);
-    }
-  }
-
-  getOutputBuffer() {
-    return this.currentAnimation.buffer;
-  }
 };
 
 export default KnobLightsRenderer;

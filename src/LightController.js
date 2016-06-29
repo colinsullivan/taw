@@ -16,6 +16,8 @@ import * as actions from "./actions.js"
 import config from "./config.js"
 import ColorUtils from "./ColorUtils.js"
 import KnobLightsRenderer from "./KnobLightsRenderer.js";
+import InstructionsSignLightsRenderer from "./InstructionsSignLightsRenderer.js";
+import TAWSignLightsRenderer from "./TAWSignLightsRenderer.js";
 
 
 /**
@@ -56,6 +58,8 @@ class LightController {
     // This is the fadecandy pixel information, in RGB format
     this.fadecandyPixels = createOPCStrand(
       config.SEQUENCE_NAMES.length * config.SEQUENCE_NUM_LEDS
+      + config.INSTRUCTION_SIGN_NUM_LEDS
+      + config.TAW_SIGN_NUM_LEDS  
     );
 
     // one knob renderer per sequence
@@ -78,7 +82,7 @@ class LightController {
     this.knobLightPixels = {};
 
     config.KNOB_NAMES.forEach((knobId) => {
-      var pixelAddrs = config.KNOB_NAME_TO_PIXEL_ADDRESSES[knobId];
+      var pixelAddrs = config.PIXEL_ADDRESSES[knobId];
 
       // get buffer slice for each knob
       this.knobLightPixels[knobId] = this.fadecandyPixels.slice(
@@ -94,6 +98,24 @@ class LightController {
       });
     })
 
+    // pixel buffers for each sign
+    this.instructionSignPixels = this.fadecandyPixels.slice(
+      config.PIXEL_ADDRESSES.INSTRUCTION_SIGN[0],
+      config.PIXEL_ADDRESSES.INSTRUCTION_SIGN[1]
+    );
+    this.tawSignPixels = this.fadecandyPixels.slice(
+      config.PIXEL_ADDRESSES.TAW_SIGN[0],
+      config.PIXEL_ADDRESSES.TAW_SIGN[1]
+    );
+
+    // create renderer for each sign
+    this.instructionSignRenderer = new InstructionsSignLightsRenderer({
+      store: this.store
+    });
+    this.tawSignRenderer = new TAWSignLightsRenderer({
+      store: this.store
+    });
+
     // start the connection to fadecandy
     this.connect();
   }
@@ -103,6 +125,16 @@ class LightController {
     this.socket.connect(7890);
   }
 
+  renderSign(signRenderer, pixels, t) {
+    var signOutput = signRenderer.getOutputBuffer(),
+      i,
+      color;
+    signRenderer.render(t);
+    for (i = 0; i < signOutput.length; i++) {
+      color = ColorUtils.hsvToRGB(signOutput.getPixel(i));
+      pixels.setPixel.apply(pixels, [i].concat(color));
+    }
+  }
 
   render () {
     var t = (new Date()).getTime();
@@ -133,6 +165,18 @@ class LightController {
         pixels.setPixel.apply(pixels, [i].concat(color));
       }
     });
+
+    // render signs
+    this.renderSign(
+      this.instructionSignRenderer,
+      this.instructionSignPixels,
+      t
+    );
+    this.renderSign(
+      this.tawSignRenderer,
+      this.tawSignPixels,
+      t
+    );
 
     // write all pixels to the fadecandy
     this.opcStream.writePixels(0, this.fadecandyPixels.buffer);
