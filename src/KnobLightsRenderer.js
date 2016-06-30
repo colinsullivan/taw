@@ -98,22 +98,16 @@ class KnobLightsRenderer extends LightRenderer {
       // if we're playing
       if (sequencerState.playingState == PLAYING_STATES.PLAYING) {
 
-        // and the knob activity has changed
-        if (knobState.active !== this.lastState.knobActive) {
-
-            // if knob has become active
-            if (knobState.active) {
-              // show knob active animation
-              newCurrentAnimation = this.knobActiveAnimation;
-            } else {
-              // knob just became inactive, our meter is probably queued
-              newCurrentAnimation = this.playbackAnimation;
-            }
-        }
-
         // if a meter change is queued
         if (sequencerState.queuedMeter) {
           newCurrentAnimation = this.meterQueuedAnimation;
+        } else if (knobState.active) {
+        // if knob is currently active
+          newCurrentAnimation = this.knobActiveAnimation;
+        }
+        else {
+          // just plain old playback
+          newCurrentAnimation = this.playbackAnimation;
         }
 
       } else if (sequencerState.playingState == PLAYING_STATES.QUEUED) {

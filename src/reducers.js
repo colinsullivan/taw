@@ -143,9 +143,13 @@ function sequencers (state = initialSequencers, action, session, knobs) {
       // get sequencer associated with that knob
       seq = state[config.KNOB_NAME_TO_SEQUENCE_NAME[action.id]];
 
-      // copy the knob's `selectedMeter` into our sequencer's `queuedMeter`,
-      // SuperCollider will actually queue the meter change.
-      seq.queuedMeter = Object.assign({}, knobs[action.id].selectedMeter);
+      // if this sequencer is playing, lets queue the meter
+      if (seq.playingState == PLAYING_STATES.PLAYING) {
+        // copy the knob's `selectedMeter` into our sequencer's `queuedMeter`,
+        // SuperCollider will actually queue the meter change.
+        seq.queuedMeter = Object.assign({}, knobs[action.id].selectedMeter);
+      }
+
 
       return state;
 
