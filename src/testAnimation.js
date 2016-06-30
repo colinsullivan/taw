@@ -17,11 +17,30 @@ var store = configureStore();
 var lightController = new LightController(store);
 
 setTimeout(() => {
-  store.dispatch(actions.knobPosChanged("A", -25));
+  //store.dispatch(actions.knobPosChanged("A", -25));
   store.dispatch({
     type: "SEQUENCE_PLAYING",
     name: "zaps"
   });
+
+  store.dispatch({
+    type: "TRANSMIT_STARTED"
+  });
+
+  setTimeout(() => {
+    store.dispatch({
+      type: "SOUND_STOPPED",
+      name: "transmitting"
+    });
+
+    setTimeout(() => {
+      store.dispatch({
+        type: "SOUND_STOPPED",
+        name: "response"
+      });
+    }, 15000);
+  }, 15000);
+
 }, 10000);
 
 

@@ -340,7 +340,7 @@ function session (state = defaultSession, action) {
     case actionTypes.KNOB_POS_CHANGED:
       if (state.stage == SESSION_STAGES.INIT) {
 
-        if (timeSinceStageStart < 8) {
+        if (timeSinceStageStart < 3) {
           console.log("not starting during init cooldown period...");
         } else {
           newState = Object.assign({}, state);

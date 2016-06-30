@@ -13,7 +13,9 @@ import SequencerLightsPlaybackAnimation from "./SequencerLightsPlaybackAnimation
 import QueuedSequencerAnimation from "./QueuedSequencerAnimation.js";
 import KnobActiveAnimation from "./KnobActiveAnimation.js";
 import KnobMeterQueuedAnimation from "./KnobMeterQueuedAnimation.js";
+import KnobTransmittingAnimation from "./KnobTransmittingAnimation.js";
 import {PLAYING_STATES} from "./reducers.js";
+import { SESSION_STAGES } from "./actions.js"
 
 
 /**
@@ -67,6 +69,12 @@ class KnobLightsRenderer extends LightRenderer {
     });
     this.allAnimations.push(this.meterQueuedAnimation);
 
+    // when the system is transmitting
+    this.knobTransmittingAnimation = new KnobTransmittingAnimation({
+      store: this.store
+    });
+    this.allAnimations.push(this.knobTransmittingAnimation);
+
     this.currentAnimation = this.playbackAnimation;
 
     this.store.subscribe(() => {this.handleStateChange()});
@@ -80,42 +88,42 @@ class KnobLightsRenderer extends LightRenderer {
 
     //console.log("[KnobLightsRenderer] handleStateChange");
 
-    // if sequencer playingState has changed need to switch view
-    if (sequencerState.playingState !== this.lastState.playingState) {
+    // if system is in transmit mode or response mode
+    if (
+      newState.session.stage == SESSION_STAGES.TRANSMIT_STARTED
+    || newState.session.stage == SESSION_STAGES.RESPONSE
+    ) {
+      newCurrentAnimation = this.knobTransmittingAnimation;
+    } else {
+      // if we're playing
+      if (sequencerState.playingState == PLAYING_STATES.PLAYING) {
 
-      // if queued, start the queued animation and switch to it
-      if (sequencerState.playingState == PLAYING_STATES.QUEUED) {
+        // and the knob activity has changed
+        if (knobState.active !== this.lastState.knobActive) {
+
+            // if knob has become active
+            if (knobState.active) {
+              // show knob active animation
+              newCurrentAnimation = this.knobActiveAnimation;
+            } else {
+              // knob just became inactive, our meter is probably queued
+              newCurrentAnimation = this.playbackAnimation;
+            }
+        }
+
+        // if a meter change is queued
+        if (sequencerState.queuedMeter) {
+          newCurrentAnimation = this.meterQueuedAnimation;
+        }
+
+      } else if (sequencerState.playingState == PLAYING_STATES.QUEUED) {
+        // if queued, start the queued animation and switch to it
         newCurrentAnimation = this.queuedAnimation;
       } else {
-
-        // if playing, start the playback renderer and switch to it
         newCurrentAnimation = this.playbackAnimation;
-
       }
     }
 
-    // if we're playing
-    if (sequencerState.playingState == PLAYING_STATES.PLAYING) {
-
-      // and the knob activity has changed
-      if (knobState.active !== this.lastState.knobActive) {
-
-          // if knob has become active
-          if (knobState.active) {
-            // show knob active animation
-            newCurrentAnimation = this.knobActiveAnimation;
-          } else {
-            // knob just became inactive, our meter is probably queued
-            newCurrentAnimation = this.playbackAnimation;
-          }
-      }
-
-      // if a meter change is queued
-      if (sequencerState.queuedMeter) {
-        newCurrentAnimation = this.meterQueuedAnimation;
-      }
-
-    }
 
     // if animation is changing
     if (newCurrentAnimation !== this.currentAnimation) {
