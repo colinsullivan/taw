@@ -17,6 +17,8 @@ config.KNOB_NAMES.forEach(function (knobName, i) {
 });
 
 config.POSSIBLE_METERS = [1, 2, 3, 4, 5, 6, 8, 16];
+config.SPEED_UP_DURATION = 8000;
+config.SLOW_DOWN_DURATION = 4000;
 
 let knobMin = -50.0;
 let knobMax = 50.0;

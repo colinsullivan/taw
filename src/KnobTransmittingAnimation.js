@@ -18,8 +18,6 @@ let ANIMATION_STAGES = {
   PULSING: 2
 };
 
-let SPEED_UP_DURATION = 8000;
-let SLOW_DOWN_DURATION = 4000;
 
 /**
  *  @class        KnobTransmittingAnimation
@@ -78,7 +76,7 @@ class KnobTransmittingAnimation extends LightAnimation {
 
       x = 0.5 * Math.sin((t - this.startTime) * 0.0006) + 0.5;
       for (i = 0; i < this.buffer.length; i++) {
-        this.buffer.setPixel(i, 0.4, 0.5, 0.2 + 0.1*x);
+        this.buffer.setPixel(i, 0.4, 0.7, 0.2 + 0.1*x);
       }
     };
   }
@@ -93,7 +91,7 @@ class KnobTransmittingAnimation extends LightAnimation {
     var speedUpElapsedTime = t - this.startTime,
       speedUpProgress,
       speedUpProgressCubic,
-      slowDownElapsedTime = t - this.startTime - SPEED_UP_DURATION,
+      slowDownElapsedTime = t - this.startTime - config.SPEED_UP_DURATION,
       slowDownProgress,
       slowDownElapsedTime,
       increment,
@@ -114,8 +112,8 @@ class KnobTransmittingAnimation extends LightAnimation {
     }
 
     // we know transmit is approximately 15 seconds
-    speedUpProgress = speedUpElapsedTime / SPEED_UP_DURATION;
-    slowDownProgress = slowDownElapsedTime / SLOW_DOWN_DURATION;
+    speedUpProgress = speedUpElapsedTime / config.SPEED_UP_DURATION;
+    slowDownProgress = slowDownElapsedTime / config.SLOW_DOWN_DURATION;
 
     if (speedUpProgress <= 1.0) {
       speedUpProgressCubic = (
