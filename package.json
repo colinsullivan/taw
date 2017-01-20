@@ -12,7 +12,7 @@
     "push_sounds_to_tawpi": "rsync -rvt ./sounds/ tawpi:projects/taw/sounds",
     "push_sounds_to_tawpi2": "rsync -rvt ./sounds/ pi@tawpi2.local:taw/sounds",
     "build_docs": "rm -f docs/*.svg && plantuml -tsvg docs/*.puml",
-    "push_docs": "rsync -rvt docs/ awakeningio@awakening.io:taw.awakening.io/docs/",
+    "push_docs": "rsync --delete --exclude '*~.skp' --exclude '*.swp' -rvt docs/ awakeningio@awakening.io:taw.awakening.io/docs/",
     "test_animation": "node build/testAnimation.js"
   },
   "author": "Colin Sullivan <colin@colin-sullivan.net>",

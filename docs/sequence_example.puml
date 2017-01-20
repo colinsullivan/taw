@@ -1,0 +1,7 @@
+@startuml
+!include styles.puml
+Knob -> Node.js_InputController : incoming_serial_data
+Node.js_InputController -> Node.js_StateStore : dispatch(KNOB_POS_CHANGED)
+Node.js_StateStore -> Node.js_SuperColliderController : handle_state_change
+Node.js_SuperColliderController -> SuperCollider : setState
+@enduml

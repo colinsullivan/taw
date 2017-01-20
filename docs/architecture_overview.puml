@@ -1,0 +1,52 @@
+@startuml
+!include styles.puml
+
+  package "Hardware" {
+    [Rotary Encoders]
+    [WS2812 LED rings]
+  }
+
+  package "USB Devices" {
+    [Arduino]
+    [Fadecandy]
+  }
+
+  [Arduino] <-up- [Rotary Encoders]
+  [Fadecandy] -up-> [WS2812 LED rings]
+
+  package "Node.JS" {
+    [LightController]
+    [StateStore]
+    [SCController]
+    [InputController]
+  }
+
+  [StateStore] <--> [SCController]
+  [StateStore] -> [LightController]
+  [StateStore] <- [InputController]
+
+  [LightController] -up-> OpenPixelControl_Serial
+  OpenPixelControl_Serial -up-> [Fadecandy]
+
+  [Arduino] --> Custom_Serial
+  Custom_Serial --> [InputController]
+
+  package "SuperCollider (sclang)" {
+    [StateStore_SC]
+    [TawSequencer]
+    [TempoClock]
+  }
+
+  package "SuperCollider (scsynth)" {
+    [Synths]
+  }
+
+  [SCController] <--> Custom_OSC
+  Custom_OSC <--> [StateStore_SC]
+  [StateStore_SC] <-> [TawSequencer]
+  [TawSequencer] <- [TempoClock]
+  [TawSequencer] --> SuperCollider_OSC
+  SuperCollider_OSC --> [Synths]
+
+
+@enduml

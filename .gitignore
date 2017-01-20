@@ -9,3 +9,7 @@ lib
 sounds
 *.DS_Store
 docs/*.svg
+demo_videos
+.supercollider.yaml
+fadecandy
+logs

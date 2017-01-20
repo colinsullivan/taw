@@ -4,6 +4,7 @@
 !include styles.puml
 
 class TAWServer {
+  oscServer
   scController
   lightController
   inputController
@@ -15,17 +16,36 @@ class LightController {
   OPCStream opcStream
   OPCStrand fadecandyPixels
   Dict knobLightRenderers{\sequencerName: KnobLightsRenderer}
+  knobLightPixels
+  instructionSignRenderer
+  instructionSignPixels
+  tawSignRenderer
+  tawSignPixels
 }
 TAWServer *-- LightController
 
 class KnobLightsRenderer {
   State store
   String sequencerName
+  String knobId
   SequencerLightsPlaybackAnimation playbackAnimation
   QueuedSequencerAnimation queuedAnimation
   LightAnimation currentAnimation
+  KnobActiveAnimation knobActiveAnimation
+  KnobMeterQueuedAnimation meterQueuedAnimation
+  KnobTransmittingAnimation knobTransmittingAnimation
 }
-KnobLightsRenderer *- LightController
+KnobLightsRenderer *-- LightController
+
+class InstructionsSignLightsRenderer {
+  
+}
+InstructionsSignLightsRenderer *-- LightController
+
+class TAWSignLightsRenderer {
+  
+}
+TAWSignLightsRenderer *-- LightController
 
 class SequencerLightsPlaybackAnimation {
   State store
@@ -102,5 +122,32 @@ class SessionState {
   Moment initTime
 }
 State *-- SessionState
+
+class TawController {
+  outputChannel
+  store
+  sequencers
+  sounds
+  bufManager
+}
+SCController .. TawController
+
+class SCStateStore {
+  
+}
+TawController *-- SCStateStore
+
+class LeftSequencer {
+  
+}
+TawController *-- LeftSequencer
+class CenterSequencer {
+  
+}
+TawController *-- CenterSequencer
+class RightSequencer {
+  
+}
+TawController *-- RightSequencer
 
 @enduml

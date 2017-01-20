@@ -13,3 +13,21 @@ skinparam state {
   arrowColor Black
   fontColor Black
 }
+skinparam sequenceParticipant {
+  backgroundColor Azure
+  borderColor DarkGrey
+}
+skinparam sequenceLifeLine {
+  borderColor DarkGrey
+}
+skinparam sequence {
+  arrowColor Black
+}
+skinparam component {
+  backgroundColor Azure
+  borderColor DarkGrey
+}
+skinparam interface {
+  backgroundColor Azure
+  borderColor DarkGrey
+}
