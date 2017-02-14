@@ -3,14 +3,14 @@
 "Person" -> "Knob": moves knob
 "Knob" -> "Arduino": voltage_change
 "Arduino" -> "Node.js InputController" : incoming_serial_data
-"Node.js InputController" -> "Node.js State Store" : dispatch(KNOB_POS_CHANGED)
-"Node.js State Store" -> "Node.js State Store": reduce_action => sequencer.queued_meter = 4
-"Node.js State Store" -> "Node.js SCController" : handle_state_change
-"Node.js SCController" -> "SuperCollider State Store": set_state
-"SuperCollider State Store" -> "SuperCollider TawSequencer": handle_state_change
+"Node.js InputController" -> "Node.js StateStore" : dispatch(KNOB_POS_CHANGED)
+"Node.js StateStore" -> "Node.js StateStore": reduce_action => sequencer.queued_meter = 4
+"Node.js StateStore" -> "Node.js SCController" : handle_state_change
+"Node.js SCController" -> "SuperCollider StateStore": set_state
+"SuperCollider StateStore" -> "SuperCollider TawSequencer": handle_state_change
 "SuperCollider TawSequencer" -> "SuperCollider TempoClock": schedule_meter_change
 "SuperCollider TempoClock" -> "SuperCollider TempoClock" : delay
-"SuperCollider TempoClock" -> "SuperCollider State Store": dispatch(SEQUENCER_METER_UPDATED)
-"SuperCollider State Store" -> "Node.js State Store" : dispatch(SEQUENCER_METER_UPDATED)
-"Node.js State Store" -> "Node.js State Store": reduce_action => sequencer.meter = 4
+"SuperCollider TempoClock" -> "SuperCollider StateStore": dispatch(SEQUENCER_METER_UPDATED)
+"SuperCollider StateStore" -> "Node.js StateStore" : dispatch(SEQUENCER_METER_UPDATED)
+"Node.js StateStore" -> "Node.js StateStore": reduce_action => sequencer.meter = 4
 @enduml
