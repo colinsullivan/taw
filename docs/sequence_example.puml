@@ -1,7 +1,15 @@
 @startuml
 !include styles.puml
-Knob -> Node.js_InputController : incoming_serial_data
-Node.js_InputController -> Node.js_StateStore : dispatch(KNOB_POS_CHANGED)
-Node.js_StateStore -> Node.js_SuperColliderController : handle_state_change
-Node.js_SuperColliderController -> SuperCollider : setState
+"Person" -> "Knob": moves knob
+"Knob" -> "Arduino": voltage_change
+"Arduino" -> "Node.js InputController" : incoming_serial_data
+"Node.js InputController" -> "Node.js State Store" : dispatch(KNOB_POS_CHANGED)
+"Node.js State Store" -> "Node.js State Store": reduce_action(sequencer.queued_meter = 4)
+"Node.js State Store" -> "Node.js SCController" : handle_state_change
+"Node.js SCController" -> "SuperCollider State Store": set_state
+"SuperCollider State Store" -> "SuperCollider TawSequencer": handle_state_change
+"SuperCollider TawSequencer" -> "SuperCollider TempoClock": schedule_meter_change
+"SuperCollider TempoClock" -> "SuperCollider State Store": dispatch(SEQUENCER_METER_UPDATED)
+"SuperCollider State Store" -> "Node.js State Store" : dispatch(SEQUENCER_METER_UPDATED)
+"Node.js State Store" -> "Node.js State Store": reduce_action(sequencer.meter = 4)
 @enduml

@@ -3,25 +3,15 @@
 
 !include styles.puml
 
-[*] -> InitialState
-
-state InitialState {
-  
-  state bufferList : [...]
-  state supercolliderIsReady : false
-  state supercolliderInitializationStarted : false
-  state lightingIsReady : false
-  state lightingInitializationStarted : false
-  state knobs {
-    state knob {
-      state position: 0
-    }
-  }
-  state tempo : 96
-  state session : {...}
-  state sequencers : {...}
-  state sounds : {...}
-
-}
+"Any Node.js Component" -> "Node.js State Store": Action Dispatched
+"Node.js State Store" -> "Node.js State Store": Action Reduced to State Change
+"Node.js State Store" -> "Node.js SCController": State Change Notification
+"Node.js SCController" -> "SuperCollider TawController": State Change Notification
+"SuperCollider TawController" -> "SuperCollider TawController": Set State
+"Any SuperCollider Component" -> "Node.js State Store": Action Dispatched
+"Node.js State Store" -> "Node.js State Store": Action Reduced to State Change
+"Node.js State Store" -> "Node.js SCController": State Change Notification
+"Node.js SCController" -> "SuperCollider TawController": State Change Notification
+"SuperCollider TawController" -> "SuperCollider TawController": Set State
 
 @enduml
