@@ -1,0 +1,8 @@
+@startuml
+!include styles.puml
+"Node.js State Store" -> "Node.js State Store": init => sequencer.transport.beat = 0
+"SuperCollider TempoClock" -> "SuperCollider State Store": dispatch(SEQUENCER_TRANSPORT_UPDATED)
+"SuperCollider State Store" -> "Node.js State Store" : dispatch(SEQUENCER_TRANSPORT_UPDATED)
+"Node.js State Store" -> "Node.js State Store": reduce_action => sequencer.transport.beat = 1
+"Node.js State Store" -> "Node.js LightController" : handle_state_change
+@enduml
