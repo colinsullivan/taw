@@ -31,6 +31,10 @@ let createSequencerFromTemplate = function (name) {
 };
 
 let initialSequencers = {};
+//let initialSequencers = {
+  //"zaps": createSequencerFromTemplate("zaps")
+//};
+//initialSequencers.zaps.playingState = PLAYING_STATES.QUEUED;
 
 config.SEQUENCE_NAMES.forEach(function (sequencerName) {
   initialSequencers[sequencerName] = createSequencerFromTemplate(sequencerName);

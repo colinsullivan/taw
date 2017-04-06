@@ -11,7 +11,9 @@
 import * as actions from "./actions.js"
 import config from "./config.js";
 
-var supercolliderjs = require("supercolliderjs");
+import sc from 'supercolliderjs';
+
+//var supercolliderjs = require("supercolliderjs");
 
 /**
  *  @class        SCController
@@ -27,38 +29,56 @@ class SCController {
     // we're starting our journey!
     this.store.dispatch(actions.supercolliderInitStarted());
 
-    // reads config file located at: ./.supercollider.yaml
-    supercolliderjs.resolveOptions(null, {
-      debug: true,
-      stdin: false
-    }).then((options) => {
-
-      var api = new supercolliderjs.scapi.SCAPI(
-        options.host,
-        options.langPort
-      );
-
-      this.scapi = api;
-      api.log.echo = true;
-
-      api.on("error", function (err) {
-        console.log("API ERROR: ");
-        console.log(err);
+    sc.lang.boot({debug: true}).then((sclang) => {
+      sclang.interpret('s.boot();').then((answer) => {
+        setTimeout(() => {
+          
+          sclang.interpret('TawController.getInstance();').then((answer) => {
+            
+            console.log("answer");
+            console.log(answer);
+          });
+        }, 3000);
       });
+      //
+      //sclang.executeFile('../main.sc');
+    });
 
-      console.log("sc api connecting...");
-      api.connect();
 
-      // send init message to the sc process
-      this.call("taw.init", [this.store.getState()]).then((resp) => {
-        if (resp.result.status === "ok") {
-          console.log("sc api connected.");
-          this.store.dispatch(actions.supercolliderReady());
-        } else {
-          console.error("ERROR: [SCController] Unable to connect to SuperCollider process.");
-        }
-      });
-    });   
+
+    //// reads config file located at: ./.supercollider.yaml
+    //sc.resolveOptions(null, {
+      //debug: true,
+      //stdin: false
+    //}).then((options) => {
+
+      //var api = new sc.scapi(
+        //options.host,
+        //options.langPort
+      //);
+
+      //this.scapi = api;
+      //api.log.echo = true;
+
+      //api.on("error", function (err) {
+        //console.log("API ERROR: ");
+        //console.log(err);
+      //});
+
+      //console.log("sc api connecting...");
+      //api.connect();
+      //console.log("connect.");
+
+      //// send init message to the sc process
+      //this.call("taw.init", [this.store.getState()]).then((resp) => {
+        //if (resp.result.status === "ok") {
+          //console.log("sc api connected.");
+          //this.store.dispatch(actions.supercolliderReady());
+        //} else {
+          //console.error("ERROR: [SCController] Unable to connect to SuperCollider process.");
+        //}
+      //});
+    //});   
 
     // save a reference to knob states so we can handle changes
     let knobStates = {};
