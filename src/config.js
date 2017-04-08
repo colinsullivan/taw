@@ -1,11 +1,11 @@
 var config = {};
 config.KNOB_NAMES = ["A", "B", "C"];
 config.SEQUENCE_NAMES = ["zaps", "orgperc", "pad"];
-config.SEQUENCE_NUM_LEDS = 16;
+config.SEQUENCE_NUM_LEDS = 4;
 config.INSTRUCTION_SIGN_NUM_LEDS = 16;
 config.TAW_SIGN_NUM_LEDS = 24;
 config.PIXEL_ADDRESSES = {
-  "A": [0, 16],
+  "A": [2, 6],
   "B": [16, 32],
   "C": [32, 48],
   "INSTRUCTION_SIGN": [48, 64],

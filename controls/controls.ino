@@ -43,24 +43,27 @@ void setup()
 {
   // set pins as input with internal pull-up resistors enabled
   /*pinMode(PIN_ENCODER_SWITCH, INPUT_PULLUP);*/
+  /*pinMode(3, INPUT_PULLUP);*/
+  /*pinMode(5, INPUT_PULLUP);*/
 
   Serial.begin(9600);
 
 
   knobs[0].uid("A");
-  knobs[0].rotaryPins(22, 23);
+  /*knobs[0].rotaryPins(22, 23);*/
+  knobs[0].rotaryPins(3, 5);
   knobs[0].switchPin(28);
 
-  knobs[1].uid("B");
-  knobs[1].rotaryPins(24, 25);
-  knobs[1].switchPin(29);
+  /*knobs[1].uid("B");*/
+  /*knobs[1].rotaryPins(24, 25);*/
+  /*knobs[1].switchPin(29);*/
 
-  knobs[2].uid("C");
-  knobs[2].rotaryPins(26, 27);
-  knobs[2].switchPin(30);
+  /*knobs[2].uid("C");*/
+  /*knobs[2].rotaryPins(26, 27);*/
+  /*knobs[2].switchPin(30);*/
 
-  tbutton.ledPin(11);
-  tbutton.switchPin(31);
+  /*tbutton.ledPin(11);*/
+  /*tbutton.switchPin(31);*/
 
   inputString.reserve(200);
 
@@ -74,10 +77,10 @@ void loop()
   }*/
 
   knobs[0].tick();
-  knobs[1].tick();
-  knobs[2].tick();
+  /*knobs[1].tick();*/
+  /*knobs[2].tick();*/
 
-  tbutton.tick();
+  /*tbutton.tick();*/
 
   serialEvent();
 

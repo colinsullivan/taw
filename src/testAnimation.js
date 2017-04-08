@@ -23,25 +23,25 @@ setTimeout(() => {
     name: "zaps"
   });
 
-  store.dispatch({
-    type: "TRANSMIT_STARTED"
-  });
+  //store.dispatch({
+    //type: "TRANSMIT_STARTED"
+  //});
 
-  setTimeout(() => {
-    store.dispatch({
-      type: "SOUND_STOPPED",
-      name: "transmitting"
-    });
+  //setTimeout(() => {
+    //store.dispatch({
+      //type: "SOUND_STOPPED",
+      //name: "transmitting"
+    //});
 
-    setTimeout(() => {
-      store.dispatch({
-        type: "SOUND_STOPPED",
-        name: "response"
-      });
-    }, 15000);
-  }, 15000);
+    //setTimeout(() => {
+      //store.dispatch({
+        //type: "SOUND_STOPPED",
+        //name: "response"
+      //});
+    //}, 15000);
+  //}, 15000);
 
-}, 10000);
+}, 5000);
 
 
 setInterval(() => {

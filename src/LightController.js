@@ -167,16 +167,16 @@ class LightController {
     });
 
     // render signs
-    this.renderSign(
-      this.instructionSignRenderer,
-      this.instructionSignPixels,
-      t
-    );
-    this.renderSign(
-      this.tawSignRenderer,
-      this.tawSignPixels,
-      t
-    );
+    //this.renderSign(
+      //this.instructionSignRenderer,
+      //this.instructionSignPixels,
+      //t
+    //);
+    //this.renderSign(
+      //this.tawSignRenderer,
+      //this.tawSignPixels,
+      //t
+    //);
 
     // write all pixels to the fadecandy
     this.opcStream.writePixels(0, this.fadecandyPixels.buffer);
