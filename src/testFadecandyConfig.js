@@ -2,7 +2,7 @@ import OPC from "./opc";
 
 import config from "./config";
 
-var MAX_PIXELS = 512 * 8;
+var MAX_PIXELS = 64 * 8;
 var PIXEL_ADDRESSES = config.PIXEL_ADDRESSES;
 
 var client = new OPC("localhost", 7890),
