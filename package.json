@@ -15,7 +15,8 @@
     "build_docs": "rm -f docs/*.svg && plantuml -tsvg docs/*.puml",
     "watch_docs": "npm-watch",
     "push_docs": "rsync --delete --exclude '*~.skp' --exclude '*.swp' -rvt docs/ awakeningio@awakening.io:taw.awakening.io/docs/",
-    "test_animation": "node build/testAnimation.js"
+    "test_animation": "node build/testAnimation.js",
+    "test_fadecandy_config": "babel-node src/testFadecandyConfig.js"
   },
   "watch": {
     "build_docs": {

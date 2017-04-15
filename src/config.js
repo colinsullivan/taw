@@ -6,10 +6,10 @@ config.INSTRUCTION_SIGN_NUM_LEDS = 16;
 config.TAW_SIGN_NUM_LEDS = 24;
 config.PIXEL_ADDRESSES = {
   "A": [2, 6],
-  "B": [16, 32],
-  "C": [32, 48],
-  "INSTRUCTION_SIGN": [48, 64],
-  "TAW_SIGN": [64, 88]
+  //"B": [16, 32],
+  //"C": [32, 48],
+  //"INSTRUCTION_SIGN": [48, 64],
+  //"TAW_SIGN": [64, 88]
 };
 config.KNOB_NAME_TO_SEQUENCE_NAME = {};
 config.KNOB_NAMES.forEach(function (knobName, i) {
