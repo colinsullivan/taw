@@ -20,7 +20,8 @@ void RotaryEncoder::switchPin (int sPin) {
 }
 void RotaryEncoder::tick () {
   // read encoder state
-  _newRead = constrainValue(_e->read());
+  //_newRead = constrainValue(_e->read());
+  _newRead = _e->read();
   _e->write(_newRead);
 
   if (_newRead != _lastRead) {

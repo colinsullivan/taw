@@ -268,6 +268,7 @@ function knobs (state = defaultKnobs, action) {
     case actionTypes.KNOB_POS_CHANGED:
       knob = state[action.id]
       knob = Object.assign({}, knob);
+      let positionDelta = action.position - knob.position;
       knob.position = action.position;
 
       // this knob is definitely active

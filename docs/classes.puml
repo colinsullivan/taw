@@ -1,9 +1,11 @@
-
 @startuml
 
 !include styles.puml
 
-class TAWServer {
+class OWAController {
+  Top level entity for controlling everything.
+  Entry point, starts all sub-controllers.
+  ..
   oscServer
   scController
   lightController
@@ -12,40 +14,66 @@ class TAWServer {
 }
 
 class LightController {
+  Maps renderers to physical lights, handles
+  serial connection & communication.
+  ..
   net.Socket socket
   OPCStream opcStream
+  // Array of pixel data to stream into
+  // Fadecandy over serial.
   OPCStrand fadecandyPixels
-  Dict knobLightRenderers{\sequencerName: KnobLightsRenderer}
-  knobLightPixels
-  instructionSignRenderer
-  instructionSignPixels
-  tawSignRenderer
-  tawSignPixels
-}
-TAWServer *-- LightController
+  /'Dict knobLightRenderers{\sequencerName: KnobLightsRenderer}'/
+  /'knobLightPixels'/
+  /'instructionSignRenderer'/
+  /'instructionSignPixels'/
+  /'tawSignRenderer'/
+  /'tawSignPixels'/
 
-class KnobLightsRenderer {
+  Dict levelLightRenderers{levelName: LevelLightsRenderer}
+  Dict levelMenuLightRenderers{levelName: LevelMenuLightsRenderer}
+}
+OWAController *-- LightController
+
+class LevelLightsRenderer {
+  Render the main lights on a given
+  level.
+  ..
   State store
-  String sequencerName
-  String knobId
-  SequencerLightsPlaybackAnimation playbackAnimation
-  QueuedSequencerAnimation queuedAnimation
-  LightAnimation currentAnimation
-  KnobActiveAnimation knobActiveAnimation
-  KnobMeterQueuedAnimation meterQueuedAnimation
-  KnobTransmittingAnimation knobTransmittingAnimation
+  String levelName
 }
-KnobLightsRenderer *-- LightController
+LightController *-- LevelLightsRenderer
 
-class InstructionsSignLightsRenderer {
-  
+class LevelMenuLightsRenderer {
+  Render the control menu lights for
+  a given level.
+  ..
+  State store
+  String levelName
 }
-InstructionsSignLightsRenderer *-- LightController
+LightController *-- LevelMenuLightsRenderer
 
-class TAWSignLightsRenderer {
+/'class KnobLightsRenderer {'/
+  /'State store'/
+  /'String sequencerName'/
+  /'String knobId'/
+  /'SequencerLightsPlaybackAnimation playbackAnimation'/
+  /'QueuedSequencerAnimation queuedAnimation'/
+  /'LightAnimation currentAnimation'/
+  /'KnobActiveAnimation knobActiveAnimation'/
+  /'KnobMeterQueuedAnimation meterQueuedAnimation'/
+  /'KnobTransmittingAnimation knobTransmittingAnimation'/
+/'}'/
+/'KnobLightsRenderer *-- LightController'/
+
+/'class InstructionsSignLightsRenderer {'/
   
-}
-TAWSignLightsRenderer *-- LightController
+/'}'/
+/'InstructionsSignLightsRenderer *-- LightController'/
+
+/'class TAWSignLightsRenderer {'/
+  
+/'}'/
+/'TAWSignLightsRenderer *-- LightController'/
 
 class SequencerLightsPlaybackAnimation {
   State store
@@ -71,35 +99,111 @@ class InputController {
   + handleKnobMessage(data)
   + handleButtonMessage(data)
 }
-TAWServer *-- InputController
+OWAController *-- InputController
 
 class SCController {
   supercolliderjs.scapi.SCAPI scapi
 }
-TAWServer *-- SCController
+OWAController *-- SCController
 
 class State {
-  Array bufferList[["bufferFileName", \bufferName]]
-  Dict sounds{\soundName: SoundState}
-  Dict sequencers{\sequencerName: SequencerState}
-  bool supercolliderIsReady
   bool supercolliderInitializationStarted
-  float tempo
   bool lightingInitializationStarted
+  bool supercolliderIsReady
   bool lightingIsReady
-  Dict knobs{\knobName: KnobState}
+  float tempo
+  Array bufferList[["bufferFileName", \bufferName]]
+  Dict oneShotSounds{\soundName: OneShotSoundState}
+  
+  RythmicControlsState rhythmicControls
+
   SessionState session
 }
-TAWServer *-- State
+OWAController *-- State
+
+class RhythmicControlsState {
+  Dict levels{levelName: RhythmicLevel}
+}
+State *-- RhythmicControlsState
 
 
-class SoundState {
+class RhythmicLevel {
+  RhythmicLevelControls controls
+  RhythmicLevelControlSpecs controlSpecs
+
+  KnobState controlKnob
+  Array controlMenus[ControlMenuState menu]
+
+  SequencerState sequencer
+}
+RhythmicControlsState *-- RhythmicLevel
+
+class RhythmicLevelControls {
+  Control offset
+  Control balance
+}
+RhythmicLevel *-- RhythmicLevelControls
+
+class Control {
+  unmappedValue
+  value
+}
+RhythmicLevelControls *-- Control
+
+class RhythmicLevelControlSpecs {
+  Spec offset
+  Spec balance
+}
+RhythmicLevel *-- RhythmicLevelControlSpecs
+
+class Spec {
+  Array options
+}
+RhythmicLevelControlSpecs *-- Spec
+
+/'class ContinuousControlSpec {'/
+  /'minval'/
+  /'maxval'/
+  /'String warp'/
+  /'step'/
+  /'default'/
+/'}'/
+/'ContinuousControl *-- ContinuousControlSpec'/
+
+/'class DiscreteControlSpec {'/
+  /'Array options'/
+  /'default'/
+/'}'/
+/'DiscreteControl *-- DiscreteControlSpec'/
+
+/'class ContinuousControl {'/
+  /'value'/
+  /'ContinuousControlSpec spec'/
+/'}'/
+/'RhythmicLevelControls *-- ContinuousControl'/
+
+/'class DiscreteControl {'/
+  /'value'/
+  /'DiscreteControlSpec spec'/
+/'}'/
+/'RhythmicLevelControls *-- DiscreteControl'/
+
+
+class ControlMenuState {
+  String currentControlName
+  Boolean isActive
+  int cursorIndex
+}
+RhythmicLevel *-- ControlMenuState
+
+
+class OneShotSoundState {
   name
   playingState
   bufName
   delay
 }
-State *-- SoundState
+State *-- OneShotSoundState
 
 class SequencerState {
   name
@@ -110,12 +214,13 @@ class SequencerState {
     int beatDur
   playingState
 }
-State *-- SequencerState
+RhythmicLevel *-- SequencerState
 
 class KnobState {
-  position
+  float position
+  bool isActive
 }
-State *-- KnobState
+RhythmicLevel *-- KnobState
 
 class SessionState {
   Enum stage
@@ -123,31 +228,31 @@ class SessionState {
 }
 State *-- SessionState
 
-class TawController {
+class SoundController {
   outputChannel
   store
   sequencers
-  sounds
+  oneShotSounds
   bufManager
 }
-SCController .. TawController
+SCController .. SoundController
 
 class SCStateStore {
   
 }
-TawController *-- SCStateStore
+SoundController *-- SCStateStore
 
-class LeftSequencer {
+/'class LeftSequencer {'/
   
-}
-TawController *-- LeftSequencer
-class CenterSequencer {
+/'}'/
+/'SoundController *-- LeftSequencer'/
+/'class CenterSequencer {'/
   
-}
-TawController *-- CenterSequencer
-class RightSequencer {
+/'}'/
+/'SoundController *-- CenterSequencer'/
+/'class RightSequencer {'/
   
-}
-TawController *-- RightSequencer
+/'}'/
+/'SoundController *-- RightSequencer'/
 
 @enduml
