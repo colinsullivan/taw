@@ -5,7 +5,12 @@ config.SEQUENCE_NUM_LEDS = 4;
 config.INSTRUCTION_SIGN_NUM_LEDS = 16;
 config.TAW_SIGN_NUM_LEDS = 24;
 config.PIXEL_ADDRESSES = {
-  "A": [2, 6],
+  "4_level_sequencer": [0, 3],
+  "6_level_sequencer": [4, 9],
+  "4_level_referenceA": [10, 19],
+  "4_level_referenceB": [20, 29],
+  "6_level_referenceA": [30, 39],
+  "6_level_referenceB": [40, 49],
   //"B": [16, 32],
   //"C": [32, 48],
   //"INSTRUCTION_SIGN": [48, 64],

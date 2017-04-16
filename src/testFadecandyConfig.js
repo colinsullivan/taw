@@ -64,6 +64,8 @@ var draw = function () {
       }
     }
   }
+  
+  client.writePixels();
 
   if (!finished) {
     setTimeout(draw, 30);
