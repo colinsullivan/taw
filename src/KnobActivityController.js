@@ -9,6 +9,7 @@
  **/
 
 import * as actions from "./actions.js"
+import config from "./config.js"
 
 /**
  *  @class        KnobActivityController
@@ -55,7 +56,7 @@ class KnobActivityController {
       this.inactiveTimeout = setTimeout(() => {
         // when the knob is inactive, update state
         this.store.dispatch(actions.knobInactive(this.knobId));
-      }, 1500);
+      }, config.KNOB_INACTIVITY_TIMEOUT_DURATION);
 
     }
 

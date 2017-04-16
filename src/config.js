@@ -1,5 +1,11 @@
 var config = {};
 config.KNOB_NAMES = ["A", "B", "C"];
+config.KNOB_NAME_TO_LEVEL_NAME = {
+  "A": "level_4"
+};
+
+config.KNOB_INACTIVITY_TIMEOUT_DURATION = 2000;
+
 config.SEQUENCE_NAMES = ["zaps", "orgperc", "pad"];
 config.SEQUENCE_NUM_LEDS = 4;
 config.INSTRUCTION_SIGN_NUM_LEDS = 16;
@@ -33,5 +39,17 @@ config.KNOB_SPEC = {
   MAX: knobMax,
   RANGE: knobRangeSize,
   METER_CHUNK_SIZE: knobRangeSize / (config.POSSIBLE_METERS.length - 1)
+};
+
+config.RHYTHMIC_CONTROL_NAMES = ["offset", "balance"];
+config.CONTROL_SPECS = {
+  offset: {
+    options: [0, 1.0/16.0, 1.0/8.0, 1.0/4.0, 1.0/3.0, 1.0/2.0]
+  },
+  balance: {
+    min: 0.0,
+    max: 1.0,
+    warp: 'lin'
+  }
 };
 export default config;

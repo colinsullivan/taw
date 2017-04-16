@@ -139,9 +139,17 @@ class State {
   
   RythmicControlsState rhythmicControls
 
+  Dict knobs{\knobName: KnobState}
+
   SessionState session
 }
 OWAController *-- State
+
+class KnobState {
+  float position
+  bool isActive
+}
+State *-- KnobState
 
 class RhythmicControlsState {
   Dict levels{levelName: RhythmicLevel}
@@ -153,7 +161,6 @@ class RhythmicLevel {
   RhythmicLevelControls controls
   RhythmicLevelControlSpecs controlSpecs
 
-  KnobState controlKnob
   Array controlMenus[ControlMenuState menu]
 
   SequencerState sequencer
@@ -237,12 +244,6 @@ class SequencerState {
   playingState
 }
 RhythmicLevel *-- SequencerState
-
-class KnobState {
-  float position
-  bool isActive
-}
-RhythmicLevel *-- KnobState
 
 class SessionState {
   Enum stage

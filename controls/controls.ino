@@ -29,7 +29,7 @@
 
 // apparently not using pointers is much more efficient for the 
 // arduino
-RotaryEncoder knobs[3];
+RotaryEncoder knobs[1];
 
 TransmitButton tbutton;
 

@@ -29,7 +29,7 @@ const INPUT_TYPES = {
  **/
 
 class InputController {
-  constructor (store) {
+  constructor (store, portOpenedCallback) {
     this.store = store;
 
     // set up serial port connection to Arduino
@@ -37,7 +37,8 @@ class InputController {
       getOrError("INPUT_ARDUINO_SERIALPORT"),
       {
         parser: serialport.parsers.readline("\n")
-      }
+      },
+      portOpenedCallback
     );
 
     this.arduinoPort.on("data", (data) => {

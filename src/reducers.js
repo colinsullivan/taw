@@ -243,6 +243,9 @@ let createKnobState = function () {
     // The current position of the knob from [-50.0, 50.0]
     position: 0,
 
+    // change in position from last update
+    positionDelta: 0,
+
     // when knob is actively being touched, this will be true
     active: false,
 
@@ -268,7 +271,7 @@ function knobs (state = defaultKnobs, action) {
     case actionTypes.KNOB_POS_CHANGED:
       knob = state[action.id]
       knob = Object.assign({}, knob);
-      let positionDelta = action.position - knob.position;
+      knob.positionDelta = action.position - knob.position;
       knob.position = action.position;
 
       // this knob is definitely active
@@ -279,19 +282,19 @@ function knobs (state = defaultKnobs, action) {
       // update selected meter
 
       // determine what meter should be
-      selectedMeterIndex = Math.floor(
-        (action.position - config.KNOB_SPEC.MIN)
-          / config.KNOB_SPEC.METER_CHUNK_SIZE
-      );
+      //selectedMeterIndex = Math.floor(
+        //(action.position - config.KNOB_SPEC.MIN)
+          /// config.KNOB_SPEC.METER_CHUNK_SIZE
+      //);
 
-      selectedMeter = config.POSSIBLE_METERS[selectedMeterIndex];
+      //selectedMeter = config.POSSIBLE_METERS[selectedMeterIndex];
 
       // update currently selected meter for this knob
-      knob.selectedMeterIndex = selectedMeterIndex;
-      knob.selectedMeter = {
-        numBeats: selectedMeter,
-        beatDur: 4.0 / selectedMeter
-      };
+      //knob.selectedMeterIndex = selectedMeterIndex;
+      //knob.selectedMeter = {
+        //numBeats: selectedMeter,
+        //beatDur: 4.0 / selectedMeter
+      //};
 
       state[action.id] = knob;
       return state;
@@ -398,6 +401,83 @@ function session (state = defaultSession, action) {
   //session
 //});
 
+function create_control () {
+  return {
+    unmappedValue: 0,
+    value: 0
+  };
+}
+
+function create_rhythmic_controls () {
+  return {
+    offset: create_control(),
+    balance: create_control()
+  };
+}
+
+function create_control_menu (currentControlName) {
+  return {
+    currentControlName: currentControlName,
+    isActive: false,
+    cursorIndex: 0
+  };
+}
+
+function create_rhythmic_control_menus () {
+  return config.RHYTHMIC_CONTROL_NAMES.map((controlName) => {
+    return create_control_menu(controlName);
+  });
+}
+
+let initialRhythmicControls = {
+  level_4: {
+    name: 'level_4',
+    controls: create_rhythmic_controls(),
+    controlMenus: create_rhythmic_control_menus(),
+    //sequencer: null
+  }
+};
+function rhythmicLevel (state, action, knobs) {
+
+  switch (action.type) {
+    case actionTypes.KNOB_POS_CHANGED:
+
+      // if it is our knob
+      if (config.KNOB_NAME_TO_LEVEL_NAME[action.id] == state.name) {
+        // if turn was clockwise
+        if (knobs[action.id].positionDelta > 0) {
+          // make appropriate menu active
+          //state.controlMenus[0] = create_control_menu(state.controlMenus[0].currentControlName);
+          state.controlMenus[0].isActive = true;
+        } else {
+          // make appropriate menu active
+          //state.controlMenus[1] = create_control_menu(state.controlMenus[1].currentControlName);
+          state.controlMenus[1].isActive = true;
+        }
+      }
+      
+      break;
+
+    case actionTypes.KNOB_INACTIVE:
+      // if it is our knob
+      if (config.KNOB_NAME_TO_LEVEL_NAME[action.id] == state.name) {
+        // make our menus inactive
+        state.controlMenus[0].isActive = false
+        state.controlMenus[1].isActive = false
+      }
+      break;
+    
+    default:
+      break;
+  }
+  return state;
+}
+function rhythmicControls (state = initialRhythmicControls, action, knobs) {
+  return {
+    level_4: rhythmicLevel(state.level_4, action, knobs)
+  }
+}
+
 export default function (state = {}, action) {
   state.bufferList = bufferList(state.bufferList, action);
   state.supercolliderIsReady = supercolliderIsReady(state.supercolliderIsReady, action);
@@ -411,5 +491,8 @@ export default function (state = {}, action) {
   state.sequencers = sequencers(state.sequencers, action, state.session, state.knobs);
 
   state.sounds = sounds(state.sounds, action);
+
+  state.rhythmicControls = rhythmicControls(state.rhythmicControls, action, state.knobs);
+
   return state;
 }

@@ -17,7 +17,8 @@
     "push_docs": "rsync --delete --exclude '*~.skp' --exclude '*.swp' -rvt docs/ awakeningio@awakening.io:taw.awakening.io/docs/",
     "test_animation": "node build/testAnimation.js",
     "fadecandy_start": "./git_modules/fadecandy/bin/fcserver-osx ./fcconfig.json",
-    "test_fadecandy_config": "babel-node src/testFadecandyConfig.js"
+    "test_fadecandy_config": "babel-node src/testFadecandyConfig.js",
+    "test": "mocha --compilers js:babel-register"
   },
   "watch": {
     "build_docs": {
@@ -50,7 +51,10 @@
     ]
   },
   "devDependencies": {
+    "babel-register": "^6.24.1",
+    "chai": "^3.5.0",
     "eslint": "^2.11.1",
+    "mocha": "^3.2.0",
     "npm-watch": "^0.1.8"
   },
   "eslintConfig": {
