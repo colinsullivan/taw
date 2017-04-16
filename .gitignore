@@ -11,5 +11,4 @@ sounds
 docs/*.svg
 demo_videos
 .supercollider.yaml
-fadecandy
 logs

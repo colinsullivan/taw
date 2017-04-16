@@ -1,0 +1,3 @@
+[submodule "git_modules/fadecandy"]
+	path = git_modules/fadecandy
+	url = https://github.com/scanlime/fadecandy.git
