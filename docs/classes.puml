@@ -34,14 +34,29 @@ class LightController {
 }
 OWAController *-- LightController
 
+class LightRenderer {
+  Renders and returns a buffer of pixels.
+  Could switch between animations as
+  state changes.
+  ..
+  store
+  Array allAnimations
+  LightAnimation currentAnimation
+  --
+  + render(t)
+  + getOutputBuffer()
+}
+
 class LevelLightsRenderer {
   Render the main lights on a given
   level.
   ..
   State store
   String levelName
+  LevelSequencerPlayingAnimation sequencerPlayingAnimation
 }
 LightController *-- LevelLightsRenderer
+LightRenderer <|-- LevelLightsRenderer
 
 class LevelMenuLightsRenderer {
   Render the control menu lights for
@@ -49,8 +64,11 @@ class LevelMenuLightsRenderer {
   ..
   State store
   String levelName
+  /'LevelMenuDefaultAnimation menuDefaultAnimation'/
+  /'LevelMenuActiveAnimation menuActiveAnimation'/
 }
 LightController *-- LevelMenuLightsRenderer
+LightRenderer <|-- LevelMenuLightsRenderer
 
 /'class KnobLightsRenderer {'/
   /'State store'/
@@ -75,23 +93,27 @@ LightController *-- LevelMenuLightsRenderer
 /'}'/
 /'TAWSignLightsRenderer *-- LightController'/
 
-class SequencerLightsPlaybackAnimation {
-  State store
-  String sequencerName
-  ..
-  handleMeterChanged
-}
-SequencerLightsPlaybackAnimation *-- KnobLightsRenderer
+/'class SequencerLightsPlaybackAnimation {'/
+  /'State store'/
+  /'String sequencerName'/
+  /'..'/
+  /'handleMeterChanged'/
+/'}'/
+/'SequencerLightsPlaybackAnimation *-- KnobLightsRenderer'/
 
-class QueuedSequencerAnimation
-QueuedSequencerAnimation *-- KnobLightsRenderer
+/'class QueuedSequencerAnimation'/
+/'QueuedSequencerAnimation *-- KnobLightsRenderer'/
 
 class LightAnimation {
   PixelBuffer buffer
   Number startTime
 }
-LightAnimation <|-- QueuedSequencerAnimation
-LightAnimation <|-- SequencerLightsPlaybackAnimation
+LightRenderer *-- LightAnimation
+/'LightAnimation <|-- QueuedSequencerAnimation'/
+/'LightAnimation <|-- SequencerLightsPlaybackAnimation'/
+
+class SequencerPlayingAnimation
+LightAnimation <|-- SequencerPlayingAnimation
 
 class InputController {
   serialport.SerialPort arduinoPort
