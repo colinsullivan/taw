@@ -1,5 +1,6 @@
 import { combineReducers  } from 'redux'
 import moment from "moment"
+import _ from "underscore"
 
 import { actionTypes, SESSION_STAGES } from "./actions.js"
 
@@ -258,20 +259,24 @@ let createKnobState = function () {
     selectedMeter: false
   }
 };
-let defaultKnobs = {
-  "A": createKnobState(),
-  "B": createKnobState(),
-  "C": createKnobState()
-};
-function knobs (state = defaultKnobs, action) {
+let create_default_knobs = function () {
+  return {
+    "A": createKnobState(),
+    "B": createKnobState(),
+    "C": createKnobState()
+  };
+}
+function knobs (state = create_default_knobs(), action) {
   var knob,
     selectedMeterIndex,
     selectedMeter;
+
   switch (action.type) {
     case actionTypes.KNOB_POS_CHANGED:
       knob = state[action.id]
       knob = Object.assign({}, knob);
       knob.positionDelta = action.position - knob.position;
+      knob.positionDeltaPercent = knob.positionDelta / config.KNOB_SPEC.RANGE;
       knob.position = action.position;
 
       // this knob is definitely active
@@ -408,7 +413,7 @@ function create_control () {
   };
 }
 
-function create_rhythmic_controls () {
+function create_rhythmic_level_controls () {
   return {
     offset: create_control(),
     balance: create_control()
@@ -419,7 +424,7 @@ function create_control_menu (currentControlName) {
   return {
     currentControlName: currentControlName,
     isActive: false,
-    cursorIndex: 0
+    cursorPosition: 0.0
   };
 }
 
@@ -429,14 +434,48 @@ function create_rhythmic_control_menus () {
   });
 }
 
-let initialRhythmicControls = {
-  level_4: {
-    name: 'level_4',
-    controls: create_rhythmic_controls(),
-    controlMenus: create_rhythmic_control_menus(),
-    //sequencer: null
-  }
+let create_rhythmic_controls = function () {
+  return {
+    level_4: {
+      name: 'level_4',
+      controls: create_rhythmic_level_controls(),
+      controlMenus: create_rhythmic_control_menus(),
+      //sequencer: null
+    }
+  };
 };
+
+function controlMenu (state, action, knob, controls) {
+  switch (action.type) {
+    case actionTypes.KNOB_POS_CHANGED:
+      // this reducer assumes it is only called when
+      // knob_pos_changed is this menu's knob
+      state = Object.assign({}, state);
+      state.isActive = true;
+
+      let currentControl = controls[state.currentControlName];
+      let controlSpec = config.CONTROL_SPECS[state.currentControlName];
+
+      // if this control is discrete
+      let absDeltaPercent = Math.abs(knob.positionDeltaPercent);
+      if (controlSpec.options) {
+        let numOptions = controlSpec.options.length;
+        state.cursorPosition += absDeltaPercent * numOptions;
+      } else if (!_.isUndefined(controlSpec.min) && !_.isUndefined(controlSpec.max)) {
+        let range = controlSpec.max - controlSpec.min;
+        state.cursorPosition += absDeltaPercent * range;
+      } else {
+        throw new Error(`Don't know how to handle controlspec: ${JSON.stringify(controlSpec)}`);
+      }
+
+        
+      break;
+    
+    default:
+      break
+  }
+  return state;
+}
 function rhythmicLevel (state, action, knobs) {
 
   switch (action.type) {
@@ -444,15 +483,21 @@ function rhythmicLevel (state, action, knobs) {
 
       // if it is our knob
       if (config.KNOB_NAME_TO_LEVEL_NAME[action.id] == state.name) {
+        let knob = knobs[action.id];
         // if turn was clockwise
-        if (knobs[action.id].positionDelta > 0) {
-          // make appropriate menu active
+        if (knob.positionDelta > 0) {
+
+          // TODO: we can make this immutable if we want
           //state.controlMenus[0] = create_control_menu(state.controlMenus[0].currentControlName);
-          state.controlMenus[0].isActive = true;
+          //state.controlMenus[0].isActive = true;
+          state.controlMenus[0] = controlMenu(state.controlMenus[0], action, knob, state.controls);
+
+          // current control
+
         } else {
-          // make appropriate menu active
           //state.controlMenus[1] = create_control_menu(state.controlMenus[1].currentControlName);
-          state.controlMenus[1].isActive = true;
+          //state.controlMenus[1].isActive = true;
+          state.controlMenus[1] = controlMenu(state.controlMenus[1], action, knob, state.controls);
         }
       }
       
@@ -472,7 +517,7 @@ function rhythmicLevel (state, action, knobs) {
   }
   return state;
 }
-function rhythmicControls (state = initialRhythmicControls, action, knobs) {
+function rhythmicControls (state = create_rhythmic_controls(), action, knobs) {
   return {
     level_4: rhythmicLevel(state.level_4, action, knobs)
   }

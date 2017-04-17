@@ -3,6 +3,7 @@ import chai from "chai";
 import configureStore from "../src/configureStore.js";
 import InputController from "../src/InputController";
 import config from "../src/config";
+import * as actions from "../src/actions.js"
 
 var assert = chai.assert;
 var expect = chai.expect;
@@ -42,6 +43,28 @@ class FakeArduino {
 };
 
 export default FakeArduino;
+
+describe("reset statestore", function () {
+  var store;
+
+  beforeEach(function () {
+    console.log("calling configureStore");
+    store = configureStore();
+  });
+
+  it("should init state", function (done) {
+    let state = store.getState();
+    expect(state.knobs.A.position).to.equal(0);
+    store.dispatch(actions.knobPosChanged("A", 50));
+    done();
+  });
+
+  it("should init state again", function (done) {
+    let state = store.getState();
+    expect(state.knobs.A.position).to.equal(0);
+    done();
+  });
+})
 
 describe("input tests", function() {
 
@@ -95,7 +118,7 @@ describe("input tests", function() {
     });
   });
 
-  describe("level_4 controls", function() {
+  describe("level_4 control menu", function() {
     it("when turned clockwise, control menu 0 should be active", function (done) {
       unsub = store.subscribe(() => {
         let state = store.getState();
@@ -124,6 +147,27 @@ describe("input tests", function() {
 
       }, config.KNOB_INACTIVITY_TIMEOUT_DURATION + 500);
     }).timeout(config.KNOB_INACTIVITY_TIMEOUT_DURATION + 1000);
+
+    it("should update cursor position", function (done) {
+      let state = store.getState();
+      unsub = store.subscribe(() => {
+        let state = store.getState();
+        expect(state.rhythmicControls.level_4.controlMenus[0].cursorPosition).to.equal(0.03 * config.CONTROL_SPECS.offset.options.length);
+        done();
+      });
+      fakeArduino.knobTurn("A", true);
+    });
+
+    it("should update other cursor position", function (done) {
+      let state = store.getState();
+      unsub = store.subscribe(() => {
+        let state = store.getState();
+        expect(state.rhythmicControls.level_4.controlMenus[1].cursorPosition).to.equal(0.03);
+        done();
+      });
+      fakeArduino.knobTurn("A", false);
+    });
+
   });
 
   

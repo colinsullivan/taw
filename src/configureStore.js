@@ -26,12 +26,12 @@ const logger = store => next => action => {
   return next(action);
 };
 
-export default function configureStore () {
+export default function configureStore (initialState = {}) {
   let createStoreWithMiddleware = applyMiddleware(
     //forwardToSC,
     logger
   )(createStore);
 
 
-  return createStoreWithMiddleware(rootReducer);
+  return createStoreWithMiddleware(rootReducer, initialState);
 }
