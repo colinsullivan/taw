@@ -221,7 +221,7 @@ RhythmicLevelControlSpecs *-- Spec
 class ControlMenuState {
   String currentControlName
   Boolean isActive
-  int cursorIndex
+  float cursorPosition
 }
 RhythmicLevel *-- ControlMenuState
 
