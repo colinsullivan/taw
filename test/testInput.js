@@ -148,11 +148,15 @@ describe("input tests", function() {
       }, config.KNOB_INACTIVITY_TIMEOUT_DURATION + 500);
     }).timeout(config.KNOB_INACTIVITY_TIMEOUT_DURATION + 1000);
 
-    it("should update cursor position", function (done) {
+    it("should update cursor position and proper control value", function (done) {
       let state = store.getState();
       unsub = store.subscribe(() => {
         let state = store.getState();
-        expect(state.rhythmicControls.level_4.controlMenus[0].cursorPosition).to.equal(0.03 * config.CONTROL_SPECS.offset.options.length);
+        let controlMenu = state.rhythmicControls.level_4.controlMenus[0];
+        let control = state.rhythmicControls.level_4.controls[controlMenu.currentControlName];
+        let controlSpec = config.CONTROL_SPECS[controlMenu.currentControlName];
+        expect(controlSpec).to.have.property('options')
+        expect(controlMenu.cursorPosition).to.equal(0.03 * controlSpec.options.length);
         done();
       });
       fakeArduino.knobTurn("A", true);
@@ -162,7 +166,12 @@ describe("input tests", function() {
       let state = store.getState();
       unsub = store.subscribe(() => {
         let state = store.getState();
-        expect(state.rhythmicControls.level_4.controlMenus[1].cursorPosition).to.equal(0.03);
+        let controlMenu = state.rhythmicControls.level_4.controlMenus[1];
+        let control = state.rhythmicControls.level_4.controls[controlMenu.currentControlName];
+        let controlSpec = config.CONTROL_SPECS[controlMenu.currentControlName];
+        expect(controlSpec).to.have.property('min')
+        expect(controlSpec).to.have.property('max')
+        expect(controlMenu.cursorPosition).to.equal(0.03);
         done();
       });
       fakeArduino.knobTurn("A", false);

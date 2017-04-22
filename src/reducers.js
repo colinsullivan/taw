@@ -408,7 +408,6 @@ function session (state = defaultSession, action) {
 
 function create_control () {
   return {
-    unmappedValue: 0,
     value: 0
   };
 }
@@ -424,14 +423,18 @@ function create_control_menu (currentControlName) {
   return {
     currentControlName: currentControlName,
     isActive: false,
-    cursorPosition: 0.0
+    cursorPosition: 0.0,
+    knobPositionMultiplier: 1.0
   };
 }
 
 function create_rhythmic_control_menus () {
-  return config.RHYTHMIC_CONTROL_NAMES.map((controlName) => {
+  var menus = config.RHYTHMIC_CONTROL_NAMES.map((controlName) => {
     return create_control_menu(controlName);
   });
+
+  menus[1].knobPositionMultiplier = -1.0;
+  return menus;
 }
 
 let create_rhythmic_controls = function () {
@@ -456,17 +459,24 @@ function controlMenu (state, action, knob, controls) {
       let currentControl = controls[state.currentControlName];
       let controlSpec = config.CONTROL_SPECS[state.currentControlName];
 
+      console.log("knob.positionDeltaPercent");
+      console.log(knob.positionDeltaPercent);
+
       // if this control is discrete
-      let absDeltaPercent = Math.abs(knob.positionDeltaPercent);
+      let deltaPercent = state.knobPositionMultiplier * knob.positionDeltaPercent;
       if (controlSpec.options) {
         let numOptions = controlSpec.options.length;
-        state.cursorPosition += absDeltaPercent * numOptions;
+        //state.cursorPosition += absDeltaPercent * numOptions;
+        state.cursorPosition += deltaPercent * numOptions;
       } else if (!_.isUndefined(controlSpec.min) && !_.isUndefined(controlSpec.max)) {
         let range = controlSpec.max - controlSpec.min;
-        state.cursorPosition += absDeltaPercent * range;
+        //state.cursorPosition += absDeltaPercent * range;
+        state.cursorPosition += deltaPercent * range;
       } else {
         throw new Error(`Don't know how to handle controlspec: ${JSON.stringify(controlSpec)}`);
       }
+      state.cursorPosition = Math.max(state.cursorPosition, 0.0);
+      state.cursorPosition = Math.min(1.0, state.cursorPosition);
 
         
       break;
@@ -484,31 +494,50 @@ function rhythmicLevel (state, action, knobs) {
       // if it is our knob
       if (config.KNOB_NAME_TO_LEVEL_NAME[action.id] == state.name) {
         let knob = knobs[action.id];
-        // if turn was clockwise
-        if (knob.positionDelta > 0) {
+        let updatedControlMenuIndex = null;
 
-          // TODO: we can make this immutable if we want
-          //state.controlMenus[0] = create_control_menu(state.controlMenus[0].currentControlName);
-          //state.controlMenus[0].isActive = true;
-          state.controlMenus[0] = controlMenu(state.controlMenus[0], action, knob, state.controls);
-
-          // current control
-
-        } else {
-          //state.controlMenus[1] = create_control_menu(state.controlMenus[1].currentControlName);
-          //state.controlMenus[1].isActive = true;
-          state.controlMenus[1] = controlMenu(state.controlMenus[1], action, knob, state.controls);
+        // if one of our menus is active
+        let activeMenuIndex = null;
+        let i;
+        for (i = 0; i < state.controlMenus.length; i++) {
+          if (state.controlMenus[i].isActive) {
+            activeMenuIndex = i;
+            break;
+          }
         }
+
+        if (activeMenuIndex == null) {
+          // if turn was clockwise
+          if (knob.positionDelta > 0) {
+            activeMenuIndex = 0;
+          } else {
+            activeMenuIndex = 1;
+          }
+        }
+
+        state.controlMenus[activeMenuIndex] = controlMenu(state.controlMenus[activeMenuIndex], action, knob, state.controls);
+
+
+
+        
+
       }
       
       break;
 
     case actionTypes.KNOB_INACTIVE:
+      console.log("KNOB_INACTIVE");
       // if it is our knob
       if (config.KNOB_NAME_TO_LEVEL_NAME[action.id] == state.name) {
+
+        console.log("handling");
+
         // make our menus inactive
-        state.controlMenus[0].isActive = false
-        state.controlMenus[1].isActive = false
+        let i;
+        for (i = 0; i < state.controlMenus.length; i++) {
+          state.controlMenus[i] = Object.assign({}, state.controlMenus[i]);
+          state.controlMenus[i].isActive = false;
+        }
       }
       break;
     

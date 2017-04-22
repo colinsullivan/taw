@@ -10,13 +10,15 @@ config.SEQUENCE_NAMES = ["zaps", "orgperc", "pad"];
 config.SEQUENCE_NUM_LEDS = 4;
 config.INSTRUCTION_SIGN_NUM_LEDS = 16;
 config.TAW_SIGN_NUM_LEDS = 24;
+config.MENU_NUM_LEDS = 10;
+config.PIXEL_ADDRESS_MENU_NAMES = ['level_4_menu_0', 'level_4_menu_1', 'level_6_menu_0', 'level_6_menu_1'];
 config.PIXEL_ADDRESSES = {
-  "4_level_sequencer": [0, 3],
-  "6_level_sequencer": [4, 9],
-  "4_level_referenceA": [10, 19],
-  "4_level_referenceB": [20, 29],
-  "6_level_referenceA": [30, 39],
-  "6_level_referenceB": [40, 49],
+  "level_4_sequencer": [0, 3],
+  "level_6_sequencer": [4, 9],
+  "level_4_menu_0": [10, 19],
+  "level_4_menu_1": [20, 29],
+  "level_6_menu_0": [30, 39],
+  "level_6_menu_1": [40, 49],
   //"B": [16, 32],
   //"C": [32, 48],
   //"INSTRUCTION_SIGN": [48, 64],
