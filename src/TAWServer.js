@@ -81,7 +81,7 @@ class TAWServer {
         // we haven't started rendering yet
         !this.isRendering
         // if we are running with sc, make sure sc is ready
-        && state.supercolliderIsReady
+        //&& state.supercolliderIsReady
         // if we are running with lighting, make sure lighting is ready
         && state.lightingIsReady
       ) {
@@ -111,7 +111,8 @@ class TAWServer {
   }
 
   render () {
-    this.lightController.render();
+    var t = (new Date()).getTime();
+    this.lightController.render(t);
   }
 }
 export default TAWServer;

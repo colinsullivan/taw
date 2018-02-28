@@ -80,12 +80,6 @@ class SCController {
       });
     });   
 
-    // save a reference to knob states so we can handle changes
-    let knobStates = {};
-    config.KNOB_NAMES.forEach((knobName) => {
-      knobStates[knobName] = this.store.getState().knobs[knobName];
-    });
-
     // when state changes
     this.store.subscribe(() => {
       var state = this.store.getState();

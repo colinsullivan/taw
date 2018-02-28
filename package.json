@@ -40,7 +40,8 @@
     "redux": "^3.0.4",
     "serialport": "^3.1.2",
     "supercolliderjs": "^0.14.1",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "yargs": "^7.1.0"
   },
   "babel": {
     "ignore": [
@@ -53,7 +54,7 @@
   "devDependencies": {
     "babel-register": "^6.24.1",
     "chai": "^3.5.0",
-    "eslint": "^2.11.1",
+    "eslint": "^2.13.1",
     "mocha": "^3.2.0",
     "npm-watch": "^0.1.8"
   },
@@ -72,7 +73,7 @@
       "es6": true
     },
     "rules": {
-      "no-console": 1,
+      "no-console": 0,
       "no-use-before-define": "error",
       "block-scoped-var": "error"
     }
