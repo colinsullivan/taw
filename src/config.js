@@ -13,12 +13,12 @@ config.TAW_SIGN_NUM_LEDS = 24;
 config.MENU_NUM_LEDS = 10;
 config.PIXEL_ADDRESS_MENU_NAMES = ['level_4_menu_0', 'level_4_menu_1', 'level_6_menu_0', 'level_6_menu_1'];
 config.PIXEL_ADDRESSES = {
-  "level_4_sequencer": [0, 3],
-  "level_6_sequencer": [4, 9],
-  "level_4_menu_0": [10, 19],
-  "level_4_menu_1": [20, 29],
-  "level_6_menu_0": [30, 39],
-  "level_6_menu_1": [40, 49],
+  "level_4_sequencer": [0, 512],
+//  "level_6_sequencer": [4, 9],
+//  "level_4_menu_0": [10, 19],
+//  "level_4_menu_1": [20, 29],
+//  "level_6_menu_0": [30, 39],
+//  "level_6_menu_1": [40, 49],
   //"B": [16, 32],
   //"C": [32, 48],
   //"INSTRUCTION_SIGN": [48, 64],

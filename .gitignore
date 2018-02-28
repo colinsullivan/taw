@@ -12,3 +12,4 @@ docs/*.svg
 demo_videos
 .supercollider.yaml
 logs
+build/
